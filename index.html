@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>生薬フォトクイズ｜共有版</title>
+<meta name="robots" content="noindex,nofollow">
+<style>
+:root{--bg:#f5f7f4;--card:#fff;--ink:#1e2b25;--muted:#64736a;--line:#dce4dd;--green:#276749;--soft:#e7f2e9;--red:#a43c35}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif}
+header{background:#183d2c;color:white;padding:22px 16px}header .wrap,main{max-width:1000px;margin:auto}h1{font-size:1.5rem;margin:0 0 6px}header p{margin:0;color:#d6e6da;font-size:.95rem}
+main{padding:18px 14px 50px}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}.tab,button{border:0;border-radius:10px;padding:11px 14px;font:inherit;font-weight:650;cursor:pointer}.tab{background:#e4eae5;color:var(--ink)}.tab.active,button.primary{background:var(--green);color:white}button.secondary{background:var(--soft);color:var(--green)}button.danger{background:#fae9e7;color:var(--red)}button:disabled{opacity:.45;cursor:not-allowed}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px;box-shadow:0 3px 12px #1d38230a}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}.stat{background:white;border:1px solid var(--line);border-radius:12px;padding:12px}.stat b{display:block;font-size:1.35rem}.stat span{font-size:.83rem;color:var(--muted)}
+.question-image{width:100%;max-height:440px;object-fit:contain;background:#f0f2ef;border-radius:12px;display:block;margin:12px 0}.gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin:12px 0}.gallery img{width:100%;height:160px;object-fit:contain;background:#f0f2ef;border-radius:10px}.muted{color:var(--muted);font-size:.9rem}.field{display:flex;flex-direction:column;gap:6px;margin:12px 0}label{font-weight:650;font-size:.93rem}input,textarea,select{width:100%;border:1px solid #cbd6cd;border-radius:9px;padding:11px;font:inherit;background:white;color:var(--ink)}textarea{min-height:76px;resize:vertical}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.row>*{flex:1}.feedback{border-radius:10px;padding:13px;margin-top:12px}.good{background:#e5f5e8;border:1px solid #b5dfbe}.bad{background:#fff0e7;border:1px solid #f0c6ad}.hidden{display:none!important}.entry{display:grid;grid-template-columns:100px 1fr auto;gap:12px;align-items:center;border-top:1px solid var(--line);padding:12px 0}.thumb{width:100px;height:80px;object-fit:cover;border-radius:8px;background:#eee}.entry h3{margin:0 0 4px;font-size:1rem}.entry p{margin:3px 0;color:var(--muted);font-size:.83rem;white-space:pre-wrap}.small{font-size:.82rem}.pill{display:inline-block;background:#edf1ed;border-radius:99px;padding:3px 8px;font-size:.78rem;margin:2px}.empty{text-align:center;padding:26px 8px;color:var(--muted)}.answer-actions{display:flex;gap:8px;margin-top:10px}.answer-actions button{flex:1}.check-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px;margin:10px 0}.check-option{display:flex;gap:9px;align-items:flex-start;padding:10px;border:1px solid var(--line);border-radius:10px;font-weight:400}.check-option input{width:auto;margin-top:4px}.scoreline{font-size:1.2rem;font-weight:750}.rule{background:#f5f7f4;padding:12px;border-radius:10px}.preview-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}.preview-item{position:relative}.preview-item img{width:100%;height:115px;object-fit:contain;background:#f0f2ef;border-radius:8px}.preview-item button{width:100%;padding:6px;font-size:.8rem}
+@media(max-width:560px){header{padding:18px 14px}.stats{grid-template-columns:repeat(2,1fr);gap:6px}.stat{padding:9px}.stat b{font-size:1.15rem}.panel{padding:14px}.entry{grid-template-columns:70px 1fr}.thumb{width:70px;height:68px}.entry .entry-actions{grid-column:2}.answer-actions{flex-direction:column}}
+
+#connectionState{padding:10px 14px;margin-bottom:10px;border-radius:9px;background:#e7f2e9;color:#194c37;font-size:.9rem}
+#connectionState.error{background:#fff0e7;color:#9a3926}
+#adminBar{margin-bottom:14px;padding:14px;background:#fff;border:1px solid var(--line);border-radius:12px}
+#adminBar h3{margin:0 0 8px}#loginBox{margin-top:12px;max-width:400px}#loginBox input{margin:5px 0 12px}
+#adminBar button{width:auto} .import-card{border:1px solid var(--line);border-radius:12px;padding:14px;background:#f8faf7}
+#migrationStatus{white-space:pre-wrap;line-height:1.7}
+progress{width:100%;height:20px}
+</style>
+</head>
+<body>
+<header><div class="wrap"><h1>生薬フォトクイズ</h1><p>写真による識別と、薬学試験向けの配点式トレーニング</p></div></header>
+<main>
+<div id="connectionState" role="status">共有データを読み込んでいます…</div>
+<div id="adminBar"><div class="row" style="align-items:center"><div id="adminState" class="muted">ゲストとして利用中：クイズ・生薬情報を閲覧できます。</div><button class="secondary" type="button" id="loginToggle">管理者ログイン</button><button class="secondary hidden" type="button" id="logoutButton">ログアウト</button></div>
+<div id="loginBox" class="hidden"><form id="loginForm"><label for="adminEmail">管理者メールアドレス</label><input id="adminEmail" type="email" required autocomplete="username"><label for="adminPassword">パスワード</label><input id="adminPassword" type="password" required autocomplete="current-password"><button type="submit" class="primary">ログイン</button></form><p id="loginMessage" class="muted"></p></div></div>
+
+<div class="stats">
+ <div class="stat"><b id="countStat">0</b><span>登録生薬</span></div>
+ <div class="stat"><b id="accuracyStat">—</b><span>累計正答率</span></div>
+ <div class="stat"><b id="scoreStat">0</b><span>累計得点</span></div>
+ <div class="stat"><b id="weakStat">0</b><span>復習対象</span></div>
+</div>
+<nav class="tabs">
+ <button class="tab active" data-tab="quiz">クイズ</button><button class="tab" data-tab="info">生薬情報</button><button class="tab hidden" data-admin-tab="1" data-tab="manage">生薬を登録・編集</button><button class="tab hidden" data-admin-tab="1" data-tab="list">登録一覧</button><button class="tab hidden" data-admin-tab="1" data-tab="backup">バックアップ</button>
+</nav>
+<section id="quiz" class="panel">
+ <div class="row"><div><h2 style="margin:0">写真識別</h2><p class="muted" id="modeLabel">出題モードを選び、「次の問題」を押してください。</p></div><div style="max-width:300px"><label for="answerMode">回答モード</label><select id="answerMode"><option value="name">生薬名だけ答える（和名・ラテン名）</option><option value="full">すべて答える（満点7点）</option></select><label for="quizMode" style="display:block;margin-top:10px">出題方法</label><select id="quizMode"><option value="random">ランダム出題</option><option value="weak">苦手問題の復習</option></select></div></div>
+ <div class="rule small"><b>採点ルール</b><br>和名1点＋生薬ラテン名1点＋基原植物1点（ラテン名）＋科名1点（ラテン名）＋主成分1点＋用途最大2点。基原植物・科名は和名回答で各0.5点。<b>生薬の和名が不正解の場合、その問題の得点はすべて0点</b>になります。用途は、正解を一部選択（誤答なし）で1点、今回の正解をすべて選択して誤答がなければ2点、誤答を1つでも選択した場合は0点です。<hr><b>入力上の注意</b><br>・生薬ラテン名は、各単語の最初の文字（スペースの後も含む）を大文字、残りを小文字で入力してください。<br>・記号（例：-、[ ]）、数字、アルファベットは半角で入力してください。</div>
+ <div id="quizArea"><div class="empty">共有データを読み込んでいます…</div></div>
+</section>
+<section id="manage" class="panel hidden">
+ <h2 id="formTitle" style="margin-top:0">生薬を登録</h2>
+ <p class="muted">ラテン名・主成分・用途も登録すると「すべて答える」モードで採点できます。写真は複数選択できます。</p>
+ <form id="herbForm">
+  <input type="hidden" id="editId">
+  <div class="field"><label for="herbName">生薬名・和名（必須／和名が採点の基準）</label><input id="herbName" required placeholder="例：カンゾウ"></div>
+  <div class="field"><label for="herbLatin">生薬名・ラテン名（必須）</label><input id="herbLatin" required placeholder="例：Glycyrrhizae Radix"><span class="muted">各単語の先頭は大文字、残りは小文字。記号・数字・アルファベットは半角で入力。</span></div>
+  <div class="field"><label for="aliases">和名の別表記・許容回答（任意、読点またはカンマ区切り）</label><input id="aliases" placeholder="例：甘草、かんぞう"></div>
+  <div class="field"><label for="photo">写真（複数選択可）</label><input id="photo" type="file" accept="image/*" multiple><span class="muted">管理者が選んだ写真は共有ストレージに保存されます。既存写真を残したまま追加できます。</span><div id="photoPreview" class="preview-grid"></div></div>
+  <div class="field"><label for="originLatin">基原植物・ラテン名（1点）</label><input id="originLatin" placeholder="例：Glycyrrhiza uralensis Fisch."></div>
+  <div class="field"><label for="originJapanese">基原植物・和名（0.5点）</label><input id="originJapanese" placeholder="例：ウラルカンゾウ"></div>
+  <div class="field"><label for="part">薬用部位（任意・学習用メモ）</label><input id="part" placeholder="例：根及びストロン"></div>
+  <div class="field"><label for="familyLatin">科名・ラテン名（1点）</label><input id="familyLatin" placeholder="例：Fabaceae"></div>
+  <div class="field"><label for="familyJapanese">科名・和名（0.5点）</label><input id="familyJapanese" placeholder="例：マメ科"></div>
+  <div class="field"><label for="constituents">主成分（日本語・1点。複数成分や別名は「、」「,」「改行」などで区切る）</label><input id="constituents" placeholder="例：d-リモネン、ナリンギン"></div>
+  <div class="field"><label for="uses">用途（日本語・複数登録可、読点または改行区切り）</label><textarea id="uses" placeholder="例：去痰&#10;鎮咳&#10;抗炎症"></textarea><span class="muted">正解として認める用途を登録します。出題時は他の生薬の用途も選択肢に加え、複数選択式にします。</span></div>
+  <div class="field"><label for="notes">識別ポイント・補足（任意）</label><textarea id="notes" placeholder="外観、におい、味、試験での注意点など"></textarea></div>
+  <div class="row"><button class="primary" type="submit">保存する</button><button class="secondary" type="button" id="resetForm">入力をクリア</button></div>
+ </form>
+</section>
+<section id="info" class="panel hidden">
+ <h2 style="margin-top:0">生薬情報</h2>
+ <p class="muted">登録済みの生薬を資料として閲覧できます。クイズと同じ生薬データ・写真を参照するため、登録・編集した内容はここにも反映されます。</p>
+ <div class="field"><label for="infoSearch">生薬名・ラテン名・基原植物・科名・用途で検索</label><input id="infoSearch" type="search" placeholder="例：カンゾウ、Glycyrrhiza、去痰"></div>
+ <div id="infoList"></div>
+ <div id="infoDetail" class="hidden"></div>
+</section>
+<section id="list" class="panel hidden"><h2 style="margin-top:0">登録一覧</h2><p class="muted">内容・写真の編集、削除ができます。</p><div id="herbList"></div></section>
+<section id="backup" class="panel hidden">
+ <h2>共有データの初期登録・確認</h2>
+ <div class="import-card"><h3>旧版のJSONバックアップから移行</h3>
+ <p>管理者のみ実行できます。バックアップの生薬データ・写真をSupabaseにアップロードします。<b>同じIDの生薬はスキップ</b>するため、通信が途切れても再開できます。元のJSONは変更されません。</p>
+ <label for="cloudBackupInput">移行するバックアップJSON</label><input id="cloudBackupInput" type="file" accept=".json,application/json">
+ <progress id="migrationProgress" max="100" value="0" class="hidden"></progress>
+ <p id="migrationStatus" class="muted" role="status">まだ移行を実行していません。</p></div>
+ <p class="muted">学習履歴はこの端末にのみ保存されます。共有データは全員に公開されます。写真と生薬情報に個人情報を含めないでください。共有版から書き出したJSONには写真の実データが含まれません。元の写真入りバックアップJSONは必ず保管してください。</p>
+ <div class="row"><button class="secondary" id="exportBtn" type="button">現在の生薬情報・学習記録を書き出す（写真はURLのみ）</button><button class="secondary" id="refreshBtn" type="button">共有データを再読み込み</button></div>
+ <p id="backupStatus" class="muted"></p>
+</section>
+<p class="muted small">生薬データ・写真はSupabaseで共通管理。学習記録は各端末のブラウザにのみ保存します。URLは誰でも再共有できます。非公開の資料は登録しないでください。</p>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+const SUPABASE_URL='https://grpgzvpeffqrlstjplqf.supabase.co';
+const SUPABASE_KEY='sb_publishable_l1Gc3k7y8RUf2ZJDZ0_Wvw_a81w0S9M';
+const ADMIN_USER_ID='2cb98c48-3770-4976-ab54-919f4c0ea3ae';
+const LOCAL_STATS_KEY='herbPhotoQuiz.shared.progress.v1';
+let client=null, isAdmin=false, isBusy=false, idbReady=true;
+let db={herbs:[],stats:{},attempts:0,correct:0,totalScore:0};
+let currentId=null,answered=false,stagedImages=[],currentUseCorrect=[];
+const $=id=>document.getElementById(id);
+function setStatus(text,bad=false){const el=$('connectionState');el.textContent=text;el.classList.toggle('error',bad)}
+function getLocalProgress(){try{const x=JSON.parse(localStorage.getItem(LOCAL_STATS_KEY)||'null');return x&&typeof x==='object'?x:{}}catch(e){return {}}}
+async function save(){try{const x={stats:db.stats,attempts:db.attempts,correct:db.correct,totalScore:db.totalScore};localStorage.setItem(LOCAL_STATS_KEY,JSON.stringify(x));return true}catch(e){alert('端末に学習履歴を保存できません。ブラウザのプライベートモードや容量を確認してください。');return false}}
+function normalHerb(row){return {id:row.id,japaneseName:row.japanese_name||'',name:row.japanese_name||'',latinName:row.latin_name||'',aliases:row.aliases||[],originLatin:row.origin_latin||'',originJapanese:row.origin_japanese||'',part:row.part||row.medicinal_part||'',familyLatin:row.family_latin||'',familyJapanese:row.family_japanese||'',constituents:row.constituents||'',uses:row.uses||[],notes:row.notes||'',images:row.images||[]}}
+function toRow(h){return {id:String(h.id),japanese_name:h.japaneseName||h.name||'',latin_name:h.latinName||'',aliases:Array.isArray(h.aliases)?h.aliases:[],origin_latin:h.originLatin||'',origin_japanese:h.originJapanese||'',part:h.part||'',medicinal_part:h.part||'',family_latin:h.familyLatin||'',family_japanese:h.familyJapanese||'',constituents:h.constituents||'',uses:Array.isArray(h.uses)?h.uses:[],notes:h.notes||'',images:Array.isArray(h.images)?h.images:[],updated_at:new Date().toISOString()}}
+async function refreshHerbs(){const {data,error}=await client.from('herbs').select('*').order('japanese_name');if(error)throw error;db.herbs=(data||[]).map(normalHerb);updateStats();currentId=null;showIdle();setStatus('共有データ：接続済み・'+db.herbs.length+'種類／学習履歴：この端末のみ');}
+function showAdmin(){document.querySelectorAll('[data-admin-tab]').forEach(x=>x.classList.toggle('hidden',!isAdmin));$('loginToggle').classList.toggle('hidden',isAdmin);$('logoutButton').classList.toggle('hidden',!isAdmin);$('adminState').textContent=isAdmin?'管理者としてログイン中：データの登録・編集ができます。':'ゲストとして利用中：クイズ・生薬情報を閲覧できます。';if(!isAdmin&&(['manage','list','backup'].some(x=>!$(x).classList.contains('hidden'))))switchTab('quiz')}
+async function updateAdminSession(){if(!client)return;const {data,error}=await client.auth.getUser();isAdmin=!error&&data?.user?.id===ADMIN_USER_ID;showAdmin();}
+function initClient(){if(!window.supabase?.createClient)throw new Error('Supabaseライブラリを読み込めません。通信状況を確認してください。');client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}})}
+async function uploadDataImage(src,path){if(!src.startsWith('data:image/'))return src;const response=await fetch(src);const blob=await response.blob();if(!blob.type.startsWith('image/'))throw new Error('対応していない画像形式です');const {error}=await client.storage.from('herb-images').upload(path,blob,{contentType:blob.type,upsert:true});if(error)throw error;const {data}=client.storage.from('herb-images').getPublicUrl(path);return data.publicUrl}
+async function upsertHerb(h){const {error}=await client.from('herbs').upsert(toRow(h),{onConflict:'id'});if(error)throw error}
+async function saveHerbToCloud(h){const uploaded=[];const images=[];try{for(const src of h.images){if(src.startsWith('data:image/')){const path=h.id+'/'+(globalThis.crypto?.randomUUID?.()||Date.now()+'-'+Math.random().toString(16).slice(2))+'.jpg';images.push(await uploadDataImage(src,path));uploaded.push(path)}else images.push(src)}h.images=images;await upsertHerb(h);await refreshHerbs()}catch(err){if(uploaded.length){await client.storage.from('herb-images').remove(uploaded).catch(()=>{})}throw err}}
+async function initShared(){try{initClient();const s=getLocalProgress();db.stats=s.stats||{};db.attempts=Number(s.attempts)||0;db.correct=Number(s.correct)||0;db.totalScore=Number(s.totalScore)||0;await updateAdminSession();await refreshHerbs();client.auth.onAuthStateChange(()=>{setTimeout(()=>{updateAdminSession().catch(console.error)},0)})}catch(err){console.error(err);setStatus('接続できません：'+(err.message||String(err)),true);$('quizArea').innerHTML='<p class="empty">共有データの取得に失敗しました。接続状況を確認して、ページを再読み込みしてください。</p>'}}
+function escapeHtml(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function statFor(id){return db.stats[id]||(db.stats[id]={seen:0,wrong:0,right:0,streak:0,score:0})}
+function isWeak(h){const s=statFor(h.id);if(s.reviewCleared===true)return false;if(s.reviewCleared===false)return true;return s.wrong>s.right||(s.seen>0&&s.streak===0)}
+function updateStats(){ $('countStat').textContent=db.herbs.length;$('accuracyStat').textContent=db.attempts?Math.round(db.correct/db.attempts*100)+'%':'—';$('scoreStat').textContent=String(db.totalScore||0);$('weakStat').textContent=db.herbs.filter(isWeak).length;renderList();if(!$('info').classList.contains('hidden'))renderHerbInfo();}
+function switchTab(tab){if(!isAdmin&&['manage','list','backup'].includes(tab))return;document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));['quiz','info','manage','list','backup'].forEach(id=>$(id).classList.toggle('hidden',id!==tab));if(tab==='list')renderList();if(tab==='info')renderHerbInfo();if(tab==='backup')$('backupStatus').textContent='学習履歴はこの端末のブラウザに保存されています。'}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
+function showIdle(){if(!db.herbs.length){$('quizArea').innerHTML='<div class="empty">登録された生薬がありません。生薬データと写真を登録してください。</div>';return}$('quizArea').innerHTML='<div class="empty">「次の問題」を押して出題を開始してください。<br><br><button class="primary" onclick="nextQuestion()">次の問題</button></div>'}
+function nextQuestion(){
+ const mode=$('quizMode').value,answerMode=$('answerMode').value;let pool=mode==='weak'?db.herbs.filter(isWeak):db.herbs.slice();
+ $('modeLabel').textContent=(answerMode==='name'?'生薬名のみを採点します。':'7点満点で採点します。')+(mode==='weak'?' 苦手問題を優先します。':' ランダムに出題します。');
+ if(!pool.length){$('quizArea').innerHTML='<div class="empty">'+(mode==='weak'?'復習対象がありません。ランダム出題に切り替えてください。':'出題できる生薬がありません。')+'<br><br><button class="primary" onclick="nextQuestion()">もう一度確認</button></div>';currentId=null;return}
+ let choices=pool.filter(h=>h.id!==currentId);if(!choices.length)choices=pool;const h=choices[Math.floor(Math.random()*choices.length)];currentId=h.id;answered=false;
+ const images=(h.images&&h.images.length?h.images:[h.image].filter(Boolean));const chosen=images[Math.floor(Math.random()*images.length)];
+ let form=answerMode==='name'?`<div class="field"><label for="answerJapanese">生薬名・和名（必須）</label><input id="answerJapanese" required autocomplete="off" placeholder="和名を入力"></div><div class="field"><label for="answerLatin">生薬名・ラテン名（必須）</label><input id="answerLatin" required autocomplete="off" autocapitalize="off" placeholder="ラテン名を入力"></div>`:
+ `<div class="field"><label for="answerJapanese">① 生薬名・和名（必須）</label><input id="answerJapanese" required autocomplete="off" placeholder="和名を入力"></div><div class="field"><label for="answerLatin">① 生薬名・ラテン名（1点）</label><input id="answerLatin" autocomplete="off" autocapitalize="off" placeholder="ラテン名を入力"></div><div class="field"><label for="answerOrigin">② 基原植物（ラテン名1点／和名0.5点）</label><input id="answerOrigin" autocomplete="off" placeholder="基原植物名を入力"></div><div class="field"><label for="answerFamily">③ 科名（ラテン名1点／和名0.5点）</label><input id="answerFamily" autocomplete="off" placeholder="科名を入力"></div><div class="field"><label for="answerConstituents">④ 主成分（日本語・1点）</label><input id="answerConstituents" autocomplete="off" placeholder="主成分を入力"></div><div class="field"><label>⑤ 用途（複数選択・最大2点）</label><div id="useOptions" class="check-grid"></div></div>`;
+ $('quizArea').innerHTML=`<div><span class="pill">${mode==='weak'?'苦手復習':'ランダム出題'}</span><span class="pill">${answerMode==='name'?'生薬名モード':'総合モード・7点満点'}</span><span class="pill">登録 ${db.herbs.length} 種</span></div><img class="question-image" src="${escapeHtml(chosen)}" alt="識別する生薬の写真"><div id="extraPhotos" class="gallery"></div><form id="answerForm">${form}<button class="primary" type="submit" style="width:100%">採点する</button></form><div id="result"></div>`;
+ const extra=$('extraPhotos');images.filter(src=>src!==chosen).slice(0,3).forEach(src=>{const im=document.createElement('img');im.src=src;im.alt='同じ生薬の別写真';extra.appendChild(im)});
+ if(answerMode==='full')renderUseOptions(h);
+ $('answerForm').addEventListener('submit',e=>{e.preventDefault();checkAnswer(h.id,answerMode)});
+ $('answerJapanese').focus({preventScroll:true});
+}
+function normalizeUse(s){return String(s||'').normalize('NFKC').trim().replace(/^漢方方剤\s*[（(]\s*/,'').replace(/\s*[）)]$/,'').toLowerCase().replace(/[\s　・･,，、.。;；:：()[\]{}]/g,'').trim()}
+function renderUseOptions(h){
+ const normUse=normalizeUse;
+ const allCorrect=[...new Map((h.uses||[]).map(x=>String(x||'').trim()).filter(Boolean).map(u=>[normUse(u),u])).values()];
+ // Each appearance randomly selects 1–3 of the target herb's registered uses as the correct answers.
+ const correctCount=allCorrect.length?1+Math.floor(Math.random()*Math.min(3,allCorrect.length)):0;
+ currentUseCorrect=allCorrect.slice().sort(()=>Math.random()-.5).slice(0,correctCount);
+ const allTargetKeys=new Set(allCorrect.map(normUse));
+ // Do not borrow distractors from any herb that shares even one use with the target herb.
+ const eligibleOtherHerbs=db.herbs.filter(other=>{
+  if(other.id===h.id)return false;
+  return !(other.uses||[]).map(u=>String(u||'').trim()).filter(Boolean).some(u=>allTargetKeys.has(normUse(u)));
+ });
+ const pool=[...new Map(eligibleOtherHerbs.flatMap(other=>other.uses||[]).map(x=>String(x||'').trim()).filter(Boolean).map(u=>[normUse(u),u])).values()]
+  .filter(u=>!allTargetKeys.has(normUse(u)));
+ const distractors=pool.sort(()=>Math.random()-.5).slice(0,6-currentUseCorrect.length);
+ // Ensure six choices even when the registered database has too few eligible distractors.
+ const fallback=['健胃','整腸','利尿','発汗','解熱','鎮痛','抗炎症','瀉下','収れん','止血','鎮静','強壮','芳香性健胃','消炎'];
+ const used=new Set([...currentUseCorrect,...distractors].map(normUse));
+ for(const u of fallback.sort(()=>Math.random()-.5)){
+  if(currentUseCorrect.length+distractors.length>=6)break;
+  if(!used.has(normUse(u))&&!allTargetKeys.has(normUse(u))){distractors.push(u);used.add(normUse(u));}
+ }
+ const options=[...currentUseCorrect,...distractors].sort(()=>Math.random()-.5);
+ $('useOptions').innerHTML=options.map(u=>`<label class="check-option"><input type="checkbox" name="useChoice" value="${escapeHtml(u)}"><span>${escapeHtml(u)}</span></label>`).join('');
+}
+function normalize(s){return String(s||'').normalize('NFKC').toLowerCase().replace(/[\s　・･,，、.。;；:：]/g,'').trim()}
+function exactAnswer(answer,targets){const a=normalize(answer);return !!a&&targets.filter(Boolean).some(t=>normalize(t)===a)}
+function splitAliases(s){return String(s||'').split(/[,，、\n\r;；]/).map(x=>x.trim()).filter(Boolean)}
+async function checkAnswer(id,answerMode){
+ if(answered)return;const h=db.herbs.find(x=>x.id===id);if(!h)return;answered=true;
+ const ja=$('answerJapanese').value,latin=$('answerLatin').value;
+ const jaOK=exactAnswer(ja,[h.japaneseName,...(h.aliases||[])]);
+ let score=0,lines=[],usePartialCorrect=false,nonUseScore=0;
+ if(!jaOK){
+  lines.push(`生薬名・和名：不正解（0点）`);lines.push('和名が不正解のため、この問題の得点はすべて0点です。');
+ }else if(answerMode==='name'){
+  score+=1;lines.push('生薬名・和名：正解（1点）');
+  const lOK=exactAnswer(latin,[h.latinName]);if(lOK){score+=1;lines.push('生薬名・ラテン名：正解（1点）')}else lines.push(`生薬名・ラテン名：不正解（0点）／正解：${escapeHtml(h.latinName||'未登録')}`);
+ }else{
+  score+=1;lines.push('生薬名・和名：正解（1点）');
+  const lOK=exactAnswer(latin,[h.latinName]);if(lOK){score+=1;lines.push('生薬名・ラテン名：正解（1点)')}else lines.push(`生薬名・ラテン名：不正解（0点）／正解：${escapeHtml(h.latinName||'未登録')}`);
+  const origin=$('answerOrigin').value,originTargets=[h.originLatin,h.originJapanese].filter(Boolean);
+  let oScore=0;if(exactAnswer(origin,[h.originLatin]))oScore=1;else if(exactAnswer(origin,[h.originJapanese]))oScore=.5;score+=oScore;lines.push(`基原植物：${oScore?`正解（${oScore}点）`:`不正解（0点）`}／ラテン名：${escapeHtml(h.originLatin||'未登録')}／和名：${escapeHtml(h.originJapanese||'未登録')}`);
+  const family=$('answerFamily').value;let fScore=0;if(exactAnswer(family,[h.familyLatin]))fScore=1;else if(exactAnswer(family,[h.familyJapanese]))fScore=.5;score+=fScore;lines.push(`科名：${fScore?`正解（${fScore}点）`:`不正解（0点）`}／ラテン名：${escapeHtml(h.familyLatin||'未登録')}／和名：${escapeHtml(h.familyJapanese||'未登録')}`);
+  const cOK=exactAnswer($('answerConstituents').value,splitAliases(h.constituents));if(cOK){score+=1;lines.push('主成分：正解（1点）')}else lines.push(`主成分：不正解（0点）／正解：${escapeHtml(h.constituents||'未登録')}`);
+  nonUseScore=score;const selected=[...document.querySelectorAll('input[name="useChoice"]:checked')].map(x=>normalizeUse(x.value));const correct=(currentUseCorrect||[]).map(normalizeUse);const hasWrong=selected.some(u=>!correct.includes(u));if(selected.length>0&&!hasWrong&&correct.length>0){if(correct.every(u=>selected.includes(u))&&selected.length===correct.length){score+=2;lines.push('用途：全問正解（2点）／今回の正解をすべて選択し、誤答はありません')}else{score+=1;usePartialCorrect=true;lines.push('用途：一部正解（1点）／選択した用途はすべて正解ですが、未選択の正解があります')}}else{const reason=selected.length===0?'選択なし':hasWrong?'誤った用途を選択しています':'正解用途が登録されていません';lines.push(`用途：不正解（0点）／${reason}／今回の正解：${escapeHtml((currentUseCorrect||[]).join('、')||'用途未登録')}`)}
+ }
+ const beforeStats=JSON.stringify(db);const s=statFor(id),attemptOK=answerMode==='name'?score===2:(score===7||(usePartialCorrect&&nonUseScore===5));s.seen++;if(attemptOK){s.right++;s.streak++;s.reviewCleared=true}else{s.wrong++;s.streak=0;s.reviewCleared=false}s.score=(s.score||0)+score;db.attempts++;if(attemptOK)db.correct++;db.totalScore=(db.totalScore||0)+score;if(!await save()){db=JSON.parse(beforeStats);answered=false;return}updateStats();
+ const detail=[h.part?`<b>薬用部位：</b>${escapeHtml(h.part)}`:'',h.notes?`<b>補足：</b><br>${escapeHtml(h.notes).replace(/\n/g,'<br>')}`:''].filter(Boolean).join('<br>');
+ $('result').innerHTML=`<div class="feedback ${score>=(answerMode==='name'?2:6)?'good':(score===0?'bad':'')}"><div class="scoreline">得点：${score}点／${answerMode==='name'?2:7}点</div><p><b>採点結果</b></p><ul>${lines.map(x=>`<li>${x}</li>`).join('')}</ul><hr><p><b>正解データ</b><br>生薬名：${escapeHtml(h.japaneseName||'未登録')} ／ ${escapeHtml(h.latinName||'未登録')}<br>基原植物：${escapeHtml(h.originLatin||'未登録')}（${escapeHtml(h.originJapanese||'未登録')}）<br>科名：${escapeHtml(h.familyLatin||'未登録')}（${escapeHtml(h.familyJapanese||'未登録')}）<br>主成分：${escapeHtml(h.constituents||'未登録')}<br>用途：${escapeHtml((h.uses||[]).join('、')||'未登録')}</p>${detail?'<hr>'+detail:''}<p class="muted">この生薬：正解 ${s.right} 回・不正解 ${s.wrong} 回・累計得点 ${s.score||0} 点</p></div><div class="answer-actions"><button class="primary" onclick="nextQuestion()">次の問題</button>${isAdmin?`<button class="secondary" onclick="editHerb('${h.id}')">この生薬を編集</button>`:""}</div>`;
+}
+$('quizMode').addEventListener('change',()=>{currentId=null;showIdle()});$('answerMode').addEventListener('change',()=>{currentId=null;showIdle()});
+function compressImage(file){return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onerror=reject;reader.onload=()=>{const im=new Image();im.onerror=reject;im.onload=()=>{const max=900,scale=Math.min(1,max/Math.max(im.width,im.height)),canvas=document.createElement('canvas');canvas.width=Math.round(im.width*scale);canvas.height=Math.round(im.height*scale);canvas.getContext('2d').drawImage(im,0,0,canvas.width,canvas.height);resolve(canvas.toDataURL('image/jpeg',.62))};im.src=reader.result};reader.readAsDataURL(file)})}
+$('photo').addEventListener('change',async e=>{const files=[...e.target.files];if(!files.length)return;try{for(const f of files){if(!f.type.startsWith('image/'))continue;stagedImages.push(await compressImage(f))}renderPhotoPreview()}catch(err){alert('画像を読み込めませんでした')}e.target.value=''});
+function renderPhotoPreview(){const root=$('photoPreview');root.innerHTML='';stagedImages.forEach((src,i)=>{const d=document.createElement('div');d.className='preview-item';d.innerHTML=`<img src="${escapeHtml(src)}" alt="登録写真 ${i+1}"><button type="button" class="secondary">この写真を外す</button>`;d.querySelector('button').addEventListener('click',()=>{stagedImages.splice(i,1);renderPhotoPreview()});root.appendChild(d)})}
+$('herbForm').addEventListener('submit',async e=>{e.preventDefault();if(!isAdmin||isBusy)return;const editId=$('editId').value,old=db.herbs.find(h=>h.id===editId);const japaneseName=$('herbName').value.trim(),latinName=$('herbLatin').value.trim();if(!japaneseName||!latinName){alert('和名とラテン名を入力してください');return}const images=[...(old?.images||[]),...stagedImages];if(!images.length){alert('写真を1枚以上登録してください');return}const h={id:editId||('h'+Date.now()+Math.random().toString(16).slice(2,7)),japaneseName,latinName,aliases:splitAliases($('aliases').value),images,originLatin:$('originLatin').value.trim(),originJapanese:$('originJapanese').value.trim(),part:$('part').value.trim(),familyLatin:$('familyLatin').value.trim(),familyJapanese:$('familyJapanese').value.trim(),constituents:$('constituents').value.trim(),uses:splitAliases($('uses').value),notes:$('notes').value.trim()};isBusy=true;setStatus('共有データを保存しています…');try{await saveHerbToCloud(h);resetForm();alert(old?'共有生薬データを更新しました':'共有生薬データを登録しました');switchTab('list')}catch(err){console.error(err);alert('共有データの保存に失敗：'+(err.message||err));setStatus('保存エラー。入力内容を確認してください。',true)}finally{isBusy=false}});
+function resetForm(){ $('herbForm').reset();$('editId').value='';stagedImages=[];renderPhotoPreview();$('formTitle').textContent='生薬を登録'}
+$('resetForm').addEventListener('click',resetForm);
+function editHerb(id){const h=db.herbs.find(x=>x.id===id);if(!h)return;switchTab('manage');$('editId').value=h.id;$('herbName').value=h.japaneseName||h.name||'';$('herbLatin').value=h.latinName||'';$('aliases').value=(h.aliases||[]).join('、');$('originLatin').value=h.originLatin||h.origin||'';$('originJapanese').value=h.originJapanese||'';$('part').value=h.part||'';$('familyLatin').value=h.familyLatin||'';$('familyJapanese').value=h.familyJapanese||h.family||'';$('constituents').value=h.constituents||'';$('uses').value=(h.uses||[]).join('\n');$('notes').value=h.notes||'';stagedImages=[];renderPhotoPreview();$('formTitle').textContent='生薬を編集';window.scrollTo({top:0,behavior:'smooth'})}
+async function deleteHerb(id){if(!isAdmin||isBusy)return;const h=db.herbs.find(x=>x.id===id);if(!h||!confirm(`「${h.japaneseName}」を共有データから削除しますか？写真も削除対象となります。元のJSONバックアップは変更されません。`))return;isBusy=true;try{const {error}=await client.from('herbs').delete().eq('id',id);if(error)throw error;const prefix=SUPABASE_URL+'/storage/v1/object/public/herb-images/';const paths=(h.images||[]).filter(x=>x.startsWith(prefix)).map(x=>decodeURIComponent(x.slice(prefix.length)));if(paths.length){const {error:photoError}=await client.storage.from('herb-images').remove(paths);if(photoError)console.warn('画像の削除に失敗しました',photoError)}await refreshHerbs();alert('共有データから削除しました')}catch(err){alert('削除できません：'+(err.message||err))}finally{isBusy=false}}
+function renderHerbInfo(){
+ const root=$('infoList'),detail=$('infoDetail');if(!root)return;
+ const query=($('infoSearch')?.value||'').trim().toLocaleLowerCase();
+ const found=db.herbs.filter(h=>[h.japaneseName,h.name,h.latinName,h.originLatin,h.originJapanese,h.familyLatin,h.familyJapanese,h.constituents,...(h.uses||[]),h.part,h.notes,...(h.aliases||[])].filter(Boolean).join(' ').toLocaleLowerCase().includes(query));
+ if(!db.herbs.length){root.innerHTML='<div class="empty">登録された生薬がありません。先に「生薬を登録・編集」から登録してください。</div>';detail.classList.add('hidden');return}
+ if(!found.length){root.innerHTML='<div class="empty">該当する生薬がありません。検索語を変えてください。</div>';detail.classList.add('hidden');return}
+ root.innerHTML='<div class="muted">'+found.length+'件の生薬</div>'+found.map(h=>{const imgs=h.images||[h.image].filter(Boolean);return `<div class="entry"><img class="thumb" src="${escapeHtml(imgs[0]||'')}" alt="${escapeHtml(h.japaneseName||h.name)}"><div><h3>${escapeHtml(h.japaneseName||h.name||'名称未登録')}</h3><p>${escapeHtml(h.latinName||'ラテン名未登録')}</p><p>基原：${escapeHtml(h.originJapanese||h.originLatin||'未登録')} ／ 科：${escapeHtml(h.familyJapanese||h.familyLatin||'未登録')}</p><p>写真 ${imgs.length}枚</p></div><div class="entry-actions"><button class="primary" onclick="showHerbInfo('${h.id}')">詳細を見る</button></div></div>`}).join('');
+ if(detail.dataset.herbId&&!found.some(h=>h.id===detail.dataset.herbId)){detail.classList.add('hidden');detail.innerHTML='';delete detail.dataset.herbId}
+}
+function showHerbInfo(id){
+ const h=db.herbs.find(x=>x.id===id);if(!h)return;const root=$('infoDetail'),imgs=h.images||[h.image].filter(Boolean);
+ const row=(label,value)=>`<div style="padding:10px 0;border-bottom:1px solid var(--line)"><b>${label}</b><div style="margin-top:4px;white-space:pre-wrap">${escapeHtml(value||'未登録')}</div></div>`;
+ root.dataset.herbId=id;root.classList.remove('hidden');root.innerHTML=`<hr style="border:0;border-top:2px solid var(--line);margin:22px 0"><div class="row" style="align-items:start"><div style="flex:2;min-width:220px"><h2 style="margin:0">${escapeHtml(h.japaneseName||h.name||'名称未登録')}</h2><p class="muted" style="margin-top:6px">${escapeHtml(h.latinName||'ラテン名未登録')}</p></div><div style="flex:1;min-width:130px">${isAdmin?`<button class="secondary" onclick="editHerb('${h.id}')">この生薬を編集</button>`:""}</div></div>
+ <h3>写真</h3>${imgs.length?`<div class="gallery">${imgs.map((src,i)=>`<img src="${escapeHtml(src)}" alt="${escapeHtml(h.japaneseName||h.name)} 写真${i+1}">`).join('')}</div>`:'<p class="muted">写真は未登録です。</p>'}
+ <h3>基本情報</h3>${row('生薬名・和名',h.japaneseName||h.name)}${row('生薬名・ラテン名',h.latinName)}${row('別表記・許容回答',(h.aliases||[]).join('、'))}${row('基原植物・ラテン名',h.originLatin||h.origin)}${row('基原植物・和名',h.originJapanese)}${row('薬用部位',h.part)}${row('科名・ラテン名',h.familyLatin)}${row('科名・和名',h.familyJapanese||h.family)}${row('主成分',h.constituents)}${row('用途',(h.uses||[]).join('、'))}${row('識別ポイント・補足',h.notes)}
+ <div class="row" style="margin-top:16px"><button class="secondary" onclick="window.scrollTo({top:0,behavior:'smooth'})">ページ上部へ</button><button class="secondary" onclick="$('infoDetail').classList.add('hidden')">詳細を閉じる</button></div>`;
+ root.scrollIntoView({behavior:'smooth',block:'start'});
+}
+$('infoSearch').addEventListener('input',renderHerbInfo);
+function renderList(){const root=$('herbList');if(!root)return;if(!db.herbs.length){root.innerHTML='<div class="empty">まだ登録がありません。</div>';return}root.innerHTML=db.herbs.map(h=>{const s=statFor(h.id),imgs=h.images||[h.image].filter(Boolean);return `<div class="entry"><img class="thumb" src="${escapeHtml(imgs[0]||'')}" alt=""><div><h3>${escapeHtml(h.japaneseName||h.name)} ／ ${escapeHtml(h.latinName||'ラテン名未登録')}</h3><p>写真 ${imgs.length}枚</p><p>基原：${escapeHtml(h.originLatin||h.origin||'未登録')} ／ 科：${escapeHtml(h.familyLatin||'未登録')}</p><p>主成分：${escapeHtml(h.constituents||'未登録')} ／ 用途：${escapeHtml((h.uses||[]).join('、')||'未登録')}</p><p>正解 ${s.right} ／ 不正解 ${s.wrong} ／ 得点 ${s.score||0} ${isWeak(h)?'<span class="pill">復習対象</span>':''}</p></div><div class="entry-actions row"><button class="secondary" onclick="editHerb('${h.id}')">編集</button><button class="danger" onclick="deleteHerb('${h.id}')">削除</button></div></div>`}).join('')}
+$('exportBtn').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(db)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='生薬フォトクイズ_共有版_エクスポート_'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),2000)});
+$('refreshBtn').addEventListener('click',async()=>{try{setStatus('共有データを読み込んでいます…');await refreshHerbs()}catch(err){setStatus(err.message,true)}});
+$('loginToggle').addEventListener('click',()=>{$('loginBox').classList.toggle('hidden')});
+$('loginForm').addEventListener('submit',async e=>{e.preventDefault();$('loginMessage').textContent='ログイン中…';if(!client)return;const email=$('adminEmail').value.trim(),password=$('adminPassword').value;const {data,error}=await client.auth.signInWithPassword({email,password});$('adminPassword').value='';if(error){$('loginMessage').textContent='ログインできません：'+error.message;return}await updateAdminSession();if(!isAdmin){await client.auth.signOut();$('loginMessage').textContent='このアカウントには管理権限がありません';return}$('loginBox').classList.add('hidden');$('loginMessage').textContent='';alert('管理者としてログインしました')});
+$('logoutButton').addEventListener('click',async()=>{await client.auth.signOut();isAdmin=false;showAdmin();switchTab('quiz')});
+$('cloudBackupInput').addEventListener('change',async e=>{const file=e.target.files[0];if(!file||isBusy)return;if(!isAdmin){alert('管理者ログインが必要です');return}try{
+ const incoming=JSON.parse(await file.text());if(!incoming||!Array.isArray(incoming.herbs))throw new Error('生薬データがありません');
+ const herbs=incoming.herbs;if(!herbs.length)throw new Error('生薬データが空です');
+ const existing=new Set(db.herbs.map(h=>h.id));const newCount=herbs.filter(h=>!existing.has(h.id)).length;
+ if(!confirm(`バックアップ ${herbs.length} 種（新規 ${newCount} 種）を共有データベースに移行します。既存IDは上書きせず、スキップします。写真が公開されます。実行しますか？`))return;
+ isBusy=true;$('cloudBackupInput').disabled=true;const progress=$('migrationProgress');progress.classList.remove('hidden');progress.value=0;const status=$('migrationStatus');let done=0,skipped=0;
+ for(const h0 of herbs){if(existing.has(h0.id)){skipped++;done++;progress.value=Math.round(done/herbs.length*100);continue}
+ status.textContent=`移行中 ${done+1}/${herbs.length}：${h0.japaneseName||h0.name||h0.id}（完了 ${done}、スキップ ${skipped}）`;
+ const images=[];for(let i=0;i<(h0.images||[]).length;i++){const src=h0.images[i];const path=h0.id+'/backup_'+i+'.jpg';images.push(await uploadDataImage(src,path))}
+ const h={...h0,japaneseName:h0.japaneseName||h0.name,images};await upsertHerb(h);done++;progress.value=Math.round(done/herbs.length*100)}
+ await refreshHerbs();if(db.attempts===0&&Number(incoming.attempts)>0){db.stats=incoming.stats||{};db.attempts=Number(incoming.attempts)||0;db.correct=Number(incoming.correct)||0;db.totalScore=Number(incoming.totalScore)||0;await save();updateStats()}
+ status.textContent=`移行完了：${done}種を処理（既存スキップ ${skipped}種）。現在の共有データは ${db.herbs.length} 種。
+元のJSONファイルは変更していません。`;
+ }catch(err){console.error(err);$('migrationStatus').textContent='途中で停止しました：'+(err.message||err)+'\nすでに成功した生薬は残ります。通信状態を確認し、同じJSONを再指定すれば未登録分から再開できます。';setStatus('移行が途中で停止しました。',true)}finally{isBusy=false;$('cloudBackupInput').disabled=false;$('cloudBackupInput').value=''}});
+initShared();
+</script>
+</body>
+</html>
