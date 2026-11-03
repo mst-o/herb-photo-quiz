@@ -113,7 +113,7 @@ function isWeak(h){const s=statFor(h.id);if(s.reviewCleared===true)return false;
 function updateStats(){ $('countStat').textContent=db.herbs.length;$('accuracyStat').textContent=db.attempts?Math.round(db.correct/db.attempts*100)+'%':'—';$('scoreStat').textContent=String(db.totalScore||0);$('weakStat').textContent=db.herbs.filter(isWeak).length;renderList();if(!$('info').classList.contains('hidden'))renderHerbInfo();}
 function switchTab(tab){if(!isAdmin&&['manage','list','backup'].includes(tab))return;document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));['quiz','info','manage','list','backup'].forEach(id=>$(id).classList.toggle('hidden',id!==tab));if(tab==='list')renderList();if(tab==='info')renderHerbInfo();if(tab==='backup')$('backupStatus').textContent='学習履歴はこの端末のブラウザに保存されています。'}
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
-function showIdle(){if(!db.herbs.length){$('quizArea').innerHTML='<div class="empty">登録された生薬がありません。生薬データと写真を登録してください。</div>';return}$('modeLabel').textContent='出題モードを選び、「開始」を押してください。';$('quizArea').innerHTML='<div class="empty">「開始」を押して出題を開始してください。<br><br><button class="primary" type="button" onclick="nextQuestion()">開始</button></div>'}
+function showIdle(){if(!db.herbs.length){$('quizArea').innerHTML='<div class="empty">登録された生薬がありません。生薬データと写真を登録してください。</div>';return}$('modeLabel').textContent='出題モードを選び、「開始」を押してください。';$('quizArea').innerHTML='<div class="empty">「開始」を押して解答スタート。<br><br><button class="primary" type="button" onclick="nextQuestion()">開始</button></div>'}
 function endQuiz(){currentId=null;answered=false;currentUseCorrect=[];selectedConstituent='';showIdle()}
 
 // 6択：正解と誤答の重複を防ぎ、登録済みの生薬から候補を生成する。
