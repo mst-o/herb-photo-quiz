@@ -39,7 +39,7 @@ progress{width:100%;height:20px}
  <div class="stat"><b id="weakStat">0</b><span>復習対象</span></div>
 </div>
 <nav class="tabs">
- <button class="tab active" data-tab="quiz">クイズ</button><button class="tab" data-tab="info">生薬情報</button><button class="tab" data-tab="cutQuiz">刻み生薬クイズ</button><button class="tab hidden" data-admin-tab="1" data-tab="cutManage">刻み生薬を登録・編集</button><button class="tab hidden" data-admin-tab="1" data-tab="manage">生薬を登録・編集</button><button class="tab hidden" data-admin-tab="1" data-tab="list">登録一覧</button><button class="tab hidden" data-admin-tab="1" data-tab="backup">バックアップ</button>
+ <button class="tab active" data-tab="quiz">クイズ</button><button class="tab" data-tab="info">生薬情報</button><button class="tab" data-tab="cutQuiz">刻み生薬クイズ</button><button class="tab" data-tab="cutInfo">刻み生薬情報</button><button class="tab hidden" data-admin-tab="1" data-tab="cutManage">刻み生薬を登録・編集</button><button class="tab hidden" data-admin-tab="1" data-tab="manage">生薬を登録・編集</button><button class="tab hidden" data-admin-tab="1" data-tab="list">登録一覧</button><button class="tab hidden" data-admin-tab="1" data-tab="backup">バックアップ</button>
 </nav>
 <section id="quiz" class="panel">
  <div class="row"><div><h2 style="margin:0">写真識別</h2><p class="muted" id="modeLabel">出題モードを選び、「開始」を押してください。</p></div><div style="max-width:300px"><label for="answerMode">回答モード</label><select id="answerMode"><option value="name">生薬名だけ答える（和名・ラテン名）</option><option value="full">すべて答える（満点7点）</option></select><label for="inputStyle" style="display:block;margin-top:10px">回答形式</label><select id="inputStyle"><option value="written">記述式</option><option value="choice">選択式（6択）</option></select><label for="quizMode" style="display:block;margin-top:10px">出題方法</label><select id="quizMode"><option value="random">ランダム出題</option><option value="weak">苦手問題の復習</option></select></div></div>
@@ -50,6 +50,12 @@ progress{width:100%;height:20px}
  <h2 style="margin-top:0">刻み生薬識別クイズ</h2><p class="muted">写真から刻み生薬の和名を答えます。登録写真の枚数に制限はありません。</p>
  <div class="row"><div class="field"><label for="cutStyle">回答形式</label><select id="cutStyle"><option value="written">記述式</option><option value="choice">選択式（最大6択）</option></select></div><div class="field"><label for="cutMode">出題方法</label><select id="cutMode"><option value="random">ランダム出題</option><option value="weak">苦手問題の復習</option></select></div></div>
  <div id="cutQuizArea" class="empty">「開始」を押して解答スタート。<p><button class="primary" type="button" onclick="nextCutQuestion()">開始</button></p></div>
+</section>
+<section id="cutInfo" class="panel hidden">
+ <h2 style="margin-top:0">刻み生薬情報</h2>
+ <p class="muted">登録済みの刻み生薬の写真を一覧・詳細で確認できます。写真の生薬名ラベルは表示・非表示を切り替えられます。</p>
+ <div class="field"><label for="cutInfoSearch">刻み生薬名で検索</label><input id="cutInfoSearch" type="search" placeholder="例：ショウマ"></div>
+ <div id="cutInfoList"></div><div id="cutInfoDetail" class="hidden"></div>
 </section>
 <section id="cutManage" class="panel hidden">
  <h2 id="cutFormTitle" style="margin-top:0">刻み生薬を登録</h2><p class="muted">刻み生薬の写真と和名を登録します。写真に名前ラベルが写っている場合は、写真ごとに隠す領域を指定できます。既存の生薬データとは別に保存されます。</p>
@@ -124,7 +130,7 @@ function escapeHtml(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','
 function statFor(id){return db.stats[id]||(db.stats[id]={seen:0,wrong:0,right:0,streak:0,score:0})}
 function isWeak(h){const s=statFor(h.id);if(s.reviewCleared===true)return false;if(s.reviewCleared===false)return true;return s.wrong>s.right||(s.seen>0&&s.streak===0)}
 function updateStats(){ $('countStat').textContent=db.herbs.length;$('accuracyStat').textContent=db.attempts?Math.round(db.correct/db.attempts*100)+'%':'—';$('scoreStat').textContent=String(db.totalScore||0);$('weakStat').textContent=db.herbs.filter(isWeak).length;renderList();if(!$('info').classList.contains('hidden'))renderHerbInfo();}
-function switchTab(tab){if(!isAdmin&&['manage','list','backup','cutManage'].includes(tab))return;document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));['quiz','info','manage','list','backup','cutQuiz','cutManage'].forEach(id=>$(id).classList.toggle('hidden',id!==tab));if(tab==='list')renderList();if(tab==='cutManage')renderCutList();if(tab==='info')renderHerbInfo();if(tab==='backup')$('backupStatus').textContent='学習履歴はこの端末のブラウザに保存されています。'}
+function switchTab(tab){if(!isAdmin&&['manage','list','backup','cutManage'].includes(tab))return;document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));['quiz','info','manage','list','backup','cutQuiz','cutManage','cutInfo'].forEach(id=>$(id).classList.toggle('hidden',id!==tab));if(tab==='list')renderList();if(tab==='cutManage')renderCutList();if(tab==='cutInfo')renderCutInfo();if(tab==='info')renderHerbInfo();if(tab==='backup')$('backupStatus').textContent='学習履歴はこの端末のブラウザに保存されています。'}
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
 function showIdle(){if(!db.herbs.length){$('quizArea').innerHTML='<div class="empty">登録された生薬がありません。生薬データと写真を登録してください。</div>';return}$('modeLabel').textContent='出題モードを選び、「開始」を押してください。';$('quizArea').innerHTML='<div class="empty">「開始」を押して解答スタート。<br><br><button class="primary" type="button" onclick="nextQuestion()">開始</button></div>'}
 function endQuiz(){currentId=null;answered=false;currentUseCorrect=[];selectedConstituent='';showIdle()}
@@ -278,13 +284,29 @@ $('cloudBackupInput').addEventListener('change',async e=>{const file=e.target.fi
 function cutImages(h){return (Array.isArray(h.images)?h.images:[]).map(x=>typeof x==='string'?{url:x,mask:{x:0,y:0,w:0,h:0}}:{url:x.url||x.src||'',mask:x.mask||{x:0,y:0,w:0,h:0}}).filter(x=>x.url)}
 function cutMaskStyle(mask){const m=mask||{};const n=k=>Math.max(0,Math.min(100,Number(m[k])||0));return `left:${n('x')}%;top:${n('y')}%;width:${n('w')}%;height:${n('h')}%`}
 function cutPhotoHtml(photo,style='height:260px'){return `<div class="cut-photo" style="${style}"><img src="${escapeHtml(photo.url)}" alt="刻み生薬の写真"><div class="cut-mask" style="${cutMaskStyle(photo.mask)}"></div></div>`}
-async function refreshCutHerbs(){const {data,error}=await client.from('cut_herbs').select('id,name,images').order('name');if(error)throw error;cutHerbs=data||[];renderCutList();}
+async function refreshCutHerbs(){const {data,error}=await client.from('cut_herbs').select('id,name,images').order('name');if(error)throw error;cutHerbs=data||[];renderCutList();if(!$('cutInfo').classList.contains('hidden'))renderCutInfo();}
 function resetCutForm(){$('cutForm').reset();$('cutEditId').value='';cutStaged=[];$('cutFormTitle').textContent='刻み生薬を登録';renderCutPhotos()}
 function renderCutPhotos(){const root=$('cutPhotoPreview');root.innerHTML='';cutStaged.forEach((photo,i)=>{const el=document.createElement('div');el.className='cut-card';el.innerHTML=cutPhotoHtml(photo,'height:145px')+`<div class="cut-controls">${[['x','左'],['y','上'],['w','幅'],['h','高さ']].map(([k,label])=>`<label>${label}%<input type="number" min="0" max="100" step="1" data-mask="${k}" value="${Number(photo.mask?.[k])||0}"></label>`).join('')}</div><button type="button" class="secondary small" style="width:100%;margin-top:6px">写真を外す</button>`;el.querySelectorAll('[data-mask]').forEach(input=>input.addEventListener('input',()=>{photo.mask[input.dataset.mask]=Math.max(0,Math.min(100,Number(input.value)||0));el.querySelector('.cut-mask').style.cssText=cutMaskStyle(photo.mask)}));el.querySelector('button').addEventListener('click',()=>{cutStaged.splice(i,1);renderCutPhotos()});root.appendChild(el)})}
 $('cutPhoto').addEventListener('change',async e=>{try{for(const f of e.target.files){if(f.type.startsWith('image/'))cutStaged.push({url:await compressImage(f),mask:{x:0,y:0,w:0,h:0}})}renderCutPhotos()}catch(err){alert('写真の読み込みに失敗しました：'+err.message)}e.target.value=''});
 $('cutForm').addEventListener('submit',async e=>{e.preventDefault();if(!isAdmin||isBusy)return;const name=$('cutName').value.trim(),id=$('cutEditId').value;if(!name||!cutStaged.length){alert('生薬名と写真を登録してください');return}isBusy=true;try{const images=[];for(const photo of cutStaged){let url=photo.url;if(url.startsWith('data:image/')){const path='cut-herbs/'+(globalThis.crypto?.randomUUID?.()||Date.now()+'-'+Math.random().toString(16).slice(2))+'.jpg';url=await uploadDataImage(url,path)}images.push({url,mask:photo.mask})}const row={name,images};if(id)row.id=id;const {error}=await client.from('cut_herbs').upsert(row);if(error)throw error;await refreshCutHerbs();resetCutForm();alert('刻み生薬を保存しました')}catch(err){console.error(err);alert('保存に失敗しました：'+(err.message||err))}finally{isBusy=false}});
 function editCutHerb(id){if(!isAdmin)return;const h=cutHerbs.find(x=>x.id===id);if(!h)return;switchTab('cutManage');$('cutEditId').value=h.id;$('cutName').value=h.name;cutStaged=cutImages(h).map(x=>({url:x.url,mask:{...x.mask}}));$('cutFormTitle').textContent='刻み生薬を編集';renderCutPhotos();window.scrollTo({top:0,behavior:'smooth'})}
 async function deleteCutHerb(id){if(!isAdmin||isBusy)return;const h=cutHerbs.find(x=>x.id===id);if(!h||!confirm(`「${h.name}」を削除しますか？`))return;isBusy=true;try{const {error}=await client.from('cut_herbs').delete().eq('id',id);if(error)throw error;await refreshCutHerbs();if($('cutEditId').value===id)resetCutForm();alert('削除しました。写真ファイル自体はストレージに残ります。')}catch(err){alert('削除に失敗しました：'+err.message)}finally{isBusy=false}}
+function renderCutInfo(){
+ const root=$('cutInfoList'),detail=$('cutInfoDetail');if(!root)return;
+ const q=($('cutInfoSearch').value||'').trim().toLocaleLowerCase();
+ const found=cutHerbs.filter(h=>(h.name||'').toLocaleLowerCase().includes(q));
+ root.innerHTML=found.length?`<p class="muted">${found.length}件の刻み生薬</p>`+found.map(h=>{const imgs=cutImages(h);return `<div class="entry"><img class="thumb" src="${escapeHtml(imgs[0]?.url||'')}" alt=""><div><h3>${escapeHtml(h.name)}</h3><p>写真 ${imgs.length}枚</p></div><div class="entry-actions"><button type="button" class="primary" onclick="showCutInfo('${h.id}')">詳細を見る</button></div></div>`}).join(''):'<p class="empty">該当する刻み生薬がありません。</p>';
+ if(detail.dataset.cutId&&!found.some(h=>h.id===detail.dataset.cutId)){detail.classList.add('hidden');detail.innerHTML='';delete detail.dataset.cutId}
+}
+function showCutInfo(id){
+ const h=cutHerbs.find(x=>x.id===id);if(!h)return;const root=$('cutInfoDetail'),imgs=cutImages(h);
+ root.dataset.cutId=id;root.classList.remove('hidden');
+ root.innerHTML=`<hr style="border:0;border-top:2px solid var(--line);margin:22px 0"><h2>${escapeHtml(h.name)}</h2><div class="row"><label><input type="checkbox" id="cutInfoMaskToggle"> 写真のラベルを隠す</label>${isAdmin?`<button type="button" class="secondary" onclick="editCutHerb('${h.id}')">この刻み生薬を編集</button>`:''}</div><div id="cutInfoGallery" class="cut-grid"></div><div class="row" style="margin-top:16px"><button class="secondary" type="button" onclick="$('cutInfoDetail').classList.add('hidden')">詳細を閉じる</button></div>`;
+ const gallery=$('cutInfoGallery'),toggle=$('cutInfoMaskToggle');
+ const draw=()=>{gallery.innerHTML=imgs.length?imgs.map((photo,i)=>`<div class="cut-card">${toggle.checked?cutPhotoHtml(photo,'height:230px'):cutPhotoHtml({...photo,mask:{x:0,y:0,w:0,h:0}},'height:230px')}<p class="muted small">写真 ${i+1} / ${imgs.length}</p></div>`).join(''):'<p class="muted">写真は未登録です。</p>';};
+ toggle.addEventListener('change',draw);draw();root.scrollIntoView({behavior:'smooth',block:'start'});
+}
+$('cutInfoSearch').addEventListener('input',renderCutInfo);
 function renderCutList(){const root=$('cutList');if(!root)return;root.innerHTML=cutHerbs.length?cutHerbs.map(h=>`<div class="entry"><img class="thumb" src="${escapeHtml(cutImages(h)[0]?.url||'')}" alt=""><div><h3>${escapeHtml(h.name)}</h3><p>写真 ${cutImages(h).length}枚</p></div><div class="entry-actions row"><button type="button" class="secondary" onclick="editCutHerb('${escapeHtml(h.id)}')">編集</button><button type="button" class="danger" onclick="deleteCutHerb('${escapeHtml(h.id)}')">削除</button></div></div>`).join(''):'<p class="empty">刻み生薬はまだ登録されていません。</p>'}
 const CUT_STATS_KEY='herbPhotoQuiz.cut.progress.v1';
 function cutProgress(){try{return JSON.parse(localStorage.getItem(CUT_STATS_KEY)||'{}')||{}}catch(e){return {}}}
