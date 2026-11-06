@@ -41,8 +41,9 @@ progress{width:100%;height:20px}
 .cut-info-image{display:block;width:100%;height:220px;object-fit:contain;background:#f0f2ef;border-radius:8px}
 .cut-info-image:focus{outline:2px solid var(--green)}
 .cut-reading{font-size:.82rem;color:var(--muted)}
-ruby rt{font-size:.58em;font-weight:450;text-align:center;letter-spacing:0}
-.cut-info-name{line-height:1.9;overflow-wrap:anywhere}
+.cut-info-name ruby{ruby-position:over}
+.cut-info-name ruby rt{font-size:.58em;font-weight:400;color:#9eaaa2;text-align:center;letter-spacing:0;position:relative;top:-.25em}
+.cut-info-name{line-height:2.25;overflow-wrap:anywhere}
 @media(max-width:560px){.cut-photo-editor{max-width:100%}.cut-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.cut-card{padding:7px}.cut-thumb{height:124px}.cut-info-image{height:170px}}
 </style>
 </head>
@@ -437,9 +438,9 @@ function renderCutInfo(){
   const root=$('cutInfoList'),detail=$('cutInfoDetail');if(!root)return;
   const q=($('cutInfoSearch').value||'').trim().toLocaleLowerCase();
   const found=cutHerbs.filter(h=>[h.name||'',h.reading||''].some(v=>v.toLocaleLowerCase().includes(q)));
-  root.innerHTML=found.length?`<p class="muted">${found.length}件／登録順に表示</p>`+found.map(h=>{
-    const imgs=cutImages(h),order=cutHerbs.indexOf(h)+1;
-    return `<div class="entry"><img class="thumb" src="${escapeHtml(imgs[0]?.url||'')}" alt=""><div><p class="muted small">登録順 ${order}</p><h3 class="cut-info-name">${cutRubyHtml(h)}</h3><p>写真 ${imgs.length}枚</p></div><div class="entry-actions"><button type="button" class="primary" onclick="showCutInfo('${h.id}')">詳細を見る</button></div></div>`
+  root.innerHTML=found.length?`<p class="muted">${found.length}件</p>`+found.map(h=>{
+    const imgs=cutImages(h);
+    return `<div class="entry"><img class="thumb" src="${escapeHtml(imgs[0]?.url||'')}" alt=""><div><h3 class="cut-info-name">${cutRubyHtml(h)}</h3><p>写真 ${imgs.length}枚</p></div><div class="entry-actions"><button type="button" class="primary" onclick="showCutInfo('${h.id}')">詳細を見る</button></div></div>`
   }).join(''):'<p class="empty">該当する刻み生薬がありません。</p>';
   if(detail.dataset.cutId&&!found.some(h=>h.id===detail.dataset.cutId)){detail.classList.add('hidden');detail.innerHTML='';delete detail.dataset.cutId}
 }
@@ -452,7 +453,7 @@ function showCutInfo(id){
 $('cutInfoSearch').addEventListener('input',renderCutInfo);
 function renderCutList(){
   const root=$('cutList');if(!root)return;
-  root.innerHTML=cutHerbs.length?cutHerbs.map((h,i)=>`<div class="entry"><img class="thumb" src="${escapeHtml(cutImages(h)[0]?.url||'')}" alt=""><div><p class="muted small">登録順 ${i+1}</p><h3 class="cut-info-name">${cutRubyHtml(h)}</h3><p>写真 ${cutImages(h).length}枚</p></div><div class="entry-actions row"><button type="button" class="secondary" onclick="editCutHerb('${escapeHtml(h.id)}')">編集</button><button type="button" class="danger" onclick="deleteCutHerb('${escapeHtml(h.id)}')">削除</button></div></div>`).join(''):'<p class="empty">刻み生薬はまだ登録されていません。</p>';
+  root.innerHTML=cutHerbs.length?cutHerbs.map(h=>`<div class="entry"><img class="thumb" src="${escapeHtml(cutImages(h)[0]?.url||'')}" alt=""><div><h3 class="cut-info-name">${cutRubyHtml(h)}</h3><p>写真 ${cutImages(h).length}枚</p></div><div class="entry-actions row"><button type="button" class="secondary" onclick="editCutHerb('${escapeHtml(h.id)}')">編集</button><button type="button" class="danger" onclick="deleteCutHerb('${escapeHtml(h.id)}')">削除</button></div></div>`).join(''):'<p class="empty">刻み生薬はまだ登録されていません。</p>';
 }
 const CUT_STATS_KEY='herbPhotoQuiz.cut.progress.v1';
 function cutProgress(){try{return JSON.parse(localStorage.getItem(CUT_STATS_KEY)||'{}')||{}}catch(e){return {}}}
