@@ -22,7 +22,28 @@ main{padding:18px 14px 50px}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bot
 #migrationStatus{white-space:pre-wrap;line-height:1.7}
 progress{width:100%;height:20px}
 .result-actions{display:flex;flex-direction:column;gap:0}.result-actions .end-quiz-button{margin-top:32px}
-.cut-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}.cut-card{border:1px solid var(--line);border-radius:10px;padding:8px}.cut-card img{width:100%;height:145px;object-fit:contain;background:#f0f2ef}.cut-photo{position:relative;overflow:hidden;background:#f0f2ef;border-radius:10px}.cut-photo img{display:block;width:100%;height:100%;object-fit:contain}.cut-mask{position:absolute;background:#f0f2ef;opacity:1;pointer-events:none}.cut-controls{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.cut-controls label{font-size:.75rem}.cut-controls input{padding:6px}.cut-result{margin-top:12px}
+/* マスクは写真自体に対する百分率。画像を枠内で contain 表示しないことが重要。 */
+.cut-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.cut-card{border:1px solid var(--line);border-radius:12px;padding:10px;min-width:0}
+.cut-thumb{display:block;width:100%;height:160px;object-fit:contain;background:#f0f2ef;border-radius:8px}
+.cut-photo{position:relative;width:100%;max-width:420px;margin:8px auto;overflow:hidden;background:#f0f2ef;border-radius:10px;line-height:0}
+.cut-photo img{display:block;width:100%;height:auto;object-fit:fill;user-select:none;-webkit-user-drag:none}
+.cut-mask{position:absolute;background:#e8e8df;opacity:1;pointer-events:none;transition:opacity .28s ease}
+.cut-mask.revealed{opacity:0}
+.cut-photo-editor{max-width:450px;touch-action:none;cursor:crosshair;border:2px solid #b5c5b7}
+.cut-photo-editor .cut-mask{background:rgba(240,235,208,.84);outline:2px solid #b07126;pointer-events:auto;cursor:grab;transition:none;box-shadow:0 0 0 1px white inset}
+.cut-photo-editor .cut-mask:active{cursor:grabbing}
+.cut-resize-handle{position:absolute;right:-9px;bottom:-9px;width:24px;height:24px;border:2px solid #fff;border-radius:50%;background:#b07126;cursor:nwse-resize;touch-action:none}
+.cut-mask-editor{padding:14px;margin:16px 0;border:2px solid #a7c5ae;border-radius:14px;background:#f8faf6}
+.cut-adjust-actions{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-top:10px}
+.cut-adjust-actions button{padding:9px 13px;flex:0 1 auto}
+.cut-result{margin-top:12px}
+.cut-info-image{display:block;width:100%;height:220px;object-fit:contain;background:#f0f2ef;border-radius:8px}
+.cut-info-image:focus{outline:2px solid var(--green)}
+.cut-reading{font-size:.82rem;color:var(--muted)}
+ruby rt{font-size:.58em;font-weight:450;text-align:center;letter-spacing:0}
+.cut-info-name{line-height:1.9;overflow-wrap:anywhere}
+@media(max-width:560px){.cut-photo-editor{max-width:100%}.cut-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.cut-card{padding:7px}.cut-thumb{height:124px}.cut-info-image{height:170px}}
 </style>
 </head>
 <body>
@@ -53,13 +74,28 @@ progress{width:100%;height:20px}
 </section>
 <section id="cutInfo" class="panel hidden">
  <h2 style="margin-top:0">刻み生薬情報</h2>
- <p class="muted">登録済みの刻み生薬の写真を一覧・詳細で確認できます。写真の生薬名ラベルは表示・非表示を切り替えられます。</p>
- <div class="field"><label for="cutInfoSearch">刻み生薬名で検索</label><input id="cutInfoSearch" type="search" placeholder="例：ショウマ"></div>
+ <p class="muted">登録した順番で刻み生薬を表示します。写真はラベルを隠さず、そのまま確認できます。</p>
+ <div class="field"><label for="cutInfoSearch">刻み生薬名で検索</label><input id="cutInfoSearch" type="search" placeholder="例：甘草"></div>
  <div id="cutInfoList"></div><div id="cutInfoDetail" class="hidden"></div>
 </section>
 <section id="cutManage" class="panel hidden">
- <h2 id="cutFormTitle" style="margin-top:0">刻み生薬を登録</h2><p class="muted">刻み生薬の写真と和名を登録します。写真に名前ラベルが写っている場合は、写真ごとに隠す領域を指定できます。既存の生薬データとは別に保存されます。</p>
- <form id="cutForm"><input id="cutEditId" type="hidden"><div class="field"><label for="cutName">生薬名・和名（必須）</label><input id="cutName" required placeholder="例：カンゾウ"></div><div class="field"><label for="cutPhoto">写真（複数選択可）</label><input id="cutPhoto" type="file" accept="image/*" multiple></div><div id="cutPhotoPreview" class="cut-grid"></div><p class="muted small">隠す領域は画像全体に対する割合（%）で指定します。幅・高さを0にすると隠しません。初期値は0です。</p><div class="row"><button class="primary" type="submit">保存する</button><button class="secondary" type="button" onclick="resetCutForm()">入力をクリア</button></div></form>
+ <h2 id="cutFormTitle" style="margin-top:0">刻み生薬を登録</h2><p class="muted">生薬名は漢字で、読みがなはひらがなで登録します。写真に名前が写っている場合、登録画面で写真をタップして隠す位置を指定できます。実際にラベルを隠すのはクイズ出題中だけです。</p>
+ <form id="cutForm"><input id="cutEditId" type="hidden">
+  <div class="field"><label for="cutName">生薬名・漢字（必須）</label><input id="cutName" required placeholder="例：甘草" autocomplete="off"></div>
+  <div class="field"><label for="cutReading">読みがな・ひらがな（必須）</label><input id="cutReading" required placeholder="例：かんぞう" autocomplete="off"><span class="muted small">刻み生薬情報では、読みがなを漢字の上に表示します。既存の登録済み生薬も編集時に読みを登録してください。</span></div>
+  <div class="field"><label for="cutPhoto">写真（複数選択可）</label><input id="cutPhoto" type="file" accept="image/*" multiple></div>
+  <div id="cutPhotoPreview" class="cut-grid"></div>
+  <div id="cutMaskEditor" class="cut-mask-editor hidden">
+    <h3 id="cutMaskEditorTitle" style="margin:0 0 6px">ラベルを隠す位置</h3>
+    <p class="muted small">写真のラベルを指で囲んでください。覆いをドラッグすると移動、右下の丸をドラッグすると大きさを調整できます。</p>
+    <div id="cutMaskEditorFrame"></div>
+    <div class="cut-adjust-actions"><button type="button" class="secondary" onclick="nudgeCutMask(-1,0)" aria-label="左へ1%">←</button><button type="button" class="secondary" onclick="nudgeCutMask(0,-1)" aria-label="上へ1%">↑</button><button type="button" class="secondary" onclick="nudgeCutMask(0,1)" aria-label="下へ1%">↓</button><button type="button" class="secondary" onclick="nudgeCutMask(1,0)" aria-label="右へ1%">→</button><button type="button" class="secondary" onclick="expandCutMask()">少し広げる</button><button type="button" class="secondary" onclick="clearCutMask()">覆いを消す</button></div>
+    <p id="cutMaskEditorStatus" class="muted small" aria-live="polite"></p>
+    <button type="button" class="primary" onclick="closeCutMaskEditor()" style="width:100%">位置を確定して戻る</button>
+  </div>
+  <p class="muted small">隠す位置は写真ごとに保存されます。登録済み写真も編集から位置を調整できます。写真はクイズ採点後と情報画面ではラベル付きで表示します。</p>
+  <div class="row"><button class="primary" type="submit">保存する</button><button class="secondary" type="button" onclick="resetCutForm()">入力をクリア</button></div>
+ </form>
  <h3>登録済み刻み生薬</h3><div id="cutList"></div>
 </section>
 <section id="manage" class="panel hidden">
@@ -280,39 +316,172 @@ $('cloudBackupInput').addEventListener('change',async e=>{const file=e.target.fi
 元のJSONファイルは変更していません。`;
  }catch(err){console.error(err);$('migrationStatus').textContent='途中で停止しました：'+(err.message||err)+'\nすでに成功した生薬は残ります。通信状態を確認し、同じJSONを再指定すれば未登録分から再開できます。';setStatus('移行が途中で停止しました。',true)}finally{isBusy=false;$('cloudBackupInput').disabled=false;$('cloudBackupInput').value=''}});
 
-// 刻み生薬は public.cut_herbs (id uuid, name text, images jsonb) に保存する。
+// 刻み生薬は public.cut_herbs (id, name, reading, images, created_at) に保存する。
 function cutImages(h){return (Array.isArray(h.images)?h.images:[]).map(x=>typeof x==='string'?{url:x,mask:{x:0,y:0,w:0,h:0}}:{url:x.url||x.src||'',mask:x.mask||{x:0,y:0,w:0,h:0}}).filter(x=>x.url)}
-function cutMaskStyle(mask){const m=mask||{};const n=k=>Math.max(0,Math.min(100,Number(m[k])||0));return `left:${n('x')}%;top:${n('y')}%;width:${n('w')}%;height:${n('h')}%`}
-function cutPhotoHtml(photo,style='height:260px'){return `<div class="cut-photo" style="${style}"><img src="${escapeHtml(photo.url)}" alt="刻み生薬の写真"><div class="cut-mask" style="${cutMaskStyle(photo.mask)}"></div></div>`}
-async function refreshCutHerbs(){const {data,error}=await client.from('cut_herbs').select('id,name,images').order('name');if(error)throw error;cutHerbs=data||[];renderCutList();if(!$('cutInfo').classList.contains('hidden'))renderCutInfo();}
-function resetCutForm(){$('cutForm').reset();$('cutEditId').value='';cutStaged=[];$('cutFormTitle').textContent='刻み生薬を登録';renderCutPhotos()}
-function renderCutPhotos(){const root=$('cutPhotoPreview');root.innerHTML='';cutStaged.forEach((photo,i)=>{const el=document.createElement('div');el.className='cut-card';el.innerHTML=cutPhotoHtml(photo,'height:145px')+`<div class="cut-controls">${[['x','左'],['y','上'],['w','幅'],['h','高さ']].map(([k,label])=>`<label>${label}%<input type="number" min="0" max="100" step="1" data-mask="${k}" value="${Number(photo.mask?.[k])||0}"></label>`).join('')}</div><button type="button" class="secondary small" style="width:100%;margin-top:6px">写真を外す</button>`;el.querySelectorAll('[data-mask]').forEach(input=>input.addEventListener('input',()=>{photo.mask[input.dataset.mask]=Math.max(0,Math.min(100,Number(input.value)||0));el.querySelector('.cut-mask').style.cssText=cutMaskStyle(photo.mask)}));el.querySelector('button').addEventListener('click',()=>{cutStaged.splice(i,1);renderCutPhotos()});root.appendChild(el)})}
-$('cutPhoto').addEventListener('change',async e=>{try{for(const f of e.target.files){if(f.type.startsWith('image/'))cutStaged.push({url:await compressImage(f),mask:{x:0,y:0,w:0,h:0}})}renderCutPhotos()}catch(err){alert('写真の読み込みに失敗しました：'+err.message)}e.target.value=''});
-$('cutForm').addEventListener('submit',async e=>{e.preventDefault();if(!isAdmin||isBusy)return;const name=$('cutName').value.trim(),id=$('cutEditId').value;if(!name||!cutStaged.length){alert('生薬名と写真を登録してください');return}isBusy=true;try{const images=[];for(const photo of cutStaged){let url=photo.url;if(url.startsWith('data:image/')){const path='cut-herbs/'+(globalThis.crypto?.randomUUID?.()||Date.now()+'-'+Math.random().toString(16).slice(2))+'.jpg';url=await uploadDataImage(url,path)}images.push({url,mask:photo.mask})}const row={name,images};if(id)row.id=id;const {error}=await client.from('cut_herbs').upsert(row);if(error)throw error;await refreshCutHerbs();resetCutForm();alert('刻み生薬を保存しました')}catch(err){console.error(err);alert('保存に失敗しました：'+(err.message||err))}finally{isBusy=false}});
-function editCutHerb(id){if(!isAdmin)return;const h=cutHerbs.find(x=>x.id===id);if(!h)return;switchTab('cutManage');$('cutEditId').value=h.id;$('cutName').value=h.name;cutStaged=cutImages(h).map(x=>({url:x.url,mask:{...x.mask}}));$('cutFormTitle').textContent='刻み生薬を編集';renderCutPhotos();window.scrollTo({top:0,behavior:'smooth'})}
+const cutMaskNumber=v=>Math.max(0,Math.min(100,Number(v)||0));
+const cutRound=v=>Math.round(v*10)/10;
+function cleanedCutMask(mask){const m=mask||{};return {x:cutMaskNumber(m.x),y:cutMaskNumber(m.y),w:cutMaskNumber(m.w),h:cutMaskNumber(m.h)}}
+function cutMaskStyle(mask){const m=cleanedCutMask(mask);return `left:${m.x}%;top:${m.y}%;width:${Math.min(m.w,100-m.x)}%;height:${Math.min(m.h,100-m.y)}%`}
+// 写真とマスクを同じ要素の幅・高さで拡縮し、containの余白による位置ずれをなくす。
+function cutPhotoHtml(photo,mode='quiz'){
+  const editor=mode==='editor';
+  return `<div class="cut-photo${editor?' cut-photo-editor':''}" aria-label="${editor?'ラベル位置編集用の写真':'刻み生薬の写真'}"><img src="${escapeHtml(photo.url)}" alt="刻み生薬の写真" draggable="false"><div class="cut-mask${editor?' cut-editor-mask':''}" style="${cutMaskStyle(photo.mask)}">${editor?'<span class="cut-resize-handle" title="大きさを変更"></span>':''}</div></div>`;
+}
+function cutRubyHtml(h){const name=escapeHtml(h.name||''),reading=escapeHtml(h.reading||'');return reading?`<ruby>${name}<rt>${reading}</rt></ruby>`:name}
+// 同名検索ではなく「登録日時」の昇順で一貫して表示し、編集時は順番を維持。
+async function refreshCutHerbs(){const {data,error}=await client.from('cut_herbs').select('id,name,reading,images,created_at').order('created_at',{ascending:true}).order('id',{ascending:true});if(error)throw error;cutHerbs=data||[];renderCutList();if(!$('cutInfo').classList.contains('hidden'))renderCutInfo()}
+let cutEditingPhotoIndex=-1;
+function resetCutForm(){$('cutForm').reset();$('cutEditId').value='';cutStaged=[];cutEditingPhotoIndex=-1;$('cutMaskEditor').classList.add('hidden');$('cutFormTitle').textContent='刻み生薬を登録';renderCutPhotos()}
+function renderCutPhotos(){
+  const root=$('cutPhotoPreview');root.innerHTML='';
+  cutStaged.forEach((photo,i)=>{
+    const el=document.createElement('div');el.className='cut-card';
+    const m=cleanedCutMask(photo.mask),hasMask=m.w>0&&m.h>0;
+    el.innerHTML=`<img class="cut-thumb" src="${escapeHtml(photo.url)}" alt="登録写真 ${i+1}"><p class="muted small">写真 ${i+1}／${hasMask?'ラベル範囲を設定済み':'ラベル範囲は未設定'}</p><button type="button" class="secondary" style="width:100%;margin-bottom:6px">ラベル位置を調整</button><button type="button" class="danger small" style="width:100%">この写真を外す</button>`;
+    const buttons=el.querySelectorAll('button');
+    buttons[0].addEventListener('click',()=>openCutMaskEditor(i));
+    buttons[1].addEventListener('click',()=>{if(cutEditingPhotoIndex===i)closeCutMaskEditor();cutStaged.splice(i,1);if(cutEditingPhotoIndex>i)cutEditingPhotoIndex--;renderCutPhotos()});
+    root.appendChild(el);
+  });
+}
+function openCutMaskEditor(index){
+  if(!isAdmin||!cutStaged[index])return;
+  cutEditingPhotoIndex=index;
+  const photo=cutStaged[index];photo.mask=cleanedCutMask(photo.mask);
+  $('cutMaskEditorTitle').textContent=`写真 ${index+1}：ラベル位置を調整`;
+  $('cutMaskEditor').classList.remove('hidden');
+  const holder=$('cutMaskEditorFrame');holder.innerHTML=cutPhotoHtml(photo,'editor');
+  const frame=holder.querySelector('.cut-photo-editor'),overlay=frame.querySelector('.cut-mask'),img=frame.querySelector('img');
+  let drag=null;
+  const coords=e=>{const box=img.getBoundingClientRect();return {x:cutRound(cutMaskNumber((e.clientX-box.left)/box.width*100)),y:cutRound(cutMaskNumber((e.clientY-box.top)/box.height*100))}};
+  const paint=()=>{overlay.style.cssText=cutMaskStyle(photo.mask)};
+  frame.addEventListener('pointerdown',e=>{
+    if(e.button!==0||!img.complete)return;
+    e.preventDefault();const point=coords(e),origin={...photo.mask};
+    const mode=e.target.closest('.cut-resize-handle')?'resize':e.target.closest('.cut-editor-mask')?'move':'draw';
+    drag={mode,start:point,origin,id:e.pointerId};
+    if(mode==='draw'){photo.mask={x:point.x,y:point.y,w:0,h:0};paint()}
+    frame.setPointerCapture(e.pointerId);
+  });
+  frame.addEventListener('pointermove',e=>{
+    if(!drag||drag.id!==e.pointerId)return;
+    e.preventDefault();const point=coords(e),{mode,start,origin}=drag;
+    if(mode==='draw')photo.mask={x:Math.min(start.x,point.x),y:Math.min(start.y,point.y),w:Math.abs(point.x-start.x),h:Math.abs(point.y-start.y)};
+    if(mode==='move')photo.mask={...origin,x:cutRound(Math.max(0,Math.min(100-origin.w,origin.x+point.x-start.x))),y:cutRound(Math.max(0,Math.min(100-origin.h,origin.y+point.y-start.y)))};
+    if(mode==='resize')photo.mask={...origin,w:cutRound(Math.max(0,Math.min(100-origin.x,origin.w+point.x-start.x))),h:cutRound(Math.max(0,Math.min(100-origin.y,origin.h+point.y-start.y)))};
+    paint();
+  });
+  const end=e=>{
+    if(!drag||drag.id!==e.pointerId)return;
+    if(drag.mode==='draw'&&(photo.mask.w<2||photo.mask.h<2)){
+      // タップのみなら、ラベルの中心を指したものとして初期矩形を作る。
+      photo.mask={x:cutRound(Math.max(0,drag.start.x-17)),y:cutRound(Math.max(0,drag.start.y-6)),w:34,h:12};
+      photo.mask.w=Math.min(photo.mask.w,100-photo.mask.x);photo.mask.h=Math.min(photo.mask.h,100-photo.mask.y);
+      paint();
+    }
+    drag=null;renderCutPhotos();updateCutMaskStatus();
+  };
+  frame.addEventListener('pointerup',end);frame.addEventListener('pointercancel',end);
+  updateCutMaskStatus();$('cutMaskEditor').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function updateCutMaskStatus(){
+  const photo=cutStaged[cutEditingPhotoIndex];if(!photo)return;
+  const m=cleanedCutMask(photo.mask);
+  $('cutMaskEditorStatus').textContent=m.w&&m.h?'覆う範囲を指定しました。保存するまでは変更は確定しません。':'ラベルの部分を指で囲むか、1回タップして範囲を作成してください。';
+}
+function repaintCutMaskEditor(){
+  const photo=cutStaged[cutEditingPhotoIndex];if(!photo)return;
+  const overlay=$('cutMaskEditorFrame').querySelector('.cut-mask');if(overlay)overlay.style.cssText=cutMaskStyle(photo.mask);
+  updateCutMaskStatus();renderCutPhotos();
+}
+function nudgeCutMask(dx,dy){
+  const photo=cutStaged[cutEditingPhotoIndex];if(!photo)return;
+  const m=cleanedCutMask(photo.mask);if(!m.w||!m.h)return;
+  photo.mask={...m,x:cutRound(Math.max(0,Math.min(100-m.w,m.x+dx))),y:cutRound(Math.max(0,Math.min(100-m.h,m.y+dy)))};
+  repaintCutMaskEditor();
+}
+function expandCutMask(){
+  const photo=cutStaged[cutEditingPhotoIndex];if(!photo)return;
+  const m=cleanedCutMask(photo.mask);if(!m.w||!m.h)return;
+  photo.mask={x:Math.max(0,m.x-2),y:Math.max(0,m.y-2),w:Math.min(100-Math.max(0,m.x-2),m.w+4),h:Math.min(100-Math.max(0,m.y-2),m.h+4)};
+  repaintCutMaskEditor();
+}
+function clearCutMask(){const photo=cutStaged[cutEditingPhotoIndex];if(!photo)return;photo.mask={x:0,y:0,w:0,h:0};repaintCutMaskEditor()}
+function closeCutMaskEditor(){$('cutMaskEditor').classList.add('hidden');cutEditingPhotoIndex=-1;renderCutPhotos()}
+$('cutPhoto').addEventListener('change',async e=>{
+  try{for(const f of e.target.files){if(f.type.startsWith('image/'))cutStaged.push({url:await compressImage(f),mask:{x:0,y:0,w:0,h:0}})}renderCutPhotos()}
+  catch(err){alert('写真の読み込みに失敗しました：'+err.message)}e.target.value='';
+});
+$('cutForm').addEventListener('submit',async e=>{
+  e.preventDefault();if(!isAdmin||isBusy)return;
+  const name=$('cutName').value.trim(),reading=$('cutReading').value.trim(),id=$('cutEditId').value;
+  if(!name||!reading||!cutStaged.length){alert('漢字の生薬名・読みがな・写真を登録してください');return}
+  isBusy=true;try{
+    const images=[];
+    for(const photo of cutStaged){let url=photo.url;
+      if(url.startsWith('data:image/')){const path='cut-herbs/'+(globalThis.crypto?.randomUUID?.()||Date.now()+'-'+Math.random().toString(16).slice(2))+'.jpg';url=await uploadDataImage(url,path)}
+      images.push({url,mask:cleanedCutMask(photo.mask)});
+    }
+    const row={name,reading,images};if(id)row.id=id;
+    const {error}=await client.from('cut_herbs').upsert(row);if(error)throw error;
+    await refreshCutHerbs();resetCutForm();alert('刻み生薬を保存しました');
+  }catch(err){console.error(err);alert('保存に失敗しました：'+(err.message||err))}finally{isBusy=false}
+});
+function editCutHerb(id){
+  if(!isAdmin)return;const h=cutHerbs.find(x=>x.id===id);if(!h)return;
+  switchTab('cutManage');$('cutEditId').value=h.id;$('cutName').value=h.name;$('cutReading').value=h.reading||'';
+  cutStaged=cutImages(h).map(x=>({url:x.url,mask:{...x.mask}}));$('cutFormTitle').textContent='刻み生薬を編集';closeCutMaskEditor();window.scrollTo({top:0,behavior:'smooth'});
+}
 async function deleteCutHerb(id){if(!isAdmin||isBusy)return;const h=cutHerbs.find(x=>x.id===id);if(!h||!confirm(`「${h.name}」を削除しますか？`))return;isBusy=true;try{const {error}=await client.from('cut_herbs').delete().eq('id',id);if(error)throw error;await refreshCutHerbs();if($('cutEditId').value===id)resetCutForm();alert('削除しました。写真ファイル自体はストレージに残ります。')}catch(err){alert('削除に失敗しました：'+err.message)}finally{isBusy=false}}
 function renderCutInfo(){
- const root=$('cutInfoList'),detail=$('cutInfoDetail');if(!root)return;
- const q=($('cutInfoSearch').value||'').trim().toLocaleLowerCase();
- const found=cutHerbs.filter(h=>(h.name||'').toLocaleLowerCase().includes(q));
- root.innerHTML=found.length?`<p class="muted">${found.length}件の刻み生薬</p>`+found.map(h=>{const imgs=cutImages(h);return `<div class="entry"><img class="thumb" src="${escapeHtml(imgs[0]?.url||'')}" alt=""><div><h3>${escapeHtml(h.name)}</h3><p>写真 ${imgs.length}枚</p></div><div class="entry-actions"><button type="button" class="primary" onclick="showCutInfo('${h.id}')">詳細を見る</button></div></div>`}).join(''):'<p class="empty">該当する刻み生薬がありません。</p>';
- if(detail.dataset.cutId&&!found.some(h=>h.id===detail.dataset.cutId)){detail.classList.add('hidden');detail.innerHTML='';delete detail.dataset.cutId}
+  const root=$('cutInfoList'),detail=$('cutInfoDetail');if(!root)return;
+  const q=($('cutInfoSearch').value||'').trim().toLocaleLowerCase();
+  const found=cutHerbs.filter(h=>[h.name||'',h.reading||''].some(v=>v.toLocaleLowerCase().includes(q)));
+  root.innerHTML=found.length?`<p class="muted">${found.length}件／登録順に表示</p>`+found.map(h=>{
+    const imgs=cutImages(h),order=cutHerbs.indexOf(h)+1;
+    return `<div class="entry"><img class="thumb" src="${escapeHtml(imgs[0]?.url||'')}" alt=""><div><p class="muted small">登録順 ${order}</p><h3 class="cut-info-name">${cutRubyHtml(h)}</h3><p>写真 ${imgs.length}枚</p></div><div class="entry-actions"><button type="button" class="primary" onclick="showCutInfo('${h.id}')">詳細を見る</button></div></div>`
+  }).join(''):'<p class="empty">該当する刻み生薬がありません。</p>';
+  if(detail.dataset.cutId&&!found.some(h=>h.id===detail.dataset.cutId)){detail.classList.add('hidden');detail.innerHTML='';delete detail.dataset.cutId}
 }
 function showCutInfo(id){
- const h=cutHerbs.find(x=>x.id===id);if(!h)return;const root=$('cutInfoDetail'),imgs=cutImages(h);
- root.dataset.cutId=id;root.classList.remove('hidden');
- root.innerHTML=`<hr style="border:0;border-top:2px solid var(--line);margin:22px 0"><h2>${escapeHtml(h.name)}</h2><div class="row"><label><input type="checkbox" id="cutInfoMaskToggle"> 写真のラベルを隠す</label>${isAdmin?`<button type="button" class="secondary" onclick="editCutHerb('${h.id}')">この刻み生薬を編集</button>`:''}</div><div id="cutInfoGallery" class="cut-grid"></div><div class="row" style="margin-top:16px"><button class="secondary" type="button" onclick="$('cutInfoDetail').classList.add('hidden')">詳細を閉じる</button></div>`;
- const gallery=$('cutInfoGallery'),toggle=$('cutInfoMaskToggle');
- const draw=()=>{gallery.innerHTML=imgs.length?imgs.map((photo,i)=>`<div class="cut-card">${toggle.checked?cutPhotoHtml(photo,'height:230px'):cutPhotoHtml({...photo,mask:{x:0,y:0,w:0,h:0}},'height:230px')}<p class="muted small">写真 ${i+1} / ${imgs.length}</p></div>`).join(''):'<p class="muted">写真は未登録です。</p>';};
- toggle.addEventListener('change',draw);draw();root.scrollIntoView({behavior:'smooth',block:'start'});
+  const h=cutHerbs.find(x=>x.id===id);if(!h)return;const root=$('cutInfoDetail'),imgs=cutImages(h);
+  root.dataset.cutId=id;root.classList.remove('hidden');
+  root.innerHTML=`<hr style="border:0;border-top:2px solid var(--line);margin:22px 0"><h2 class="cut-info-name">${cutRubyHtml(h)}</h2>${h.reading?'':'<p class="muted small">読みがなは未登録です。管理者は編集画面から登録できます。</p>'}<div class="row">${isAdmin?`<button type="button" class="secondary" onclick="editCutHerb('${h.id}')">この刻み生薬を編集</button>`:''}</div><div id="cutInfoGallery" class="cut-grid">${imgs.length?imgs.map((photo,i)=>`<div class="cut-card"><a href="${escapeHtml(photo.url)}" target="_blank" rel="noopener noreferrer" aria-label="写真 ${i+1} を拡大"><img class="cut-info-image" src="${escapeHtml(photo.url)}" alt="${escapeHtml(h.name)}の写真 ${i+1}"></a><p class="muted small">写真 ${i+1} / ${imgs.length}（タップで拡大）</p></div>`).join(''):'<p class="muted">写真は未登録です。</p>'}</div><div class="row" style="margin-top:16px"><button class="secondary" type="button" onclick="$('cutInfoDetail').classList.add('hidden')">詳細を閉じる</button></div>`;
+  root.scrollIntoView({behavior:'smooth',block:'start'});
 }
 $('cutInfoSearch').addEventListener('input',renderCutInfo);
-function renderCutList(){const root=$('cutList');if(!root)return;root.innerHTML=cutHerbs.length?cutHerbs.map(h=>`<div class="entry"><img class="thumb" src="${escapeHtml(cutImages(h)[0]?.url||'')}" alt=""><div><h3>${escapeHtml(h.name)}</h3><p>写真 ${cutImages(h).length}枚</p></div><div class="entry-actions row"><button type="button" class="secondary" onclick="editCutHerb('${escapeHtml(h.id)}')">編集</button><button type="button" class="danger" onclick="deleteCutHerb('${escapeHtml(h.id)}')">削除</button></div></div>`).join(''):'<p class="empty">刻み生薬はまだ登録されていません。</p>'}
+function renderCutList(){
+  const root=$('cutList');if(!root)return;
+  root.innerHTML=cutHerbs.length?cutHerbs.map((h,i)=>`<div class="entry"><img class="thumb" src="${escapeHtml(cutImages(h)[0]?.url||'')}" alt=""><div><p class="muted small">登録順 ${i+1}</p><h3 class="cut-info-name">${cutRubyHtml(h)}</h3><p>写真 ${cutImages(h).length}枚</p></div><div class="entry-actions row"><button type="button" class="secondary" onclick="editCutHerb('${escapeHtml(h.id)}')">編集</button><button type="button" class="danger" onclick="deleteCutHerb('${escapeHtml(h.id)}')">削除</button></div></div>`).join(''):'<p class="empty">刻み生薬はまだ登録されていません。</p>';
+}
 const CUT_STATS_KEY='herbPhotoQuiz.cut.progress.v1';
 function cutProgress(){try{return JSON.parse(localStorage.getItem(CUT_STATS_KEY)||'{}')||{}}catch(e){return {}}}
 function cutIdle(){$('cutQuizArea').innerHTML='<div class="empty">「開始」を押して解答スタート。<p><button class="primary" onclick="nextCutQuestion()">開始</button></p></div>';cutCurrent=null;cutAnswered=false}
-function nextCutQuestion(){const stats=cutProgress();let pool=cutHerbs.filter(h=>cutImages(h).length);if($('cutMode').value==='weak')pool=pool.filter(h=>stats[h.id]?.wrong>0&&!stats[h.id]?.cleared);if(!pool.length){$('cutQuizArea').innerHTML='<p class="empty">'+($('cutMode').value==='weak'?'復習対象がありません。':'写真が登録された刻み生薬がありません。')+'</p><button class="secondary" onclick="cutIdle()">戻る</button>';return}let candidates=pool.filter(h=>h.id!==cutLastId);if(!candidates.length)candidates=pool;const h=candidates[Math.floor(Math.random()*candidates.length)];cutCurrent=h;cutLastId=h.id;cutAnswered=false;const imgs=cutImages(h),photo=imgs[Math.floor(Math.random()*imgs.length)];let input='<input id="cutAnswer" required autocomplete="off" placeholder="生薬名を入力">';if($('cutStyle').value==='choice'){const names=shuffleValues([h.name,...shuffleValues(distinctValues(cutHerbs.filter(x=>x.id!==h.id).map(x=>x.name))).slice(0,5)]);input=`<select id="cutAnswer" required><option value="">選択してください</option>${names.map(n=>`<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('')}</select>`} $('cutQuizArea').innerHTML=cutPhotoHtml(photo,'height:min(65vw,390px);max-height:390px')+`<form id="cutAnswerForm"><div class="field"><label for="cutAnswer">この刻み生薬の名前は？</label>${input}</div><div class="answer-actions"><button class="primary" type="submit">採点する</button><button class="secondary" type="button" onclick="cutIdle()">終了</button></div></form><div id="cutResult"></div>`;$('cutAnswerForm').addEventListener('submit',e=>{e.preventDefault();checkCutAnswer()})}
-function checkCutAnswer(){if(cutAnswered||!cutCurrent)return;cutAnswered=true;const h=cutCurrent,ok=exactAnswer($('cutAnswer').value,[h.name]);const stats=cutProgress(),s=stats[h.id]||{right:0,wrong:0};if(ok){s.right++;s.cleared=true}else{s.wrong++;s.cleared=false}stats[h.id]=s;try{localStorage.setItem(CUT_STATS_KEY,JSON.stringify(stats))}catch(e){console.warn(e)}$('cutResult').innerHTML=`<div class="feedback ${ok?'good':'bad'} cut-result"><b>${ok?'正解':'不正解'}</b><p>正解：${escapeHtml(h.name)}</p><p class="muted">この生薬：正解 ${s.right} 回／不正解 ${s.wrong} 回</p></div><div class="answer-actions result-actions"><button class="primary" onclick="nextCutQuestion()">次の問題</button><button class="secondary end-quiz-button" onclick="cutIdle()">終了</button></div>`;$('cutAnswerForm').querySelector('.answer-actions').remove()}
+function nextCutQuestion(){
+  const stats=cutProgress();let pool=cutHerbs.filter(h=>cutImages(h).length);
+  if($('cutMode').value==='weak')pool=pool.filter(h=>stats[h.id]?.wrong>0&&!stats[h.id]?.cleared);
+  if(!pool.length){$('cutQuizArea').innerHTML='<p class="empty">'+($('cutMode').value==='weak'?'復習対象がありません。':'写真が登録された刻み生薬がありません。')+'</p><button class="secondary" onclick="cutIdle()">戻る</button>';return}
+  let candidates=pool.filter(h=>h.id!==cutLastId);if(!candidates.length)candidates=pool;
+  const h=candidates[Math.floor(Math.random()*candidates.length)];cutCurrent=h;cutLastId=h.id;cutAnswered=false;
+  const imgs=cutImages(h),photo=imgs[Math.floor(Math.random()*imgs.length)];
+  let input='<input id="cutAnswer" required autocomplete="off" placeholder="例：甘草">';
+  if($('cutStyle').value==='choice'){
+    const names=shuffleValues([h.name,...shuffleValues(distinctValues(cutHerbs.filter(x=>x.id!==h.id).map(x=>x.name))).slice(0,5)]);
+    input=`<select id="cutAnswer" required><option value="">選択してください</option>${names.map(n=>`<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('')}</select>`;
+  }
+  $('cutQuizArea').innerHTML=cutPhotoHtml(photo)+`<form id="cutAnswerForm"><div class="field"><label for="cutAnswer">この刻み生薬の名前は？</label>${input}</div><div class="answer-actions"><button class="primary" type="submit">採点する</button><button class="secondary" type="button" onclick="cutIdle()">終了</button></div></form><div id="cutResult"></div>`;
+  $('cutAnswerForm').addEventListener('submit',e=>{e.preventDefault();checkCutAnswer()});
+}
+function checkCutAnswer(){
+  if(cutAnswered||!cutCurrent)return;cutAnswered=true;
+  const h=cutCurrent,ok=exactAnswer($('cutAnswer').value,[h.name]),stats=cutProgress(),s=stats[h.id]||{right:0,wrong:0};
+  if(ok){s.right++;s.cleared=true}else{s.wrong++;s.cleared=false}
+  stats[h.id]=s;try{localStorage.setItem(CUT_STATS_KEY,JSON.stringify(stats))}catch(e){console.warn(e)}
+  // 採点後は覆いを取り除き、元の写真に写っているラベルを一斉に見せる。
+  $('cutQuizArea').querySelectorAll('.cut-mask').forEach(mask=>mask.classList.add('revealed'));
+  $('cutResult').innerHTML=`<div class="feedback ${ok?'good':'bad'} cut-result"><b>${ok?'正解':'不正解'}</b><p>正解：${cutRubyHtml(h)}</p><p class="muted">この生薬：正解 ${s.right} 回／不正解 ${s.wrong} 回</p></div><div class="answer-actions result-actions"><button class="primary" onclick="nextCutQuestion()">次の問題</button><button class="secondary end-quiz-button" onclick="cutIdle()">終了</button></div>`;
+  $('cutAnswerForm').querySelector('.answer-actions').remove();
+}
 $('cutStyle').addEventListener('change',cutIdle);$('cutMode').addEventListener('change',cutIdle);
 
 initShared();
