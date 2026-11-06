@@ -100,7 +100,7 @@ progress{width:100%;height:20px}
  <div class="stat"><b id="weakStat">0</b><span>復習対象</span></div>
 </div>
 <nav class="tabs">
- <button class="tab active" data-tab="quiz">クイズ</button><button class="tab" data-tab="info">生薬情報</button><button class="tab" data-tab="cutQuiz">刻み生薬クイズ</button><button class="tab" data-tab="cutInfo">刻み生薬情報</button><button class="tab" data-tab="kampoQuiz">漢方処方クイズ</button><button class="tab" data-tab="kampoInfo">漢方処方情報</button><button class="tab" data-tab="kampoCatalog">漢方処方一覧</button><button class="tab hidden" data-admin-tab="1" data-tab="cutManage">刻み生薬を登録・編集</button><button class="tab hidden" data-admin-tab="1" data-tab="kampoManage">漢方処方を登録・編集</button><button class="tab hidden" data-admin-tab="1" data-tab="manage">生薬を登録・編集</button><button class="tab hidden" data-admin-tab="1" data-tab="list">登録一覧</button><button class="tab hidden" data-admin-tab="1" data-tab="backup">バックアップ</button>
+ <button class="tab active" data-tab="quiz">クイズ</button><button class="tab" data-tab="info">生薬情報</button><button class="tab" data-tab="cutQuiz">刻み生薬クイズ</button><button class="tab" data-tab="cutInfo">刻み生薬情報</button><button class="tab" data-tab="kampoQuiz">漢方処方クイズ</button><button class="tab" data-tab="kampoInfo">漢方処方情報</button><button class="tab hidden" data-admin-tab="1" data-tab="cutManage">刻み生薬を登録・編集</button><button class="tab hidden" data-admin-tab="1" data-tab="kampoManage">漢方処方を登録・編集</button><button class="tab hidden" data-admin-tab="1" data-tab="manage">生薬を登録・編集</button><button class="tab hidden" data-admin-tab="1" data-tab="list">登録一覧</button><button class="tab hidden" data-admin-tab="1" data-tab="backup">バックアップ</button>
 </nav>
 <section id="quiz" class="panel">
  <div class="row"><div><h2 style="margin:0">写真識別</h2><p class="muted" id="modeLabel">出題モードを選び、「開始」を押してください。</p></div><div style="max-width:300px"><label for="answerMode">回答モード</label><select id="answerMode"><option value="name">生薬名だけ答える（和名・ラテン名）</option><option value="full">すべて答える（満点7点）</option></select><label for="inputStyle" style="display:block;margin-top:10px">回答形式</label><select id="inputStyle"><option value="written">記述式</option><option value="choice">選択式（6択）</option></select><label for="quizMode" style="display:block;margin-top:10px">出題方法</label><select id="quizMode"><option value="random">ランダム出題</option><option value="weak">苦手問題の復習</option></select></div></div>
@@ -160,12 +160,7 @@ progress{width:100%;height:20px}
  <div id="kampoInfoList"><p class="muted">漢方処方を読み込んでいます…</p></div>
  <div id="kampoInfoDetail" class="hidden"></div>
 </section>
-<section id="kampoCatalog" class="panel hidden">
- <h2 style="margin-top:0">漢方処方一覧</h2>
- <p class="muted">登録済みの漢方処方を登録順に一覧表示します。構成生薬数は処方ごとに異なります。詳しい写真は「漢方処方情報」で確認できます。</p>
- <div class="field"><label for="kampoCatalogSearch">漢方処方名・構成生薬で検索</label><input id="kampoCatalogSearch" type="search" placeholder="例：葛根湯、甘草" autocomplete="off"></div>
- <div id="kampoCatalogList"><p class="muted">漢方処方を読み込んでいます…</p></div>
-</section>
+
 <section id="kampoManage" class="panel hidden">
   <h2 id="kampoFormTitle" style="margin-top:0">漢方処方を登録</h2>
   <p class="muted">処方名と構成生薬を登録します。構成生薬数は処方ごとに自動判定され、固定ではありません。ここで登録した情報を、漢方処方クイズで共通利用します。</p>
@@ -259,12 +254,12 @@ function initClient(){if(!window.supabase?.createClient)throw new Error('Supabas
 async function uploadDataImage(src,path){if(!src.startsWith('data:image/'))return src;const response=await fetch(src);const blob=await response.blob();if(!blob.type.startsWith('image/'))throw new Error('対応していない画像形式です');const {error}=await client.storage.from('herb-images').upload(path,blob,{contentType:blob.type,upsert:true});if(error)throw error;const {data}=client.storage.from('herb-images').getPublicUrl(path);return data.publicUrl}
 async function upsertHerb(h){const {error}=await client.from('herbs').upsert(toRow(h),{onConflict:'id'});if(error)throw error}
 async function saveHerbToCloud(h){const uploaded=[];const images=[];try{for(const src of h.images){if(src.startsWith('data:image/')){const path=h.id+'/'+(globalThis.crypto?.randomUUID?.()||Date.now()+'-'+Math.random().toString(16).slice(2))+'.jpg';images.push(await uploadDataImage(src,path));uploaded.push(path)}else images.push(src)}h.images=images;await upsertHerb(h);await refreshHerbs()}catch(err){if(uploaded.length){await client.storage.from('herb-images').remove(uploaded).catch(()=>{})}throw err}}
-async function initShared(){try{initClient();const s=getLocalProgress();db.stats=s.stats||{};db.attempts=Number(s.attempts)||0;db.correct=Number(s.correct)||0;db.totalScore=Number(s.totalScore)||0;await updateAdminSession();await refreshHerbs();await refreshCutHerbs();await refreshKampoFormulas().catch(err=>{kampoLoadError=err.message||String(err);console.warn('漢方処方の読み込みに失敗:',err);renderKampoList();renderKampoInfo();renderKampoCatalog()});client.auth.onAuthStateChange(()=>{setTimeout(()=>{updateAdminSession().catch(console.error)},0)})}catch(err){console.error(err);setStatus('接続できません：'+(err.message||String(err)),true);$('quizArea').innerHTML='<p class="empty">共有データの取得に失敗しました。接続状況を確認して、ページを再読み込みしてください。</p>'}}
+async function initShared(){try{initClient();const s=getLocalProgress();db.stats=s.stats||{};db.attempts=Number(s.attempts)||0;db.correct=Number(s.correct)||0;db.totalScore=Number(s.totalScore)||0;await updateAdminSession();await refreshHerbs();await refreshCutHerbs();await refreshKampoFormulas().catch(err=>{kampoLoadError=err.message||String(err);console.warn('漢方処方の読み込みに失敗:',err);renderKampoList();renderKampoInfo();});client.auth.onAuthStateChange(()=>{setTimeout(()=>{updateAdminSession().catch(console.error)},0)})}catch(err){console.error(err);setStatus('接続できません：'+(err.message||String(err)),true);$('quizArea').innerHTML='<p class="empty">共有データの取得に失敗しました。接続状況を確認して、ページを再読み込みしてください。</p>'}}
 function escapeHtml(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function statFor(id){return db.stats[id]||(db.stats[id]={seen:0,wrong:0,right:0,streak:0,score:0})}
 function isWeak(h){const s=statFor(h.id);if(s.reviewCleared===true)return false;if(s.reviewCleared===false)return true;return s.wrong>s.right||(s.seen>0&&s.streak===0)}
 function updateStats(){ $('countStat').textContent=db.herbs.length;$('accuracyStat').textContent=db.attempts?Math.round(db.correct/db.attempts*100)+'%':'—';$('scoreStat').textContent=String(db.totalScore||0);$('weakStat').textContent=db.herbs.filter(isWeak).length;renderList();if(!$('info').classList.contains('hidden'))renderHerbInfo();}
-function switchTab(tab){if(!isAdmin&&['manage','list','backup','cutManage','kampoManage'].includes(tab))return;document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));['quiz','info','manage','list','backup','cutQuiz','cutManage','cutInfo','kampoManage','kampoQuiz','kampoInfo','kampoCatalog'].forEach(id=>$(id).classList.toggle('hidden',id!==tab));if(tab==='list')renderList();if(tab==='cutManage')renderCutList();if(tab==='kampoManage'){renderKampoList();renderKampoIngredientOptions();renderKampoPreview()}if(tab==='cutInfo')renderCutInfo();if(tab==='kampoQuiz')renderKampoQuizProgress();if(tab==='kampoInfo')renderKampoInfo();if(tab==='kampoCatalog')renderKampoCatalog();if(tab==='info')renderHerbInfo();if(tab==='backup')$('backupStatus').textContent='学習履歴はこの端末のブラウザに保存されています。'}
+function switchTab(tab){if(!isAdmin&&['manage','list','backup','cutManage','kampoManage'].includes(tab))return;document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));['quiz','info','manage','list','backup','cutQuiz','cutManage','cutInfo','kampoManage','kampoQuiz','kampoInfo'].forEach(id=>$(id).classList.toggle('hidden',id!==tab));if(tab==='list')renderList();if(tab==='cutManage')renderCutList();if(tab==='kampoManage'){renderKampoList();renderKampoIngredientOptions();renderKampoPreview()}if(tab==='cutInfo')renderCutInfo();if(tab==='kampoQuiz')renderKampoQuizProgress();if(tab==='kampoInfo')renderKampoInfo();if(tab==='info')renderHerbInfo();if(tab==='backup')$('backupStatus').textContent='学習履歴はこの端末のブラウザに保存されています。'}
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
 function showIdle(){if(!db.herbs.length){$('quizArea').innerHTML='<div class="empty">登録された生薬がありません。生薬データと写真を登録してください。</div>';return}$('modeLabel').textContent='出題モードを選び、「開始」を押してください。';$('quizArea').innerHTML='<div class="empty">「開始」を押して解答スタート。<br><br><button class="primary" type="button" onclick="nextQuestion()">開始</button></div>'}
 function endQuiz(){currentId=null;answered=false;currentUseCorrect=[];selectedConstituent='';showIdle()}
@@ -427,7 +422,7 @@ function cutPhotoHtml(photo,mode='quiz'){
 }
 function cutRubyHtml(h){const name=escapeHtml(h.name||''),reading=escapeHtml(h.reading||'');return reading?`<ruby>${name}<rt>${reading}</rt></ruby>`:name}
 // 同名検索ではなく「登録日時」の昇順で一貫して表示し、編集時は順番を維持。
-async function refreshCutHerbs(){const {data,error}=await client.from('cut_herbs').select('id,name,reading,images,created_at').order('created_at',{ascending:true}).order('id',{ascending:true});if(error)throw error;cutHerbs=data||[];renderCutList();renderKampoIngredientOptions();if($('kampoManage')&&!$('kampoManage').classList.contains('hidden')){renderKampoPreview();renderKampoList()} if(!$('cutInfo').classList.contains('hidden'))renderCutInfo();if($('kampoInfo')&&!$('kampoInfo').classList.contains('hidden'))renderKampoInfo();if($('kampoCatalog')&&!$('kampoCatalog').classList.contains('hidden'))renderKampoCatalog()}
+async function refreshCutHerbs(){const {data,error}=await client.from('cut_herbs').select('id,name,reading,images,created_at').order('created_at',{ascending:true}).order('id',{ascending:true});if(error)throw error;cutHerbs=data||[];renderCutList();renderKampoIngredientOptions();if($('kampoManage')&&!$('kampoManage').classList.contains('hidden')){renderKampoPreview();renderKampoList()} if(!$('cutInfo').classList.contains('hidden'))renderCutInfo();if($('kampoInfo')&&!$('kampoInfo').classList.contains('hidden'))renderKampoInfo();}
 let cutEditingPhotoIndex=-1;
 function resetCutForm(){$('cutForm').reset();$('cutEditId').value='';cutStaged=[];cutEditingPhotoIndex=-1;$('cutMaskEditor').classList.add('hidden');$('cutFormTitle').textContent='刻み生薬を登録';renderCutPhotos()}
 function renderCutPhotos(){
@@ -615,7 +610,7 @@ function resetKampoForm(){
 async function refreshKampoFormulas(){
   const {data,error}=await client.from('kampo_formulas').select('id,name,ingredients,created_at').order('created_at',{ascending:true});
   if(error)throw error;
-  kampoFormulas=data||[];kampoLoadError='';renderKampoList();renderKampoQuizProgress();renderKampoInfo();renderKampoCatalog();
+  kampoFormulas=data||[];kampoLoadError='';renderKampoList();renderKampoQuizProgress();renderKampoInfo();
 }
 function renderKampoList(){
   const root=$('kampoList');if(!root)return;
@@ -677,22 +672,8 @@ function showKampoPublicInfo(id){
   if(!kampoPublicSearchMatches(kampoFormulas.find(f=>f.id===id),normalize(search.value))){search.value='';renderKampoInfo()}
   renderKampoInfoDetail(id,true);
 }
-function renderKampoCatalog(){
-  const root=$('kampoCatalogList');if(!root)return;
-  if(kampoLoadError){root.innerHTML=kampoPublicError();return}
-  const q=normalize($('kampoCatalogSearch').value);
-  const found=kampoFormulas.filter(f=>kampoPublicSearchMatches(f,q));
-  root.innerHTML=found.length?`<p class="muted">登録済み ${kampoFormulas.length}処方 ／ 表示 ${found.length}処方</p>`+found.map(f=>{
-    const items=kampoNormalizedIngredients(f);
-    return `<div class="kampo-public-row"><div class="kampo-public-row-body"><h3>${escapeHtml(f.name)}</h3><p>構成生薬 ${items.length}種類</p><p>${escapeHtml(items.join('・'))}</p></div><button type="button" class="secondary" data-show-kampo="${escapeHtml(f.id)}">詳細を見る</button></div>`;
-  }).join(''):'<p class="empty">'+(q?'検索条件に一致する漢方処方がありません。':'まだ漢方処方が登録されていません。')+'</p>';
-}
 $('kampoInfoSearch').addEventListener('input',renderKampoInfo);
-$('kampoCatalogSearch').addEventListener('input',renderKampoCatalog);
 $('kampoInfoList').addEventListener('click',e=>{
-  const button=e.target.closest('button[data-show-kampo]');if(button)showKampoPublicInfo(button.dataset.showKampo);
-});
-$('kampoCatalogList').addEventListener('click',e=>{
   const button=e.target.closest('button[data-show-kampo]');if(button)showKampoPublicInfo(button.dataset.showKampo);
 });
 $('kampoInfoDetail').addEventListener('click',e=>{
