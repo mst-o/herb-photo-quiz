@@ -165,6 +165,27 @@ progress{width:100%;height:20px}
 .progress-review-missed{font-size:.83rem;padding:6px 0;line-height:1.6}
 .progress-entry-actions{gap:7px;flex-wrap:wrap}
 @media(max-width:500px){.review-start-actions button{flex:1 1 100%;}}
+
+/* トップメニュー：操作目的から入り、各グループ内で対象を選ぶ2段構成 */
+.top-navigation{margin:0 0 16px}
+.nav-main{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+body.is-admin .nav-main{grid-template-columns:repeat(4,minmax(0,1fr))}
+.nav-main-button{background:#e8efe9;color:#254232;border:1px solid #d8e5db;border-radius:12px;min-width:0;min-height:51px;padding:10px 8px;font-size:.96rem;letter-spacing:.01em;line-height:1.35}
+.nav-main-button.active{background:var(--green);color:white;border-color:var(--green);box-shadow:0 2px 7px #1d382322}
+.nav-main-button:focus-visible,.nav-subset .tab:focus-visible{outline:3px solid #8ab89a;outline-offset:2px}
+.nav-subset{display:flex;align-items:stretch;flex-wrap:wrap;gap:7px;margin-top:8px;padding:10px;border:1px solid var(--line);border-radius:13px;background:white}
+.nav-subtitle{flex:0 0 100%;font-size:.78rem;font-weight:650;color:var(--muted);padding:0 3px 2px}
+.nav-subset .tab{flex:1 1 140px;min-width:0;min-height:43px;font-size:.9rem;padding:9px 9px;border:1px solid transparent;border-radius:9px;background:#edf2ed;color:#31503b}
+.nav-subset .tab.active{background:#e1f0e5;border-color:#a2ceb0;color:#205b3b}
+.nav-subset-admin .tab{flex:1 1 165px}
+@media(max-width:560px){
+ .nav-main{gap:5px}
+ body.is-admin .nav-main{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .nav-main-button{font-size:.86rem;min-height:46px;padding:9px 4px;border-radius:10px}
+ .nav-subset{gap:5px;padding:8px;margin-top:6px}
+ .nav-subset .tab{flex:1 1 30%;font-size:.81rem;min-height:41px;padding:8px 4px}
+ .nav-subset-admin .tab{flex:1 1 45%;font-size:.84rem}
+}
 </style>
 </head>
 <body>
@@ -180,8 +201,33 @@ progress{width:100%;height:20px}
  <div class="stat"><b id="scoreStat">0</b><span>累計得点</span></div>
  <div class="stat"><b id="weakStat">0</b><span>復習対象</span></div>
 </div>
-<nav class="tabs">
- <button class="tab active" data-tab="quiz">クイズ</button><button class="tab" data-tab="info">生薬情報</button><button class="tab" data-tab="cutQuiz">刻み生薬クイズ</button><button class="tab" data-tab="cutInfo">刻み生薬情報</button><button class="tab" data-tab="kampoQuiz">漢方処方クイズ</button><button class="tab" data-tab="kampoInfo">漢方処方情報</button><button class="tab" data-tab="progress">学習進捗</button><button class="tab hidden" data-admin-tab="1" data-tab="cutManage">刻み生薬を登録・編集</button><button class="tab hidden" data-admin-tab="1" data-tab="kampoManage">漢方処方を登録・編集</button><button class="tab hidden" data-admin-tab="1" data-tab="manage">生薬を登録・編集</button><button class="tab hidden" data-admin-tab="1" data-tab="list">登録一覧</button><button class="tab hidden" data-admin-tab="1" data-tab="backup">バックアップ</button>
+<nav class="top-navigation" aria-label="機能メニュー">
+ <div class="nav-main" role="group" aria-label="メインメニュー">
+  <button class="nav-main-button active" type="button" data-nav-group="quiz" aria-pressed="true">クイズ</button>
+  <button class="nav-main-button" type="button" data-nav-group="info" aria-pressed="false">情報を見る</button>
+  <button class="nav-main-button" type="button" data-nav-group="progress" aria-pressed="false">学習進捗</button>
+  <button class="nav-main-button hidden" type="button" data-nav-group="admin" data-admin-tab="1" aria-pressed="false">管理者メニュー</button>
+ </div>
+ <div class="nav-subset" data-nav-items="quiz" role="group" aria-label="クイズの種類">
+  <span class="nav-subtitle">出題する種類</span>
+  <button class="tab active" type="button" data-tab="quiz">生薬</button>
+  <button class="tab" type="button" data-tab="cutQuiz">刻み生薬</button>
+  <button class="tab" type="button" data-tab="kampoQuiz">漢方処方</button>
+ </div>
+ <div class="nav-subset hidden" data-nav-items="info" role="group" aria-label="情報の種類">
+  <span class="nav-subtitle">調べる種類</span>
+  <button class="tab" type="button" data-tab="info">生薬</button>
+  <button class="tab" type="button" data-tab="cutInfo">刻み生薬</button>
+  <button class="tab" type="button" data-tab="kampoInfo">漢方処方</button>
+ </div>
+ <div class="nav-subset nav-subset-admin hidden" data-nav-items="admin" role="group" aria-label="管理者の操作">
+  <span class="nav-subtitle">登録・編集・バックアップ</span>
+  <button class="tab" type="button" data-admin-tab="1" data-tab="manage">生薬を登録・編集</button>
+  <button class="tab" type="button" data-admin-tab="1" data-tab="cutManage">刻み生薬を登録・編集</button>
+  <button class="tab" type="button" data-admin-tab="1" data-tab="kampoManage">漢方処方を登録・編集</button>
+  <button class="tab" type="button" data-admin-tab="1" data-tab="list">登録一覧</button>
+  <button class="tab" type="button" data-admin-tab="1" data-tab="backup">バックアップ</button>
+ </div>
 </nav>
 <section id="progress" class="panel hidden">
  <h2 style="margin-top:0">学習進捗</h2>
@@ -359,7 +405,7 @@ async function save(){try{const x={stats:db.stats,attempts:db.attempts,correct:d
 function normalHerb(row){return {id:row.id,japaneseName:row.japanese_name||'',name:row.japanese_name||'',latinName:(row.latin_name||'').toUpperCase(),aliases:row.aliases||[],originLatin:row.origin_latin||'',originJapanese:row.origin_japanese||'',part:row.part||row.medicinal_part||'',familyLatin:row.family_latin||'',familyJapanese:row.family_japanese||'',constituents:row.constituents||'',uses:row.uses||[],notes:row.notes||'',images:row.images||[]}}
 function toRow(h){return {id:String(h.id),japanese_name:h.japaneseName||h.name||'',latin_name:(h.latinName||'').toUpperCase(),aliases:Array.isArray(h.aliases)?h.aliases:[],origin_latin:h.originLatin||'',origin_japanese:h.originJapanese||'',part:h.part||'',medicinal_part:h.part||'',family_latin:h.familyLatin||'',family_japanese:h.familyJapanese||'',constituents:h.constituents||'',uses:Array.isArray(h.uses)?h.uses:[],notes:h.notes||'',images:Array.isArray(h.images)?h.images:[],updated_at:new Date().toISOString()}}
 async function refreshHerbs(){const {data,error}=await client.from('herbs').select('*').order('japanese_name');if(error)throw error;db.herbs=(data||[]).map(normalHerb);updateStats();currentId=null;showIdle();setStatus('共有データ：接続済み・'+db.herbs.length+'種類／学習履歴：この端末のみ');}
-function showAdmin(){document.querySelectorAll('[data-admin-tab]').forEach(x=>x.classList.toggle('hidden',!isAdmin));$('loginToggle').classList.toggle('hidden',isAdmin);$('logoutButton').classList.toggle('hidden',!isAdmin);$('adminState').textContent=isAdmin?'管理者としてログイン中：データの登録・編集ができます。':'ゲストとして利用中：クイズ・生薬情報を閲覧できます。';if(!isAdmin&&(['manage','list','backup','cutManage','kampoManage'].some(x=>!$(x).classList.contains('hidden'))))switchTab('quiz')}
+function showAdmin(){document.body.classList.toggle('is-admin',isAdmin);document.querySelectorAll('[data-admin-tab]').forEach(x=>x.classList.toggle('hidden',!isAdmin));$('loginToggle').classList.toggle('hidden',isAdmin);$('logoutButton').classList.toggle('hidden',!isAdmin);$('adminState').textContent=isAdmin?'管理者としてログイン中：データの登録・編集ができます。':'ゲストとして利用中：クイズ・生薬情報を閲覧できます。';if(!isAdmin&&(['manage','list','backup','cutManage','kampoManage'].some(x=>!$(x).classList.contains('hidden'))))switchTab('quiz')}
 async function updateAdminSession(){if(!client)return;const {data,error}=await client.auth.getUser();isAdmin=!error&&data?.user?.id===ADMIN_USER_ID;showAdmin();}
 function initClient(){if(!window.supabase?.createClient)throw new Error('Supabaseライブラリを読み込めません。通信状況を確認してください。');client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}})}
 async function uploadDataImage(src,path){if(!src.startsWith('data:image/'))return src;const response=await fetch(src);const blob=await response.blob();if(!blob.type.startsWith('image/'))throw new Error('対応していない画像形式です');const {error}=await client.storage.from('herb-images').upload(path,blob,{contentType:blob.type,upsert:true});if(error)throw error;const {data}=client.storage.from('herb-images').getPublicUrl(path);return data.publicUrl}
@@ -530,7 +576,29 @@ document.querySelectorAll('button[data-start-due]').forEach(b=>b.addEventListene
 function statFor(id){return db.stats[id]||(db.stats[id]={seen:0,wrong:0,right:0,streak:0,score:0})}
 function isWeak(h){const s=statFor(h.id);if(s.reviewCleared===true)return false;if(s.reviewCleared===false)return true;return s.wrong>s.right||(s.seen>0&&s.streak===0)}
 function updateStats(){ $('countStat').textContent=db.herbs.length;$('accuracyStat').textContent=db.attempts?Math.round(db.correct/db.attempts*100)+'%':'—';$('scoreStat').textContent=String(db.totalScore||0);$('weakStat').textContent=db.herbs.filter(isWeak).length;renderList();if(!$('info').classList.contains('hidden'))renderHerbInfo();if(!$('progress').classList.contains('hidden'))renderLearningProgress();}
-function switchTab(tab,keepLinkedHistory=false){if(!keepLinkedHistory)linkedInfoHistory=[];if(!isAdmin&&['manage','list','backup','cutManage','kampoManage'].includes(tab))return;document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));['quiz','info','manage','list','backup','cutQuiz','cutManage','cutInfo','kampoManage','kampoQuiz','kampoInfo','progress'].forEach(id=>$(id).classList.toggle('hidden',id!==tab));if(tab==='list')renderList();if(tab==='cutManage')renderCutList();if(tab==='kampoManage'){renderKampoList();renderKampoIngredientOptions();renderKampoPreview()}if(tab==='cutInfo')renderCutInfo();if(tab==='kampoQuiz')renderKampoQuizProgress();if(tab==='kampoInfo')renderKampoInfo();if(tab==='info')renderHerbInfo();if(tab==='progress')renderLearningProgress();if(tab==='backup')$('backupStatus').textContent='学習履歴はこの端末のブラウザに保存されています。'}
+// メインメニューと小メニューを同期。直接の画面移動（進捗から復習、情報リンク等）も反映する。
+const NAV_GROUP_TABS={quiz:['quiz','cutQuiz','kampoQuiz'],info:['info','cutInfo','kampoInfo'],progress:['progress'],admin:['manage','cutManage','kampoManage','list','backup']};
+const NAV_DEFAULT={quiz:'quiz',info:'info',progress:'progress',admin:'manage'};
+const navLastTab={...NAV_DEFAULT};
+function syncMainNavigation(tab){
+ const group=Object.keys(NAV_GROUP_TABS).find(g=>NAV_GROUP_TABS[g].includes(tab));
+ if(!group)return;
+ navLastTab[group]=tab;
+ document.querySelectorAll('[data-nav-group]').forEach(b=>{
+  const active=b.dataset.navGroup===group;
+  b.classList.toggle('active',active);
+  b.setAttribute('aria-pressed',String(active));
+ });
+ document.querySelectorAll('[data-nav-items]').forEach(el=>{
+  el.classList.toggle('hidden',el.dataset.navItems!==group);
+ });
+}
+document.querySelectorAll('[data-nav-group]').forEach(b=>b.addEventListener('click',()=>{
+ const group=b.dataset.navGroup;
+ if(group==='admin'&&!isAdmin)return;
+ switchTab(navLastTab[group]||NAV_DEFAULT[group]);
+}));
+function switchTab(tab,keepLinkedHistory=false){if(!keepLinkedHistory)linkedInfoHistory=[];if(!isAdmin&&['manage','list','backup','cutManage','kampoManage'].includes(tab))return;document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));syncMainNavigation(tab);['quiz','info','manage','list','backup','cutQuiz','cutManage','cutInfo','kampoManage','kampoQuiz','kampoInfo','progress'].forEach(id=>$(id).classList.toggle('hidden',id!==tab));if(tab==='list')renderList();if(tab==='cutManage')renderCutList();if(tab==='kampoManage'){renderKampoList();renderKampoIngredientOptions();renderKampoPreview()}if(tab==='cutInfo')renderCutInfo();if(tab==='kampoQuiz')renderKampoQuizProgress();if(tab==='kampoInfo')renderKampoInfo();if(tab==='info')renderHerbInfo();if(tab==='progress')renderLearningProgress();if(tab==='backup')$('backupStatus').textContent='学習履歴はこの端末のブラウザに保存されています。'}
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
 function showIdle(){if(!db.herbs.length){$('quizArea').innerHTML='<div class="empty">登録された生薬がありません。生薬データと写真を登録してください。</div>';return}$('modeLabel').textContent='出題モードを選び、「開始」を押してください。';$('quizArea').innerHTML='<div class="empty">「開始」を押して解答スタート。<br><br><button class="primary" type="button" onclick="nextQuestion()">開始</button></div>'}
 function endQuiz(){currentId=null;answered=false;currentUseCorrect=[];selectedConstituent='';showIdle()}
