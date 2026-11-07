@@ -72,18 +72,45 @@ progress{width:100%;height:20px}
 .kampo-question{background:#f3f6f2;border-radius:13px;padding:19px 14px;margin:14px 0;text-align:center}
 .kampo-question h3{font-size:1.8rem;margin:10px 0 5px;line-height:1.5}
 .kampo-question p{margin:8px 0}
-.kampo-quiz-photos{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:16px 0}
-.kampo-photo-card{border:1px solid var(--line);border-radius:12px;padding:7px;min-width:0;background:#fff}
+.kampo-quiz-photos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:12px 0}
+.kampo-quiz-photos.is-many{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+.kampo-photo-card{border:1px solid var(--line);border-radius:12px;padding:6px;min-width:0;background:#fff}
+.kampo-quiz-photos.is-many .kampo-photo-card{padding:3px;border-radius:8px}
 .kampo-photo-card .cut-photo{margin:0 auto;max-width:none}
 .kampo-photo-card .cut-mask{border-radius:2px}
 .kampo-photo-beginner .cut-mask{display:none}
-.kampo-photo-label{text-align:center;font-weight:700;padding:8px 3px 2px;font-size:.98rem}
+.kampo-photo-label{text-align:center;font-weight:700;padding:6px 2px 2px;font-size:.94rem}
+.kampo-quiz-photos.is-many .kampo-photo-label{font-size:.82rem;padding:4px 1px 2px;overflow-wrap:anywhere}
+.kampo-photo-trigger{display:block;width:100%;min-width:0;margin:0;padding:0;border:0;border-radius:7px;background:transparent;color:inherit;cursor:zoom-in;overflow:hidden}
+.kampo-photo-trigger:focus-visible{outline:3px solid var(--green);outline-offset:2px}
+.kampo-photo-trigger .cut-photo{pointer-events:none}
+.kampo-quiz-photos.is-many .kampo-photo-trigger{border-radius:5px}
+@media(min-width:700px){.kampo-quiz-photos{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.kampo-quiz-photos.is-many{grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}}
+/* 写真の拡大ビューアー：オリジナル画像の縦横比とマスク座標を維持 */
+.kampo-viewer{position:fixed;inset:0;width:100vw;height:100vh;height:100dvh;max-width:none;max-height:none;margin:0;padding:0;border:0;background:#16211b;color:#fff;overflow:hidden}
+.kampo-viewer::backdrop{background:rgba(0,0,0,.85)}
+.kampo-viewer-shell{height:100%;min-height:0;display:flex;flex-direction:column}
+.kampo-viewer-head{flex:none;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 15px 6px;font-weight:700}
+.kampo-viewer-head button,.kampo-viewer-controls button{flex:none;background:#33493b;color:#fff;padding:9px 12px;border-radius:9px;font-size:.9rem}
+.kampo-viewer-head button:focus-visible,.kampo-viewer-controls button:focus-visible{outline:2px solid #b4ebca}
+.kampo-viewer-stage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden;touch-action:none;user-select:none;overscroll-behavior:contain}
+.kampo-viewer-transform{max-width:100%;max-height:100%;display:flex;align-items:center;justify-content:center;transform-origin:center center;will-change:transform}
+.kampo-viewer-card{max-width:95vw;max-height:100%;min-width:0}
+.kampo-viewer-card .cut-photo{width:fit-content;max-width:min(95vw,820px);max-height:calc(100dvh - 190px);margin:0 auto;overflow:hidden}
+.kampo-viewer-card .cut-photo img{display:block;width:auto;height:auto;max-width:100%;max-height:calc(100dvh - 190px);object-fit:contain}
+.kampo-viewer-card .cut-mask{border-radius:2px}
+.kampo-viewer-name{min-height:28px;max-height:50px;flex:none;text-align:center;font-weight:700;font-size:1rem;padding:2px 8px 6px;overflow-wrap:anywhere}
+.kampo-viewer-controls{flex:none;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:7px;padding:8px 8px max(14px,env(safe-area-inset-bottom))}
+.kampo-viewer-controls button:disabled{opacity:.35;cursor:default}
+.kampo-viewer-controls .kampo-viewer-step{background:#286c4b}
+@media(max-width:400px){.kampo-viewer-controls{gap:5px}.kampo-viewer-controls button{padding:9px 8px;font-size:.8rem}}
+@media(max-width:560px){.kampo-quiz-photos{gap:7px}.kampo-photo-card{padding:4px;border-radius:9px}}
 .kampo-quiz-choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px;margin:14px 0}
 .kampo-quiz-choices label{font-weight:500;display:flex;gap:9px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:11px 10px;cursor:pointer}
 .kampo-quiz-choices input{width:auto;flex:0 0 auto;margin:0}
 .kampo-result-details{line-height:1.75}
 .kampo-quiz-hint{font-size:.86rem;color:var(--muted);margin:8px 0}
-@media(max-width:560px){.kampo-quiz-photos{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.kampo-photo-card{padding:5px}.kampo-question h3{font-size:1.45rem}.kampo-quiz-choices{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){.kampo-question h3{font-size:1.45rem}.kampo-quiz-choices{grid-template-columns:repeat(2,minmax(0,1fr))}}
 /* 詳細を選択した項目の直後に表示する共通スタイル */
 .inline-info-detail{background:#f8faf7;border:1px solid var(--line);border-radius:12px;padding:16px;margin:6px 0 18px;min-width:0}
 .inline-info-detail:focus{outline:2px solid var(--green);outline-offset:2px}
@@ -230,6 +257,22 @@ progress{width:100%;height:20px}
 </section>
 <p class="muted small">生薬データ・写真はSupabaseで共通管理。学習記録は各端末のブラウザにのみ保存します。URLは誰でも再共有できます。非公開の資料は登録しないでください。</p>
 </main>
+<dialog id="kampoPhotoViewer" class="kampo-viewer" aria-label="漢方処方の構成生薬写真を拡大">
+ <div class="kampo-viewer-shell">
+  <div class="kampo-viewer-head"><span id="kampoViewerCounter">写真 1 / 1</span><button id="kampoViewerClose" type="button">閉じる ×</button></div>
+  <div id="kampoViewerStage" class="kampo-viewer-stage" aria-label="写真を拡大表示。ピンチで拡大し、左右にスワイプして写真を切り替えられます">
+   <div id="kampoViewerTransform" class="kampo-viewer-transform"><div id="kampoViewerPhoto" class="kampo-viewer-card"></div></div>
+  </div>
+  <div id="kampoViewerName" class="kampo-viewer-name"></div>
+  <div class="kampo-viewer-controls">
+   <button class="kampo-viewer-step" id="kampoViewerPrev" type="button">前へ</button>
+   <button id="kampoViewerZoomOut" type="button" aria-label="縮小">−</button>
+   <button id="kampoViewerReset" type="button">等倍</button>
+   <button id="kampoViewerZoomIn" type="button" aria-label="拡大">＋</button>
+   <button class="kampo-viewer-step" id="kampoViewerNext" type="button">次へ</button>
+  </div>
+ </div>
+</dialog>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 const SUPABASE_URL='https://grpgzvpeffqrlstjplqf.supabase.co';
@@ -814,6 +857,7 @@ function renderKampoQuizProgress(){
   box.textContent=`この形式の学習履歴（この端末のみ）：解答 ${seen}回／完全正解 ${perfect}回／復習対象 ${weak}処方`;
 }
 function kampoQuizIdle(){
+  closeKampoPhotoViewer();
   kampoCurrent=null;kampoAnswered=false;
   $('kampoQuizDifficultyField').classList.toggle('hidden',$('kampoQuizType').value!=='photos');
   const area=$('kampoQuizArea');
@@ -821,6 +865,119 @@ function kampoQuizIdle(){
   renderKampoQuizProgress();
 }
 function endKampoQuiz(){kampoLastId=null;kampoQuizIdle()}
+// 写真ビューアー：既存の刻み生薬写真とラベル範囲をそのまま拡大する。
+let kampoViewerIndex=0,kampoViewerScale=1,kampoViewerPanX=0,kampoViewerPanY=0;
+let kampoViewerBeforeOverflow='',kampoViewerGesture=null;
+const kampoViewerPointers=new Map();
+function closeKampoPhotoViewer(){
+  const d=$('kampoPhotoViewer');if(d?.open)d.close();
+}
+function kampoViewerResetZoom(){
+  kampoViewerScale=1;kampoViewerPanX=0;kampoViewerPanY=0;kampoViewerApplyZoom();
+}
+function kampoViewerApplyZoom(){
+  const el=$('kampoViewerTransform');if(!el)return;
+  const limX=Math.max(0,(kampoViewerScale-1)*($('kampoViewerStage')?.clientWidth||0)/2);
+  const limY=Math.max(0,(kampoViewerScale-1)*($('kampoViewerStage')?.clientHeight||0)/2);
+  kampoViewerPanX=Math.min(limX,Math.max(-limX,kampoViewerPanX));
+  kampoViewerPanY=Math.min(limY,Math.max(-limY,kampoViewerPanY));
+  el.style.transform=`translate(${kampoViewerPanX}px,${kampoViewerPanY}px) scale(${kampoViewerScale})`;
+}
+function kampoViewerSetZoom(value){
+  kampoViewerScale=Math.max(1,Math.min(4,value));
+  if(kampoViewerScale===1){kampoViewerPanX=0;kampoViewerPanY=0}
+  kampoViewerApplyZoom();
+}
+function kampoViewerRender(){
+  const imgs=kampoCurrent?.chosenPhotos||[];
+  if(!imgs.length){closeKampoPhotoViewer();return}
+  kampoViewerIndex=Math.max(0,Math.min(imgs.length-1,kampoViewerIndex));
+  const {photo,name}=imgs[kampoViewerIndex];
+  const showNames=kampoCurrent.config.difficulty==='beginner'||kampoAnswered;
+  $('kampoViewerCounter').textContent=`写真 ${kampoViewerIndex+1} / ${imgs.length}`;
+  $('kampoViewerPhoto').innerHTML=cutPhotoHtml(photo,'quiz');
+  $('kampoViewerPhoto').classList.toggle('kampo-photo-beginner',kampoCurrent.config.difficulty==='beginner');
+  if(showNames){$('kampoViewerPhoto').querySelectorAll('.cut-mask').forEach(el=>el.classList.add('revealed'))}
+  $('kampoViewerName').textContent=showNames?name:'採点後に生薬名を表示します';
+  $('kampoViewerPrev').disabled=kampoViewerIndex===0;
+  $('kampoViewerNext').disabled=kampoViewerIndex===imgs.length-1;
+  kampoViewerResetZoom();
+}
+function kampoViewerStep(direction){
+  const n=kampoCurrent?.chosenPhotos?.length||0;
+  const next=kampoViewerIndex+direction;
+  if(next>=0&&next<n){kampoViewerIndex=next;kampoViewerPointers.clear();kampoViewerGesture=null;kampoViewerRender()}
+}
+function openKampoPhotoViewer(index){
+  if(!kampoCurrent||kampoCurrent.config.type!=='photos'||!kampoCurrent.chosenPhotos.length)return;
+  const d=$('kampoPhotoViewer');
+  if(!d||typeof d.showModal!=='function')return;
+  kampoViewerIndex=Math.max(0,Math.min(kampoCurrent.chosenPhotos.length-1,index));
+  if(!d.open){kampoViewerBeforeOverflow=document.documentElement.style.overflow;d.showModal();document.documentElement.style.overflow='hidden'}
+  kampoViewerRender();
+}
+$('kampoQuizArea').addEventListener('click',e=>{
+  const button=e.target.closest('button[data-kampo-photo-index]');
+  if(button)openKampoPhotoViewer(Number(button.dataset.kampoPhotoIndex));
+});
+$('kampoViewerClose').addEventListener('click',closeKampoPhotoViewer);
+$('kampoViewerPrev').addEventListener('click',()=>kampoViewerStep(-1));
+$('kampoViewerNext').addEventListener('click',()=>kampoViewerStep(1));
+$('kampoViewerZoomIn').addEventListener('click',()=>kampoViewerSetZoom(kampoViewerScale+.5));
+$('kampoViewerZoomOut').addEventListener('click',()=>kampoViewerSetZoom(kampoViewerScale-.5));
+$('kampoViewerReset').addEventListener('click',kampoViewerResetZoom);
+$('kampoPhotoViewer').addEventListener('close',()=>{
+  document.documentElement.style.overflow=kampoViewerBeforeOverflow;
+  kampoViewerPointers.clear();kampoViewerGesture=null;kampoViewerResetZoom();
+});
+$('kampoPhotoViewer').addEventListener('keydown',e=>{
+  if(e.key==='ArrowLeft'){e.preventDefault();kampoViewerStep(-1)}
+  if(e.key==='ArrowRight'){e.preventDefault();kampoViewerStep(1)}
+});
+const kampoViewerStage=$('kampoViewerStage');
+function kampoViewerDistance(pts){return Math.hypot(pts[0].x-pts[1].x,pts[0].y-pts[1].y)}
+kampoViewerStage.addEventListener('pointerdown',e=>{
+  if(!$('kampoPhotoViewer').open)return;
+  e.preventDefault();
+  kampoViewerStage.setPointerCapture(e.pointerId);
+  kampoViewerPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  const pts=[...kampoViewerPointers.values()];
+  if(pts.length===1)kampoViewerGesture={kind:'single',x:e.clientX,y:e.clientY,px:kampoViewerPanX,py:kampoViewerPanY};
+  if(pts.length===2)kampoViewerGesture={kind:'pinch',distance:Math.max(1,kampoViewerDistance(pts)),scale:kampoViewerScale};
+},{passive:false});
+kampoViewerStage.addEventListener('pointermove',e=>{
+  if(!kampoViewerPointers.has(e.pointerId))return;
+  e.preventDefault();
+  kampoViewerPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  const pts=[...kampoViewerPointers.values()],g=kampoViewerGesture;
+  if(!g)return;
+  if(pts.length>=2&&g.kind==='pinch')kampoViewerSetZoom(g.scale*kampoViewerDistance(pts.slice(0,2))/g.distance);
+  else if(pts.length===1&&g.kind==='single'&&kampoViewerScale>1){
+    kampoViewerPanX=g.px+e.clientX-g.x;kampoViewerPanY=g.py+e.clientY-g.y;kampoViewerApplyZoom();
+  }
+},{passive:false});
+function kampoViewerFinishPointer(e){
+  if(!kampoViewerPointers.has(e.pointerId))return;
+  const g=kampoViewerGesture;
+  const wasSingle=kampoViewerPointers.size===1&&g?.kind==='single';
+  if(wasSingle&&kampoViewerScale===1){
+    const dx=e.clientX-g.x,dy=e.clientY-g.y;
+    if(Math.abs(dx)>65&&Math.abs(dx)>Math.abs(dy)*1.3)kampoViewerStep(dx<0?1:-1);
+  }
+  kampoViewerPointers.delete(e.pointerId);
+  if(kampoViewerPointers.size===1){
+    const p=[...kampoViewerPointers.values()][0];
+    kampoViewerGesture={kind:'single',x:p.x,y:p.y,px:kampoViewerPanX,py:kampoViewerPanY};
+  }else if(!kampoViewerPointers.size)kampoViewerGesture=null;
+}
+kampoViewerStage.addEventListener('pointerup',kampoViewerFinishPointer);
+kampoViewerStage.addEventListener('pointercancel',kampoViewerFinishPointer);
+kampoViewerStage.addEventListener('dblclick',()=>kampoViewerSetZoom(kampoViewerScale===1?2:1));
+kampoViewerStage.addEventListener('wheel',e=>{
+  if(!$('kampoPhotoViewer').open)return;
+  e.preventDefault();kampoViewerSetZoom(kampoViewerScale+(e.deltaY<0?.25:-.25));
+},{passive:false});
+
 function kampoChoicePool(formula){
   const correct=kampoNormalizedIngredients(formula),blocked=new Set(correct.map(normalize));
   const distractors=distinctValues([
@@ -831,6 +988,7 @@ function kampoChoicePool(formula){
   return shuffleValues([...correct,...shuffleValues(distractors).slice(0,Math.max(0,num-correct.length))]);
 }
 function nextKampoQuestion(){
+  closeKampoPhotoViewer();
   if(kampoLoadError){$('kampoQuizArea').innerHTML=`<div class="feedback bad">漢方処方を取得できません：${escapeHtml(kampoLoadError)}</div>`;return}
   const config=kampoCurrentConfig();let pool=kampoQuestionPool(config);
   if(config.mode==='weak')pool=pool.filter(f=>kampoIsWeak(f,config));
@@ -857,14 +1015,14 @@ function nextKampoQuestion(){
     const entries=kampoUsablePhotos(formula,config.difficulty);
     if(!entries){$('kampoQuizArea').innerHTML='<div class="empty">この処方には写真が不足しています。</div>';return}
     chosenPhotos=shuffleValues(entries.map(x=>({name:x.name,photo:x.photos[Math.floor(Math.random()*x.photos.length)]})));
-    const photoCards=chosenPhotos.map(({name,photo})=>`<div class="kampo-photo-card${config.difficulty==='beginner'?' kampo-photo-beginner':''}">${cutPhotoHtml(photo,'quiz')}<div class="kampo-photo-label${config.difficulty==='advanced'?' hidden':''}">${escapeHtml(name)}</div></div>`).join('');
+    const photoCards=chosenPhotos.map(({name,photo},i)=>`<div class="kampo-photo-card${config.difficulty==='beginner'?' kampo-photo-beginner':''}"><button class="kampo-photo-trigger" type="button" data-kampo-photo-index="${i}" aria-label="写真 ${i+1} を拡大">${cutPhotoHtml(photo,'quiz')}</button><div class="kampo-photo-label${config.difficulty==='advanced'?' hidden':''}">${escapeHtml(name)}</div></div>`).join('');
     if(config.style==='choice'){
       const otherNames=distinctValues(kampoFormulas.filter(f=>f.id!==formula.id).map(f=>f.name));
       if(!otherNames.length){$('kampoQuizArea').innerHTML='<div class="empty">写真識別の選択式には、漢方処方が2種類以上必要です。現在は記述式で学習できます。</div>';return}
       const names=shuffleValues([formula.name,...shuffleValues(otherNames).slice(0,5)]);
       answerHtml=`<div class="field"><label for="kampoPhotoAnswerChoice">漢方処方名を選択してください</label><select id="kampoPhotoAnswerChoice" required><option value="">選択してください</option>${names.map(x=>`<option value="${escapeHtml(x)}">${escapeHtml(x)}</option>`).join('')}</select></div>`;
     }else answerHtml='<div class="field"><label for="kampoPhotoAnswerWritten">漢方処方名を入力してください</label><input id="kampoPhotoAnswerWritten" autocomplete="off" placeholder="漢方処方名を入力" required></div>';
-    $('kampoQuizArea').innerHTML=`<div class="kampo-question"><span class="pill">写真識別・${config.difficulty==='beginner'?'初級':'上級'}</span><p>写真に写っている生薬で構成される漢方処方名を答えなさい。</p></div><div class="kampo-quiz-photos">${photoCards}</div><form id="kampoAnswerForm">${answerHtml}<div class="answer-actions"><button type="submit" class="primary">採点する</button><button type="button" class="secondary" onclick="endKampoQuiz()">終了</button></div></form><div id="kampoResult" aria-live="polite"></div>`;
+    $('kampoQuizArea').innerHTML=`<div class="kampo-question"><span class="pill">写真識別・${config.difficulty==='beginner'?'初級':'上級'}</span><p>写真に写っている生薬で構成される漢方処方名を答えなさい。</p></div><div class="kampo-quiz-photos${chosenPhotos.length>=7?' is-many':''}">${photoCards}</div><form id="kampoAnswerForm">${answerHtml}<div class="answer-actions"><button type="submit" class="primary">採点する</button><button type="button" class="secondary" onclick="endKampoQuiz()">終了</button></div></form><div id="kampoResult" aria-live="polite"></div>`;
   }
   kampoCurrent={formula,ingredients,config,chosenPhotos};
   $('kampoAnswerForm').addEventListener('submit',e=>{e.preventDefault();checkKampoAnswer()});
