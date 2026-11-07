@@ -84,6 +84,10 @@ progress{width:100%;height:20px}
 .kampo-result-details{line-height:1.75}
 .kampo-quiz-hint{font-size:.86rem;color:var(--muted);margin:8px 0}
 @media(max-width:560px){.kampo-quiz-photos{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.kampo-photo-card{padding:5px}.kampo-question h3{font-size:1.45rem}.kampo-quiz-choices{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* 詳細を選択した項目の直後に表示する共通スタイル */
+.inline-info-detail{background:#f8faf7;border:1px solid var(--line);border-radius:12px;padding:16px;margin:6px 0 18px;min-width:0}
+.inline-info-detail:focus{outline:2px solid var(--green);outline-offset:2px}
+@media(max-width:560px){.inline-info-detail{padding:12px;margin:6px 0 14px}}
 </style>
 </head>
 <body>
@@ -369,23 +373,60 @@ function resetForm(){ $('herbForm').reset();$('editId').value='';stagedImages=[]
 $('resetForm').addEventListener('click',resetForm);
 function editHerb(id){const h=db.herbs.find(x=>x.id===id);if(!h)return;switchTab('manage');$('editId').value=h.id;$('herbName').value=h.japaneseName||h.name||'';$('herbLatin').value=h.latinName||'';$('originLatin').value=h.originLatin||h.origin||'';$('originJapanese').value=h.originJapanese||'';$('part').value=h.part||'';$('familyLatin').value=h.familyLatin||'';$('familyJapanese').value=h.familyJapanese||h.family||'';$('constituents').value=h.constituents||'';$('uses').value=(h.uses||[]).join('\n');$('notes').value=h.notes||'';stagedImages=[];renderPhotoPreview();$('formTitle').textContent='生薬を編集';window.scrollTo({top:0,behavior:'smooth'})}
 async function deleteHerb(id){if(!isAdmin||isBusy)return;const h=db.herbs.find(x=>x.id===id);if(!h||!confirm(`「${h.japaneseName}」を共有データから削除しますか？写真も削除対象となります。元のJSONバックアップは変更されません。`))return;isBusy=true;try{const {error}=await client.from('herbs').delete().eq('id',id);if(error)throw error;const prefix=SUPABASE_URL+'/storage/v1/object/public/herb-images/';const paths=(h.images||[]).filter(x=>x.startsWith(prefix)).map(x=>decodeURIComponent(x.slice(prefix.length)));if(paths.length){const {error:photoError}=await client.storage.from('herb-images').remove(paths);if(photoError)console.warn('画像の削除に失敗しました',photoError)}await refreshHerbs();alert('共有データから削除しました')}catch(err){alert('削除できません：'+(err.message||err))}finally{isBusy=false}}
+// 詳細パネルを一覧の末尾ではなく、選択した行のすぐ下へ移動する。
+// 一覧の再描画前に退避しないと、innerHTMLの置換時に詳細パネルも消えてしまう。
+function detachInfoDetailForRender(list,detail){
+  if(detail.parentElement===list)list.after(detail);
+}
+function insertInfoDetailAfterRow(listId,detail,rowSelector,dataKey,id){
+  const list=$(listId);
+  const row=[...list.querySelectorAll(rowSelector)].find(el=>el.dataset[dataKey]===String(id));
+  if(!row)return false;
+  row.after(detail);
+  detail.classList.add('inline-info-detail');
+  detail.classList.remove('hidden');
+  list.querySelectorAll('button[aria-controls="'+detail.id+'"]').forEach(btn=>{
+    btn.setAttribute('aria-expanded',String(row.contains(btn)));
+  });
+  return true;
+}
+function closeInlineInfoDetail(detailId,dataKey){
+  const detail=$(detailId);
+  const row=detail.previousElementSibling;
+  detail.classList.add('hidden');
+  detail.innerHTML='';
+  delete detail.dataset[dataKey];
+  if(row && row.querySelector){
+    const button=row.querySelector('button[aria-controls="'+detailId+'"]');
+    if(button)button.setAttribute('aria-expanded','false');
+    // 詳細の末尾で閉じても、見ていた項目の位置に戻る。
+    row.scrollIntoView({behavior:'auto',block:'nearest'});
+  }
+}
 function renderHerbInfo(){
  const root=$('infoList'),detail=$('infoDetail');if(!root)return;
+ const selected=detail.dataset.herbId;
+ detachInfoDetailForRender(root,detail);
  const query=($('infoSearch')?.value||'').trim().toLocaleLowerCase();
  const found=db.herbs.filter(h=>[h.japaneseName,h.name,h.latinName,h.originLatin,h.originJapanese,h.familyLatin,h.familyJapanese,h.constituents,...(h.uses||[]),h.part,h.notes,...(h.aliases||[])].filter(Boolean).join(' ').toLocaleLowerCase().includes(query));
- if(!db.herbs.length){root.innerHTML='<div class="empty">登録された生薬がありません。先に「生薬を登録・編集」から登録してください。</div>';detail.classList.add('hidden');return}
- if(!found.length){root.innerHTML='<div class="empty">該当する生薬がありません。検索語を変えてください。</div>';detail.classList.add('hidden');return}
- root.innerHTML='<div class="muted">'+found.length+'件の生薬</div>'+found.map(h=>{const imgs=h.images||[h.image].filter(Boolean);return `<div class="entry"><img class="thumb" src="${escapeHtml(imgs[0]||'')}" alt="${escapeHtml(h.japaneseName||h.name)}"><div><h3>${escapeHtml(h.japaneseName||h.name||'名称未登録')}</h3><p>${escapeHtml(h.latinName||'ラテン名未登録')}</p><p>基原：${escapeHtml(h.originJapanese||h.originLatin||'未登録')} ／ 科：${escapeHtml(h.familyJapanese||h.familyLatin||'未登録')}</p><p>写真 ${imgs.length}枚</p></div><div class="entry-actions"><button class="primary" onclick="showHerbInfo('${h.id}')">詳細を見る</button></div></div>`}).join('');
- if(detail.dataset.herbId&&!found.some(h=>h.id===detail.dataset.herbId)){detail.classList.add('hidden');detail.innerHTML='';delete detail.dataset.herbId}
+ if(!db.herbs.length){root.innerHTML='<div class="empty">登録された生薬がありません。先に「生薬を登録・編集」から登録してください。</div>';detail.classList.add('hidden');delete detail.dataset.herbId;return}
+ if(!found.length){root.innerHTML='<div class="empty">該当する生薬がありません。検索語を変えてください。</div>';detail.classList.add('hidden');delete detail.dataset.herbId;return}
+ root.innerHTML='<div class="muted">'+found.length+'件の生薬</div>'+found.map(h=>{const imgs=h.images||[h.image].filter(Boolean);return `<div class="entry" data-herb-id="${escapeHtml(h.id)}"><img class="thumb" src="${escapeHtml(imgs[0]||'')}" alt="${escapeHtml(h.japaneseName||h.name)}"><div><h3>${escapeHtml(h.japaneseName||h.name||'名称未登録')}</h3><p>${escapeHtml(h.latinName||'ラテン名未登録')}</p><p>基原：${escapeHtml(h.originJapanese||h.originLatin||'未登録')} ／ 科：${escapeHtml(h.familyJapanese||h.familyLatin||'未登録')}</p><p>写真 ${imgs.length}枚</p></div><div class="entry-actions"><button class="primary" type="button" aria-controls="infoDetail" aria-expanded="false" onclick="showHerbInfo('${h.id}')">詳細を見る</button></div></div>`}).join('');
+ if(selected&&found.some(h=>h.id===selected))showHerbInfo(selected,false);
+ else{detail.classList.add('hidden');detail.innerHTML='';delete detail.dataset.herbId}
 }
-function showHerbInfo(id){
- const h=db.herbs.find(x=>x.id===id);if(!h)return;const root=$('infoDetail'),imgs=h.images||[h.image].filter(Boolean);
+function showHerbInfo(id,toggle=true){
+ const h=db.herbs.find(x=>x.id===id);if(!h)return;
+ const root=$('infoDetail'),imgs=h.images||[h.image].filter(Boolean);
+ if(toggle&&root.dataset.herbId===id&&!root.classList.contains('hidden')){
+   closeInlineInfoDetail('infoDetail','herbId');return;
+ }
  const row=(label,value)=>`<div style="padding:10px 0;border-bottom:1px solid var(--line)"><b>${label}</b><div style="margin-top:4px;white-space:pre-wrap">${escapeHtml(value||'未登録')}</div></div>`;
- root.dataset.herbId=id;root.classList.remove('hidden');root.innerHTML=`<hr style="border:0;border-top:2px solid var(--line);margin:22px 0"><div class="row" style="align-items:start"><div style="flex:2;min-width:220px"><h2 style="margin:0">${escapeHtml(h.japaneseName||h.name||'名称未登録')}</h2><p class="muted" style="margin-top:6px">${escapeHtml(h.latinName||'ラテン名未登録')}</p></div><div style="flex:1;min-width:130px">${isAdmin?`<button class="secondary" onclick="editHerb('${h.id}')">この生薬を編集</button>`:""}</div></div>
+ root.dataset.herbId=id;root.innerHTML=`<div class="row" style="align-items:start"><div style="flex:2;min-width:220px"><h2 style="margin:0">${escapeHtml(h.japaneseName||h.name||'名称未登録')}</h2><p class="muted" style="margin-top:6px">${escapeHtml(h.latinName||'ラテン名未登録')}</p></div><div style="flex:1;min-width:130px">${isAdmin?`<button class="secondary" onclick="editHerb('${h.id}')">この生薬を編集</button>`:""}</div></div>
  <h3>写真</h3>${imgs.length?`<div class="gallery">${imgs.map((src,i)=>`<img src="${escapeHtml(src)}" alt="${escapeHtml(h.japaneseName||h.name)} 写真${i+1}">`).join('')}</div>`:'<p class="muted">写真は未登録です。</p>'}
  <h3>基本情報</h3>${row('生薬名・和名',h.japaneseName||h.name)}${row('生薬名・ラテン名',h.latinName)}${row('基原植物・ラテン名',h.originLatin||h.origin)}${row('基原植物・和名',h.originJapanese)}${row('薬用部位',h.part)}${row('科名・ラテン名',h.familyLatin)}${row('科名・和名',h.familyJapanese||h.family)}${row('主成分',h.constituents)}${row('用途',(h.uses||[]).join('、'))}${row('識別ポイント・補足',h.notes)}
- <div class="row" style="margin-top:16px"><button class="secondary" onclick="window.scrollTo({top:0,behavior:'smooth'})">ページ上部へ</button><button class="secondary" onclick="$('infoDetail').classList.add('hidden')">詳細を閉じる</button></div>`;
- root.scrollIntoView({behavior:'smooth',block:'start'});
+ <div class="row" style="margin-top:16px"><button class="secondary" type="button" onclick="window.scrollTo({top:0,behavior:'smooth'})">ページ上部へ</button><button class="secondary" type="button" onclick="closeInlineInfoDetail('infoDetail','herbId')">詳細を閉じる</button></div>`;
+ insertInfoDetailAfterRow('infoList',root,'.entry','herbId',id);
 }
 $('infoSearch').addEventListener('input',renderHerbInfo);
 function renderList(){const root=$('herbList');if(!root)return;if(!db.herbs.length){root.innerHTML='<div class="empty">まだ登録がありません。</div>';return}root.innerHTML=db.herbs.map(h=>{const s=statFor(h.id),imgs=h.images||[h.image].filter(Boolean);return `<div class="entry"><img class="thumb" src="${escapeHtml(imgs[0]||'')}" alt=""><div><h3>${escapeHtml(h.japaneseName||h.name)} ／ ${escapeHtml(h.latinName||'ラテン名未登録')}</h3><p>写真 ${imgs.length}枚</p><p>基原：${escapeHtml(h.originLatin||h.origin||'未登録')} ／ 科：${escapeHtml(h.familyLatin||'未登録')}</p><p>主成分：${escapeHtml(h.constituents||'未登録')} ／ 用途：${escapeHtml((h.uses||[]).join('、')||'未登録')}</p><p>正解 ${s.right} ／ 不正解 ${s.wrong} ／ 得点 ${s.score||0} ${isWeak(h)?'<span class="pill">復習対象</span>':''}</p></div><div class="entry-actions row"><button class="secondary" onclick="editHerb('${h.id}')">編集</button><button class="danger" onclick="deleteHerb('${h.id}')">削除</button></div></div>`}).join('')}
@@ -527,22 +568,30 @@ function editCutHerb(id){
 }
 async function deleteCutHerb(id){if(!isAdmin||isBusy)return;const h=cutHerbs.find(x=>x.id===id);if(!h||!confirm(`「${h.name}」を削除しますか？`))return;isBusy=true;try{const {error}=await client.from('cut_herbs').delete().eq('id',id);if(error)throw error;await refreshCutHerbs();if($('cutEditId').value===id)resetCutForm();alert('削除しました。写真ファイル自体はストレージに残ります。')}catch(err){alert('削除に失敗しました：'+err.message)}finally{isBusy=false}}
 function renderCutInfo(){
-  const root=$('cutInfoList'),detail=$('cutInfoDetail');if(!root)return;
-  const q=($('cutInfoSearch').value||'').trim().toLocaleLowerCase();
-  const found=cutHerbs.filter(h=>[h.name||'',h.reading||''].some(v=>v.toLocaleLowerCase().includes(q)));
-  root.innerHTML=found.length?`<p class="muted">${found.length}件</p>`+found.map(h=>{
-    const imgs=cutImages(h);
-    return `<div class="entry"><img class="thumb" src="${escapeHtml(imgs[0]?.url||'')}" alt=""><div><h3 class="cut-info-name">${cutRubyHtml(h)}</h3><p>写真 ${imgs.length}枚</p></div><div class="entry-actions"><button type="button" class="primary" onclick="showCutInfo('${h.id}')">詳細を見る</button></div></div>`
-  }).join(''):'<p class="empty">該当する刻み生薬がありません。</p>';
-  if(detail.dataset.cutId&&!found.some(h=>h.id===detail.dataset.cutId)){detail.classList.add('hidden');detail.innerHTML='';delete detail.dataset.cutId}
+ const root=$('cutInfoList'),detail=$('cutInfoDetail');if(!root)return;
+ const selected=detail.dataset.cutId;
+ detachInfoDetailForRender(root,detail);
+ const q=($('cutInfoSearch').value||'').trim().toLocaleLowerCase();
+ const found=cutHerbs.filter(h=>[h.name||'',h.reading||''].some(v=>v.toLocaleLowerCase().includes(q)));
+ root.innerHTML=found.length?`<p class="muted">${found.length}件</p>`+found.map(h=>{
+   const imgs=cutImages(h);
+   return `<div class="entry" data-cut-id="${escapeHtml(h.id)}"><img class="thumb" src="${escapeHtml(imgs[0]?.url||'')}" alt=""><div><h3 class="cut-info-name">${cutRubyHtml(h)}</h3><p>写真 ${imgs.length}枚</p></div><div class="entry-actions"><button type="button" class="primary" aria-controls="cutInfoDetail" aria-expanded="false" onclick="showCutInfo('${h.id}')">詳細を見る</button></div></div>`;
+ }).join(''):'<p class="empty">該当する刻み生薬がありません。</p>';
+ if(selected&&found.some(h=>h.id===selected))showCutInfo(selected,false);
+ else{detail.classList.add('hidden');detail.innerHTML='';delete detail.dataset.cutId}
 }
-function showCutInfo(id){
-  const h=cutHerbs.find(x=>x.id===id);if(!h)return;const root=$('cutInfoDetail'),imgs=cutImages(h);
-  root.dataset.cutId=id;root.classList.remove('hidden');
-  root.innerHTML=`<hr style="border:0;border-top:2px solid var(--line);margin:22px 0"><h2 class="cut-info-name">${cutRubyHtml(h)}</h2>${h.reading?'':'<p class="muted small">読みがなは未登録です。管理者は編集画面から登録できます。</p>'}<div class="row">${isAdmin?`<button type="button" class="secondary" onclick="editCutHerb('${h.id}')">この刻み生薬を編集</button>`:''}</div><div id="cutInfoGallery" class="cut-grid">${imgs.length?imgs.map((photo,i)=>`<div class="cut-card"><a href="${escapeHtml(photo.url)}" target="_blank" rel="noopener noreferrer" aria-label="写真 ${i+1} を拡大"><img class="cut-info-image" src="${escapeHtml(photo.url)}" alt="${escapeHtml(h.name)}の写真 ${i+1}"></a><p class="muted small">写真 ${i+1} / ${imgs.length}（タップで拡大）</p></div>`).join(''):'<p class="muted">写真は未登録です。</p>'}</div><div class="row" style="margin-top:16px"><button class="secondary" type="button" onclick="$('cutInfoDetail').classList.add('hidden')">詳細を閉じる</button></div>`;
-  root.scrollIntoView({behavior:'smooth',block:'start'});
+function showCutInfo(id,toggle=true){
+ const h=cutHerbs.find(x=>x.id===id);if(!h)return;
+ const root=$('cutInfoDetail'),imgs=cutImages(h);
+ if(toggle&&root.dataset.cutId===id&&!root.classList.contains('hidden')){
+   closeInlineInfoDetail('cutInfoDetail','cutId');return;
+ }
+ root.dataset.cutId=id;
+ root.innerHTML=`<h2 class="cut-info-name">${cutRubyHtml(h)}</h2>${h.reading?'':'<p class="muted small">読みがなは未登録です。管理者は編集画面から登録できます。</p>'}<div class="row">${isAdmin?`<button type="button" class="secondary" onclick="editCutHerb('${h.id}')">この刻み生薬を編集</button>`:''}</div><div id="cutInfoGallery" class="cut-grid">${imgs.length?imgs.map((photo,i)=>`<div class="cut-card"><a href="${escapeHtml(photo.url)}" target="_blank" rel="noopener noreferrer" aria-label="写真 ${i+1} を拡大"><img class="cut-info-image" src="${escapeHtml(photo.url)}" alt="${escapeHtml(h.name)}の写真 ${i+1}"></a><p class="muted small">写真 ${i+1} / ${imgs.length}（タップで拡大）</p></div>`).join(''):'<p class="muted">写真は未登録です。</p>'}</div><div class="row" style="margin-top:16px"><button class="secondary" type="button" onclick="window.scrollTo({top:0,behavior:'smooth'})">ページ上部へ</button><button class="secondary" type="button" onclick="closeInlineInfoDetail('cutInfoDetail','cutId')">詳細を閉じる</button></div>`;
+ insertInfoDetailAfterRow('cutInfoList',root,'.entry','cutId',id);
 }
 $('cutInfoSearch').addEventListener('input',renderCutInfo);
+
 function renderCutList(){
   const root=$('cutList');if(!root)return;
   root.innerHTML=cutHerbs.length?cutHerbs.map(h=>`<div class="entry"><img class="thumb" src="${escapeHtml(cutImages(h)[0]?.url||'')}" alt=""><div><h3 class="cut-info-name">${cutRubyHtml(h)}</h3><p>写真 ${cutImages(h).length}枚</p></div><div class="entry-actions row"><button type="button" class="secondary" onclick="editCutHerb('${escapeHtml(h.id)}')">編集</button><button type="button" class="danger" onclick="deleteCutHerb('${escapeHtml(h.id)}')">削除</button></div></div>`).join(''):'<p class="empty">刻み生薬はまだ登録されていません。</p>';
@@ -633,54 +682,56 @@ function kampoPublicError(){
   return `<div class="feedback bad">漢方処方を読み込めません：${escapeHtml(kampoLoadError)}<br>通信状況とSupabaseのアクセス権限を確認してください。</div>`;
 }
 function renderKampoInfo(){
-  const root=$('kampoInfoList'),detail=$('kampoInfoDetail');if(!root)return;
-  if(kampoLoadError){root.innerHTML=kampoPublicError();detail.classList.add('hidden');return}
-  const q=normalize($('kampoInfoSearch').value);
-  const matches=kampoFormulas.filter(f=>kampoPublicSearchMatches(f,q));
-  root.innerHTML=matches.length?`<p class="muted">${matches.length}件の漢方処方</p>`+matches.map(f=>{
-    const items=kampoNormalizedIngredients(f);
-    return `<div class="kampo-public-row"><div class="kampo-public-row-body"><h3>${escapeHtml(f.name)}</h3><p>構成生薬：${items.length}種類</p><p>${escapeHtml(items.join('・'))}</p></div><button class="primary" type="button" data-show-kampo="${escapeHtml(f.id)}">詳細を見る</button></div>`;
-  }).join(''):'<p class="empty">'+(q?'検索条件に一致する漢方処方がありません。':'まだ漢方処方が登録されていません。')+'</p>';
-  const selected=detail.dataset.kampoId;
-  if(selected && matches.some(f=>f.id===selected)){
-    renderKampoInfoDetail(selected,false);
-  }else{
-    detail.classList.add('hidden');detail.innerHTML='';delete detail.dataset.kampoId;
-  }
+ const root=$('kampoInfoList'),detail=$('kampoInfoDetail');if(!root)return;
+ const selected=detail.dataset.kampoId;
+ detachInfoDetailForRender(root,detail);
+ if(kampoLoadError){root.innerHTML=kampoPublicError();detail.classList.add('hidden');delete detail.dataset.kampoId;return}
+ const q=normalize($('kampoInfoSearch').value);
+ const matches=kampoFormulas.filter(f=>kampoPublicSearchMatches(f,q));
+ root.innerHTML=matches.length?`<p class="muted">${matches.length}件の漢方処方</p>`+matches.map(f=>{
+   const items=kampoNormalizedIngredients(f);
+   return `<div class="kampo-public-row" data-kampo-id="${escapeHtml(f.id)}"><div class="kampo-public-row-body"><h3>${escapeHtml(f.name)}</h3><p>構成生薬：${items.length}種類</p><p>${escapeHtml(items.join('・'))}</p></div><button class="primary" type="button" aria-controls="kampoInfoDetail" aria-expanded="false" data-show-kampo="${escapeHtml(f.id)}">詳細を見る</button></div>`;
+ }).join(''):'<p class="empty">'+(q?'検索条件に一致する漢方処方がありません。':'まだ漢方処方が登録されていません。')+'</p>';
+ if(selected&&matches.some(f=>f.id===selected))renderKampoInfoDetail(selected);
+ else{detail.classList.add('hidden');detail.innerHTML='';delete detail.dataset.kampoId}
 }
-function renderKampoInfoDetail(id,scroll=true){
-  const formula=kampoFormulas.find(f=>f.id===id),root=$('kampoInfoDetail');
-  if(!formula||!root)return;
-  const ingredients=kampoNormalizedIngredients(formula);
-  root.dataset.kampoId=id;root.classList.remove('hidden');
-  const images=ingredients.map(name=>{
-    const herb=kampoCutHerbByName(name);
-    const photos=herb?cutImages(herb):[];
-    const photo=photos[0];
-    const displayName=herb?cutRubyHtml(herb):escapeHtml(name);
-    const figure=photo?`<a href="${escapeHtml(photo.url)}" target="_blank" rel="noopener noreferrer" aria-label="${escapeHtml(name)}の写真を拡大"><img loading="lazy" src="${escapeHtml(photo.url)}" alt="${escapeHtml(name)}の刻み生薬写真"></a>`:'<div class="kampo-info-no-photo">写真未登録</div>';
-    const extra=photos.slice(1).map((other,i)=>`<a href="${escapeHtml(other.url)}" target="_blank" rel="noopener noreferrer" class="small" style="margin-right:9px;display:inline-block;padding:4px 0">別写真${i+2}</a>`).join('');
-    return `<div class="kampo-info-herb"><div>${figure}</div><h4 class="cut-info-name">${displayName}</h4><p class="muted small">${photos.length?`写真 ${photos.length}枚登録（タップで拡大）`:'刻み生薬写真は未登録'}</p>${extra}</div>`;
-  }).join('');
-  root.innerHTML=`<div class="kampo-info-detail"><div class="kampo-info-head"><h3>${escapeHtml(formula.name)}</h3><p class="muted">構成生薬 ${ingredients.length}種類 ／ 解答時の順番は不問</p></div><h3>構成生薬と刻み生薬の写真</h3><div class="kampo-info-grid">${images||'<p class="muted">構成生薬は未登録です。</p>'}</div><div class="row">${isAdmin?`<button class="secondary" type="button" data-edit-kampo="${escapeHtml(id)}">この漢方処方を編集</button>`:''}<button class="secondary" type="button" id="closeKampoInfoDetail">詳細を閉じる</button></div></div>`;
-  if(scroll)root.scrollIntoView({behavior:'smooth',block:'start'});
+function renderKampoInfoDetail(id){
+ const formula=kampoFormulas.find(f=>f.id===id),root=$('kampoInfoDetail');
+ if(!formula||!root)return;
+ const ingredients=kampoNormalizedIngredients(formula);
+ root.dataset.kampoId=id;
+ const images=ingredients.map(name=>{
+   const herb=kampoCutHerbByName(name);
+   const photos=herb?cutImages(herb):[];
+   const photo=photos[0];
+   const displayName=herb?cutRubyHtml(herb):escapeHtml(name);
+   const figure=photo?`<a href="${escapeHtml(photo.url)}" target="_blank" rel="noopener noreferrer" aria-label="${escapeHtml(name)}の写真を拡大"><img loading="lazy" src="${escapeHtml(photo.url)}" alt="${escapeHtml(name)}の刻み生薬写真"></a>`:'<div class="kampo-info-no-photo">写真未登録</div>';
+   const extra=photos.slice(1).map((other,i)=>`<a href="${escapeHtml(other.url)}" target="_blank" rel="noopener noreferrer" class="small" style="margin-right:9px;display:inline-block;padding:4px 0">別写真${i+2}</a>`).join('');
+   return `<div class="kampo-info-herb"><div>${figure}</div><h4 class="cut-info-name">${displayName}</h4><p class="muted small">${photos.length?`写真 ${photos.length}枚登録（タップで拡大）`:'刻み生薬写真は未登録'}</p>${extra}</div>`;
+ }).join('');
+ root.innerHTML=`<div class="kampo-info-detail"><div class="kampo-info-head"><h3>${escapeHtml(formula.name)}</h3><p class="muted">構成生薬 ${ingredients.length}種類 ／ 解答時の順番は不問</p></div><h3>構成生薬と刻み生薬の写真</h3><div class="kampo-info-grid">${images||'<p class="muted">構成生薬は未登録です。</p>'}</div><div class="row">${isAdmin?`<button class="secondary" type="button" data-edit-kampo="${escapeHtml(id)}">この漢方処方を編集</button>`:''}<button class="secondary" type="button" onclick="window.scrollTo({top:0,behavior:'smooth'})">ページ上部へ</button><button class="secondary" type="button" id="closeKampoInfoDetail">詳細を閉じる</button></div></div>`;
+ insertInfoDetailAfterRow('kampoInfoList',root,'.kampo-public-row','kampoId',id);
 }
 function showKampoPublicInfo(id){
-  if(!kampoFormulas.some(f=>f.id===id))return;
-  switchTab('kampoInfo');
-  const search=$('kampoInfoSearch');
-  if(!kampoPublicSearchMatches(kampoFormulas.find(f=>f.id===id),normalize(search.value))){search.value='';renderKampoInfo()}
-  renderKampoInfoDetail(id,true);
+ const formula=kampoFormulas.find(f=>f.id===id);if(!formula)return;
+ const detail=$('kampoInfoDetail');
+ if(detail.dataset.kampoId===id&&!detail.classList.contains('hidden')&&!$('kampoInfo').classList.contains('hidden')){
+   closeInlineInfoDetail('kampoInfoDetail','kampoId');return;
+ }
+ if($('kampoInfo').classList.contains('hidden'))switchTab('kampoInfo');
+ const search=$('kampoInfoSearch');
+ if(!kampoPublicSearchMatches(formula,normalize(search.value))){search.value='';renderKampoInfo()}
+ renderKampoInfoDetail(id);
 }
 $('kampoInfoSearch').addEventListener('input',renderKampoInfo);
 $('kampoInfoList').addEventListener('click',e=>{
-  const button=e.target.closest('button[data-show-kampo]');if(button)showKampoPublicInfo(button.dataset.showKampo);
+ const button=e.target.closest('button[data-show-kampo]');if(button)showKampoPublicInfo(button.dataset.showKampo);
 });
 $('kampoInfoDetail').addEventListener('click',e=>{
-  if(e.target.closest('#closeKampoInfoDetail')){
-    const detail=$('kampoInfoDetail');detail.classList.add('hidden');detail.innerHTML='';delete detail.dataset.kampoId;
-  }
-  const btn=e.target.closest('button[data-edit-kampo]');if(btn&&isAdmin)editKampoFormula(btn.dataset.editKampo);
+ if(e.target.closest('#closeKampoInfoDetail')){
+   closeInlineInfoDetail('kampoInfoDetail','kampoId');return;
+ }
+ const btn=e.target.closest('button[data-edit-kampo]');if(btn&&isAdmin)editKampoFormula(btn.dataset.editKampo);
 });
 function editKampoFormula(id){
   if(!isAdmin)return;
