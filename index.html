@@ -125,6 +125,35 @@ progress{width:100%;height:20px}
 .info-card-links button{font-size:.79rem;padding:7px 8px}
 .info-links details{margin-top:8px}.info-links summary{cursor:pointer;color:var(--green);font-weight:650;padding:5px 0}
 .info-return{margin:10px 0 12px}.info-return button{font-size:.86rem;padding:9px 11px}
+
+/* 学習進捗：登録データに紐づいた、この端末だけの復習ダッシュボード */
+.progress-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:17px 0}
+.progress-card{background:#f7faf7;border:1px solid var(--line);border-radius:12px;padding:13px;min-width:0;text-align:left;color:var(--ink)}
+.progress-card.active{border:2px solid var(--green);background:#f1f8f1;padding:12px}
+.progress-card strong{display:block;font-size:.93rem;line-height:1.5}
+.progress-card .progress-count{font-size:1.5rem;font-weight:800;margin:7px 0 2px;display:block}
+.progress-card .progress-count span{font-size:.85rem;font-weight:500;color:var(--muted)}
+.progress-card p{font-size:.78rem;color:var(--muted);margin:3px 0 9px}
+.progress-track{height:7px;border-radius:999px;background:#dfe8df;overflow:hidden}
+.progress-track-fill{height:100%;background:var(--green);border-radius:999px;transition:width .15s ease}
+.progress-filters{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin:6px 0 10px}
+.progress-filters .field{margin:6px 0}
+.progress-summary-line{color:var(--muted);font-size:.85rem;margin:10px 0 5px}
+.progress-entry{display:flex;gap:12px;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding:13px 0}
+.progress-entry-main{min-width:0;flex:1}
+.progress-entry h3{margin:0 0 6px;font-size:1.03rem;overflow-wrap:anywhere}
+.progress-entry p{margin:5px 0;color:var(--muted);font-size:.85rem;line-height:1.55}
+.progress-entry-actions{flex:none}
+.progress-entry-actions button{padding:9px 10px;font-size:.85rem}
+.progress-state{display:inline-block;font-size:.76rem;font-weight:750;padding:4px 9px;border-radius:99px;line-height:1.5}
+.progress-state.new{background:#eef1f3;color:#4d5b61}
+.progress-state.weak{background:#fff0e5;color:#984c20}
+.progress-state.done{background:#e5f4e9;color:#216238}
+.progress-modes{margin-top:7px;font-size:.84rem}
+.progress-modes summary{cursor:pointer;color:var(--green);font-weight:650;padding:4px 0}
+.progress-mode-item{font-size:.82rem;padding:7px 3px;border-top:1px solid var(--line);color:var(--ink)}
+.progress-footnote{padding:11px 12px;background:#f7f9f6;border-radius:10px;color:var(--muted);font-size:.8rem;line-height:1.65;margin-top:16px}
+@media(max-width:560px){.progress-cards{gap:5px}.progress-card{padding:8px;border-radius:9px}.progress-card.active{padding:7px}.progress-card strong{font-size:.76rem}.progress-card .progress-count{font-size:1.22rem}.progress-card p{font-size:.69rem}.progress-filters{grid-template-columns:1fr}.progress-entry{align-items:flex-start;gap:6px}.progress-entry-actions button{font-size:.77rem;padding:8px}.progress-entry h3{font-size:.96rem}}
 </style>
 </head>
 <body>
@@ -141,8 +170,20 @@ progress{width:100%;height:20px}
  <div class="stat"><b id="weakStat">0</b><span>復習対象</span></div>
 </div>
 <nav class="tabs">
- <button class="tab active" data-tab="quiz">クイズ</button><button class="tab" data-tab="info">生薬情報</button><button class="tab" data-tab="cutQuiz">刻み生薬クイズ</button><button class="tab" data-tab="cutInfo">刻み生薬情報</button><button class="tab" data-tab="kampoQuiz">漢方処方クイズ</button><button class="tab" data-tab="kampoInfo">漢方処方情報</button><button class="tab hidden" data-admin-tab="1" data-tab="cutManage">刻み生薬を登録・編集</button><button class="tab hidden" data-admin-tab="1" data-tab="kampoManage">漢方処方を登録・編集</button><button class="tab hidden" data-admin-tab="1" data-tab="manage">生薬を登録・編集</button><button class="tab hidden" data-admin-tab="1" data-tab="list">登録一覧</button><button class="tab hidden" data-admin-tab="1" data-tab="backup">バックアップ</button>
+ <button class="tab active" data-tab="quiz">クイズ</button><button class="tab" data-tab="info">生薬情報</button><button class="tab" data-tab="cutQuiz">刻み生薬クイズ</button><button class="tab" data-tab="cutInfo">刻み生薬情報</button><button class="tab" data-tab="kampoQuiz">漢方処方クイズ</button><button class="tab" data-tab="kampoInfo">漢方処方情報</button><button class="tab" data-tab="progress">学習進捗</button><button class="tab hidden" data-admin-tab="1" data-tab="cutManage">刻み生薬を登録・編集</button><button class="tab hidden" data-admin-tab="1" data-tab="kampoManage">漢方処方を登録・編集</button><button class="tab hidden" data-admin-tab="1" data-tab="manage">生薬を登録・編集</button><button class="tab hidden" data-admin-tab="1" data-tab="list">登録一覧</button><button class="tab hidden" data-admin-tab="1" data-tab="backup">バックアップ</button>
 </nav>
+<section id="progress" class="panel hidden">
+ <h2 style="margin-top:0">学習進捗</h2>
+ <p class="muted">生薬・刻み生薬・漢方処方の学習履歴をまとめて確認できます。データはこの端末のブラウザ内に保存されています。</p>
+ <div id="progressCards" class="progress-cards" aria-label="クイズ別の学習状況"></div>
+ <div class="progress-filters">
+  <div class="field"><label for="progressStatus">表示する項目</label><select id="progressStatus"><option value="all">すべて</option><option value="weak">復習対象</option><option value="new">未学習</option><option value="done">復習不要</option></select></div>
+  <div class="field"><label for="progressSearch">名前で検索</label><input id="progressSearch" type="search" placeholder="生薬名・処方名など" autocomplete="off"></div>
+ </div>
+ <div id="progressSummary" class="progress-summary-line" role="status"></div>
+ <div id="progressList"></div>
+ <p class="progress-footnote">「復習対象」は現在のクイズの復習判定と同じです。漢方処方は回答形式・難易度ごとに進捗を記録するため、いずれかの形式で直近が完全正解でなければ復習対象として表示します。学習履歴はこの端末のみで、別の端末とは自動同期されません。</p>
+</section>
 <section id="quiz" class="panel">
  <div class="row"><div><h2 style="margin:0">写真識別</h2><p class="muted" id="modeLabel">出題モードを選び、「開始」を押してください。</p></div><div style="max-width:300px"><label for="answerMode">回答モード</label><select id="answerMode"><option value="name">生薬名だけ答える（和名・ラテン名）</option><option value="full">すべて答える（満点7点）</option></select><label for="inputStyle" style="display:block;margin-top:10px">回答形式</label><select id="inputStyle"><option value="written">記述式</option><option value="choice">選択式（6択）</option></select><label for="quizMode" style="display:block;margin-top:10px">出題方法</label><select id="quizMode"><option value="random">ランダム出題</option><option value="weak">苦手問題の復習</option></select></div></div>
  <div class="rule small"><b>採点ルール</b><br>和名1点＋生薬ラテン名1点＋基原植物1点（ラテン名）＋科名1点（ラテン名）＋主成分1点＋用途最大2点。記述式では基原植物・科名の和名回答は各0.5点、選択式ではラテン名のみを出題します。<b>生薬の和名が不正解の場合、その問題の得点はすべて0点</b>になります。用途は、正解を一部選択（誤答なし）で1点、今回の正解をすべて選択して誤答がなければ2点、誤答を1つでも選択した場合は0点です。<hr><b>入力上の注意</b><br>・生薬ラテン名は、原則として全て大文字で入力してください。各単語の頭文字のみ大文字でも正解とします。<br>・記号（例：-、[ ]）、数字、アルファベットは半角で入力してください。</div>
@@ -314,10 +355,78 @@ async function upsertHerb(h){const {error}=await client.from('herbs').upsert(toR
 async function saveHerbToCloud(h){const uploaded=[];const images=[];try{for(const src of h.images){if(src.startsWith('data:image/')){const path=h.id+'/'+(globalThis.crypto?.randomUUID?.()||Date.now()+'-'+Math.random().toString(16).slice(2))+'.jpg';images.push(await uploadDataImage(src,path));uploaded.push(path)}else images.push(src)}h.images=images;await upsertHerb(h);await refreshHerbs()}catch(err){if(uploaded.length){await client.storage.from('herb-images').remove(uploaded).catch(()=>{})}throw err}}
 async function initShared(){try{initClient();const s=getLocalProgress();db.stats=s.stats||{};db.attempts=Number(s.attempts)||0;db.correct=Number(s.correct)||0;db.totalScore=Number(s.totalScore)||0;await updateAdminSession();await refreshHerbs();await refreshCutHerbs();await refreshKampoFormulas().catch(err=>{kampoLoadError=err.message||String(err);console.warn('漢方処方の読み込みに失敗:',err);renderKampoList();renderKampoInfo();});client.auth.onAuthStateChange(()=>{setTimeout(()=>{updateAdminSession().catch(console.error)},0)})}catch(err){console.error(err);setStatus('接続できません：'+(err.message||String(err)),true);$('quizArea').innerHTML='<p class="empty">共有データの取得に失敗しました。接続状況を確認して、ページを再読み込みしてください。</p>'}}
 function escapeHtml(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+
+// 学習進捗：既存の3種類のローカル履歴を読み取り、登録済みの項目に集約する。
+let progressCurrentKind='herb';
+function progressNumber(n){const x=Number(n);return Number.isFinite(x)&&x>0?Math.floor(x):0}
+function progressStatus(seen,weak){return !seen?'new':weak?'weak':'done'}
+function progressRows(kind){
+ if(kind==='herb')return db.herbs.map(h=>{
+  const s=db.stats[h.id]||{},right=progressNumber(s.right),wrong=progressNumber(s.wrong),seen=Math.max(progressNumber(s.seen),right+wrong);
+  const weak=seen>0&&(s.reviewCleared===false||(s.reviewCleared!==true&&(wrong>right||progressNumber(s.streak)===0)));
+  return {id:String(h.id),kind,name:h.japaneseName||h.name||'名称未登録',subtitle:h.latinName||'',seen,right,wrong,score:Number(s.score)||0,status:progressStatus(seen,weak)};
+ });
+ if(kind==='cut'){
+  const stats=cutProgress();
+  return cutHerbs.map(h=>{
+   const s=stats[h.id]||{},right=progressNumber(s.right),wrong=progressNumber(s.wrong),seen=right+wrong;
+   const weak=seen>0&&wrong>0&&s.cleared!==true;
+   return {id:String(h.id),kind,name:h.name||'名称未登録',subtitle:h.reading||'',seen,right,wrong,status:progressStatus(seen,weak)};
+  });
+ }
+ if(kind==='kampo')return kampoFormulas.map(f=>{
+  const entries=Object.entries(kampoProgress).filter(([key,stat])=>key.startsWith(String(f.id)+'|')&&stat&&typeof stat==='object'&&progressNumber(stat.seen)>0).map(([key,stat])=>{
+   const [,type,style,difficulty]=key.split('|');
+   const typeName=type==='ingredients'?'構成生薬':type==='photos'?'写真識別':type;
+   const styleName=style==='written'?'記述':style==='choice'?'選択':style;
+   const difficultyName=type==='photos'?(difficulty==='advanced'?'上級':difficulty==='beginner'?'初級':difficulty):'';
+   return {name:[typeName,styleName,difficultyName].filter(Boolean).join('・'),seen:progressNumber(stat.seen),right:progressNumber(stat.perfect),weak:stat.lastPerfect!==true};
+  });
+  const seen=entries.reduce((total,x)=>total+x.seen,0),right=entries.reduce((total,x)=>total+x.right,0),weak=entries.some(x=>x.weak);
+  return {id:String(f.id),kind,name:f.name||'名称未登録',subtitle:'構成生薬 '+kampoNormalizedIngredients(f).length+'種類',seen,right,wrong:Math.max(0,seen-right),modes:entries,status:progressStatus(seen,weak)};
+ });
+ return [];
+}
+function progressStatusText(status){return {new:'未学習',weak:'復習対象',done:'復習不要'}[status]||''}
+function renderLearningProgress(){
+ const cards=$('progressCards'),list=$('progressList');if(!cards||!list)return;
+ const types=[['herb','生薬'],['cut','刻み生薬'],['kampo','漢方処方']];
+ cards.innerHTML=types.map(([kind,label])=>{
+  const rows=progressRows(kind),total=rows.length,learned=rows.filter(r=>r.status!=='new').length,weak=rows.filter(r=>r.status==='weak').length,done=rows.filter(r=>r.status==='done').length;
+  const percent=total?Math.round(learned/total*100):0;
+  return `<button type="button" class="progress-card${kind===progressCurrentKind?' active':''}" data-progress-type="${kind}" aria-pressed="${kind===progressCurrentKind}" aria-label="${label}：${total}件のうち${learned}件学習済み"><strong>${label}</strong><span class="progress-count">${learned}<span> / ${total}件</span></span><div class="progress-track" role="progressbar" aria-label="${label}の学習率" aria-valuenow="${percent}" aria-valuemin="0" aria-valuemax="100"><div class="progress-track-fill" style="width:${percent}%"></div></div><p>復習対象 ${weak}・復習不要 ${done}</p></button>`;
+ }).join('');
+ const rows=progressRows(progressCurrentKind),status=$('progressStatus').value,q=normalize($('progressSearch').value);
+ if(progressCurrentKind==='kampo'&&kampoLoadError){$('progressSummary').textContent='漢方処方のデータを取得できません。';list.innerHTML=`<p class="feedback bad">漢方処方の読み込みに失敗しました：${escapeHtml(kampoLoadError)}</p>`;return}
+ const filtered=rows.filter(r=>(status==='all'||r.status===status)&&(!q||normalize(r.name).includes(q)||normalize(r.subtitle).includes(q)));
+ const counts={new:rows.filter(r=>r.status==='new').length,weak:rows.filter(r=>r.status==='weak').length,done:rows.filter(r=>r.status==='done').length};
+ $('progressSummary').textContent=`${filtered.length}件を表示 ／ 全${rows.length}件（未学習 ${counts.new}・復習対象 ${counts.weak}・復習不要 ${counts.done}）`;
+ list.innerHTML=filtered.length?filtered.map(r=>{
+  const score=r.kind==='herb'?`／累計 ${r.score}点`:'';
+  const detail=r.kind==='kampo'?`回答 ${r.seen}回 ／ 完全正解 ${r.right}回`: `回答 ${r.seen}回 ／ 正解 ${r.right}回 ／ 不正解 ${r.wrong}回${score}`;
+  const modes=r.modes?.length?`<details class="progress-modes"><summary>回答形式ごとの履歴（${r.modes.length}形式）</summary>${r.modes.map(m=>`<div class="progress-mode-item">${escapeHtml(m.name)}：${m.seen}回中 ${m.right}回完全正解 ／ 直近${m.weak?'復習対象':'完全正解'}</div>`).join('')}</details>`:'';
+  return `<div class="progress-entry" data-progress-id="${escapeHtml(r.id)}" data-progress-kind="${r.kind}"><div class="progress-entry-main"><h3>${escapeHtml(r.name)}</h3>${r.subtitle?`<p>${escapeHtml(r.subtitle)}</p>`:''}<span class="progress-state ${r.status}">${progressStatusText(r.status)}</span><p>${detail}</p>${modes}</div><div class="progress-entry-actions"><button type="button" class="secondary" data-progress-info="${r.kind}" data-progress-id="${escapeHtml(r.id)}">情報を見る</button></div></div>`;
+ }).join(''):'<p class="empty">該当する項目がありません。表示条件や検索語を確認してください。</p>';
+}
+$('progressStatus').addEventListener('change',renderLearningProgress);
+$('progressSearch').addEventListener('input',renderLearningProgress);
+$('progressCards').addEventListener('click',e=>{
+ const btn=e.target.closest('button[data-progress-type]');if(!btn)return;
+ progressCurrentKind=btn.dataset.progressType;
+ $('progressStatus').value='all';$('progressSearch').value='';
+ renderLearningProgress();
+});
+$('progressList').addEventListener('click',e=>{
+ const btn=e.target.closest('button[data-progress-info]');if(!btn)return;
+ // 情報ページを閉じたあと、進捗の同じ項目まで戻れるようにする。
+ linkedInfoHistory.push({kind:'progress',id:btn.dataset.progressId,progressKind:btn.dataset.progressInfo});
+ navigateLinkedInfo(btn.dataset.progressInfo,btn.dataset.progressId,false);
+});
+
 function statFor(id){return db.stats[id]||(db.stats[id]={seen:0,wrong:0,right:0,streak:0,score:0})}
 function isWeak(h){const s=statFor(h.id);if(s.reviewCleared===true)return false;if(s.reviewCleared===false)return true;return s.wrong>s.right||(s.seen>0&&s.streak===0)}
-function updateStats(){ $('countStat').textContent=db.herbs.length;$('accuracyStat').textContent=db.attempts?Math.round(db.correct/db.attempts*100)+'%':'—';$('scoreStat').textContent=String(db.totalScore||0);$('weakStat').textContent=db.herbs.filter(isWeak).length;renderList();if(!$('info').classList.contains('hidden'))renderHerbInfo();}
-function switchTab(tab,keepLinkedHistory=false){if(!keepLinkedHistory)linkedInfoHistory=[];if(!isAdmin&&['manage','list','backup','cutManage','kampoManage'].includes(tab))return;document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));['quiz','info','manage','list','backup','cutQuiz','cutManage','cutInfo','kampoManage','kampoQuiz','kampoInfo'].forEach(id=>$(id).classList.toggle('hidden',id!==tab));if(tab==='list')renderList();if(tab==='cutManage')renderCutList();if(tab==='kampoManage'){renderKampoList();renderKampoIngredientOptions();renderKampoPreview()}if(tab==='cutInfo')renderCutInfo();if(tab==='kampoQuiz')renderKampoQuizProgress();if(tab==='kampoInfo')renderKampoInfo();if(tab==='info')renderHerbInfo();if(tab==='backup')$('backupStatus').textContent='学習履歴はこの端末のブラウザに保存されています。'}
+function updateStats(){ $('countStat').textContent=db.herbs.length;$('accuracyStat').textContent=db.attempts?Math.round(db.correct/db.attempts*100)+'%':'—';$('scoreStat').textContent=String(db.totalScore||0);$('weakStat').textContent=db.herbs.filter(isWeak).length;renderList();if(!$('info').classList.contains('hidden'))renderHerbInfo();if(!$('progress').classList.contains('hidden'))renderLearningProgress();}
+function switchTab(tab,keepLinkedHistory=false){if(!keepLinkedHistory)linkedInfoHistory=[];if(!isAdmin&&['manage','list','backup','cutManage','kampoManage'].includes(tab))return;document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));['quiz','info','manage','list','backup','cutQuiz','cutManage','cutInfo','kampoManage','kampoQuiz','kampoInfo','progress'].forEach(id=>$(id).classList.toggle('hidden',id!==tab));if(tab==='list')renderList();if(tab==='cutManage')renderCutList();if(tab==='kampoManage'){renderKampoList();renderKampoIngredientOptions();renderKampoPreview()}if(tab==='cutInfo')renderCutInfo();if(tab==='kampoQuiz')renderKampoQuizProgress();if(tab==='kampoInfo')renderKampoInfo();if(tab==='info')renderHerbInfo();if(tab==='progress')renderLearningProgress();if(tab==='backup')$('backupStatus').textContent='学習履歴はこの端末のブラウザに保存されています。'}
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
 function showIdle(){if(!db.herbs.length){$('quizArea').innerHTML='<div class="empty">登録された生薬がありません。生薬データと写真を登録してください。</div>';return}$('modeLabel').textContent='出題モードを選び、「開始」を押してください。';$('quizArea').innerHTML='<div class="empty">「開始」を押して解答スタート。<br><br><button class="primary" type="button" onclick="nextQuestion()">開始</button></div>'}
 function endQuiz(){currentId=null;answered=false;currentUseCorrect=[];selectedConstituent='';showIdle()}
@@ -518,7 +627,7 @@ function navigateLinkedInfo(kind,id,remember=true){
 // 既存の「詳細を見る」はそのまま利用し、追加したリンクだけを横断ナビゲーションにする。
 document.addEventListener('click',e=>{
  const back=e.target.closest('button[data-info-return]');
- if(back){const prev=linkedInfoHistory.pop();if(prev)navigateLinkedInfo(prev.kind,prev.id,false);return}
+ if(back){const prev=linkedInfoHistory.pop();if(prev){if(prev.kind==='progress'){switchTab('progress',true);const row=[...$('progressList').querySelectorAll('.progress-entry')].find(x=>x.dataset.progressId===String(prev.id)&&x.dataset.progressKind===prev.progressKind);if(row)row.scrollIntoView({behavior:'auto',block:'start'})}else navigateLinkedInfo(prev.kind,prev.id,false)}return}
  const button=e.target.closest('button[data-info-link]');
  if(button)navigateLinkedInfo(button.dataset.infoLink,button.dataset.infoId);
 });
@@ -613,7 +722,7 @@ function cutPhotoHtml(photo,mode='quiz'){
 }
 function cutRubyHtml(h){const name=escapeHtml(h.name||''),reading=escapeHtml(h.reading||'');return reading?`<ruby>${name}<rt>${reading}</rt></ruby>`:name}
 // 同名検索ではなく「登録日時」の昇順で一貫して表示し、編集時は順番を維持。
-async function refreshCutHerbs(){const {data,error}=await client.from('cut_herbs').select('id,name,reading,images,created_at').order('created_at',{ascending:true}).order('id',{ascending:true});if(error)throw error;cutHerbs=data||[];renderCutList();renderKampoIngredientOptions();if($('kampoManage')&&!$('kampoManage').classList.contains('hidden')){renderKampoPreview();renderKampoList()} if(!$('cutInfo').classList.contains('hidden'))renderCutInfo();if($('kampoInfo')&&!$('kampoInfo').classList.contains('hidden'))renderKampoInfo();}
+async function refreshCutHerbs(){const {data,error}=await client.from('cut_herbs').select('id,name,reading,images,created_at').order('created_at',{ascending:true}).order('id',{ascending:true});if(error)throw error;cutHerbs=data||[];renderCutList();renderKampoIngredientOptions();if($('kampoManage')&&!$('kampoManage').classList.contains('hidden')){renderKampoPreview();renderKampoList()} if(!$('cutInfo').classList.contains('hidden'))renderCutInfo();if(!$('progress').classList.contains('hidden'))renderLearningProgress();if($('kampoInfo')&&!$('kampoInfo').classList.contains('hidden'))renderKampoInfo();}
 let cutEditingPhotoIndex=-1;
 function resetCutForm(){$('cutForm').reset();$('cutEditId').value='';cutStaged=[];cutEditingPhotoIndex=-1;$('cutMaskEditor').classList.add('hidden');$('cutFormTitle').textContent='刻み生薬を登録';renderCutPhotos()}
 function renderCutPhotos(){
@@ -809,7 +918,7 @@ function resetKampoForm(){
 async function refreshKampoFormulas(){
   const {data,error}=await client.from('kampo_formulas').select('id,name,ingredients,created_at').order('created_at',{ascending:true});
   if(error)throw error;
-  kampoFormulas=data||[];kampoLoadError='';renderKampoList();renderKampoQuizProgress();renderKampoInfo();
+  kampoFormulas=data||[];kampoLoadError='';renderKampoList();renderKampoQuizProgress();renderKampoInfo();if(!$('progress').classList.contains('hidden'))renderLearningProgress();
 }
 function renderKampoList(){
   const root=$('kampoList');if(!root)return;
