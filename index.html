@@ -197,6 +197,12 @@ body.is-admin .nav-main{grid-template-columns:repeat(4,minmax(0,1fr))}
 .backup-checks input{width:auto;margin:0}.backup-preview{background:#fff;border-radius:9px;padding:12px;white-space:pre-line;line-height:1.7;font-size:.9rem;border:1px solid var(--line)}
 #restoreLearningBtn,#restoreSharedBtn{width:100%}
 @media(max-width:560px){.backup-panel{padding:11px}.backup-panel .row{flex-direction:column}.backup-panel .row button{width:100%}}
+/* 漢方処方の問題種類を縦並び・全幅にし、Androidでも選択肢を読みやすくする */
+.kampo-quiz-settings{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;margin:16px 0}
+.kampo-quiz-settings .field{width:100%;max-width:none;min-width:0;margin:0}
+.kampo-quiz-settings select{box-sizing:border-box;display:block;width:100%;max-width:100%;min-width:0}
+.info-photo-viewer .info-photo-stage{display:flex;flex:1;min-height:0;align-items:center;justify-content:center;overflow:auto;padding:14px}
+.info-photo-viewer .info-photo-stage img{display:block;width:auto;height:auto;max-width:100%;max-height:100%;object-fit:contain}
 </style>
 </head>
 <body>
@@ -301,8 +307,8 @@ body.is-admin .nav-main{grid-template-columns:repeat(4,minmax(0,1fr))}
 <section id="kampoQuiz" class="panel hidden">
  <h2 style="margin-top:0">漢方処方クイズ</h2>
  <p class="muted">登録済みの漢方処方から出題します。構成生薬の解答順序は問いません。</p>
- <div class="row">
-  <div class="field"><label for="kampoQuizType">問題の種類</label><select id="kampoQuizType"><option value="ingredients">処方名から構成生薬をすべて答える</option><option value="photos">刻み生薬の写真から処方名を答える</option></select></div>
+ <div class="kampo-quiz-settings">
+  <div class="field"><label for="kampoQuizType">問題の種類</label><select id="kampoQuizType"><option value="ingredients">処方名 → 構成生薬を答える</option><option value="photos">刻み生薬写真 → 処方名</option></select></div>
   <div class="field"><label for="kampoQuizStyle">回答形式</label><select id="kampoQuizStyle"><option value="written">記述式</option><option value="choice">選択式</option></select></div>
  </div>
  <div class="row">
@@ -426,6 +432,12 @@ body.is-admin .nav-main{grid-template-columns:repeat(4,minmax(0,1fr))}
   </div>
  </div>
 </dialog>
+<dialog id="infoPhotoViewer" class="kampo-viewer info-photo-viewer" aria-label="生薬写真を拡大">
+ <div class="kampo-viewer-shell">
+  <div class="kampo-viewer-head"><span id="infoPhotoViewerLabel">写真を拡大</span><button id="infoPhotoViewerClose" type="button">閉じる ×</button></div>
+  <div class="info-photo-stage"><img id="infoPhotoViewerImage" alt="生薬写真の拡大"></div>
+ </div>
+</dialog>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 /*!
@@ -456,6 +468,87 @@ let kampoFormulas=[],kampoLoadError="";
 const KAMPO_PROGRESS_KEY='herbPhotoQuiz.kampo.progress.v1';
 let kampoProgress=readKampoProgress(),kampoCurrent=null,kampoLastId=null,kampoAnswered=false;
 const $=id=>document.getElementById(id);
+// Android の「戻る」で情報詳細・写真拡大を段階的に閉じられるよう、同一URL内に画面状態を保存。
+const APP_VIEW_STATE_KEY='herbQuizViewV1';
+const appViewSession=String(Date.now())+'-'+Math.random().toString(36).slice(2);
+let appViewReady=false,appViewRestoring=false,appViewSuspended=false;
+let infoPhotoOverflow='';
+function appVisibleTab(){return document.querySelector('section.panel:not(.hidden)')?.id||'quiz'}
+function appViewSnapshot(){
+ const photo=$('infoPhotoViewer')?.open?{type:'info',url:$('infoPhotoViewerImage').getAttribute('src'),label:$('infoPhotoViewerLabel').textContent}:
+   $('kampoPhotoViewer')?.open?{type:'kampo',index:kampoViewerIndex}:null;
+ return {session:appViewSession,tab:appVisibleTab(),detail:infoCurrentLocation(),photo,scrollY:window.scrollY,linkedHistory:linkedInfoHistory.slice(-20)};
+}
+function appSameScreen(a,b){return !!a&&a.session===appViewSession&&a.tab===b.tab&&JSON.stringify(a.detail)===JSON.stringify(b.detail)&&JSON.stringify(a.photo)===JSON.stringify(b.photo)}
+function appStoreView(mode='push'){
+ if(!appViewReady||appViewRestoring||appViewSuspended)return;
+ const next=appViewSnapshot(),prev=history.state?.[APP_VIEW_STATE_KEY];
+ if(mode==='push'&&appSameScreen(prev,next))return;
+ try{
+  if(mode==='push'&&prev?.session===appViewSession){
+   history.replaceState({...history.state,[APP_VIEW_STATE_KEY]:{...prev,scrollY:window.scrollY}},'',location.href);
+  }
+  history[mode==='push'?'pushState':'replaceState']({...history.state,[APP_VIEW_STATE_KEY]:next},'',location.href);
+ }catch(err){console.warn('画面の戻る履歴を保存できません:',err)}
+}
+function appCanBackFromDetail(detailId){
+ const current=history.state?.[APP_VIEW_STATE_KEY],detail=infoCurrentLocation();
+ const map={infoDetail:'herb',cutInfoDetail:'cut',kampoInfoDetail:'kampo'};
+ return appViewReady&&!appViewRestoring&&current?.session===appViewSession&&!current.photo&&detail?.kind===map[detailId]&&current.detail?.kind===detail.kind&&String(current.detail.id)===String(detail.id);
+}
+function appBackFromViewer(type){
+ const current=history.state?.[APP_VIEW_STATE_KEY];
+ if(appViewReady&&!appViewRestoring&&current?.session===appViewSession&&current.photo?.type===type){history.back();return}
+ if(type==='info')closeInfoPhotoViewerDirect();else closeKampoPhotoViewer();
+}
+function appHideAllInfoDetails(){
+ for(const [detailId,key] of [['infoDetail','herbId'],['cutInfoDetail','cutId'],['kampoInfoDetail','kampoId']]){
+  const el=$(detailId);if(!el)continue;
+  el.classList.add('hidden');el.innerHTML='';delete el.dataset[key];
+ }
+}
+function appRestoreView(view){
+ if(!view||view.session!==appViewSession)return;
+ appViewRestoring=true;
+ try{
+  linkedInfoHistory=Array.isArray(view.linkedHistory)?view.linkedHistory.slice(-20):[];
+  closeKampoPhotoViewer();closeInfoPhotoViewerDirect();appHideAllInfoDetails();
+  switchTab(view.tab||'quiz',true);
+  if(view.detail){navigateLinkedInfo(view.detail.kind,view.detail.id,false)}
+  if(view.photo?.type==='kampo')openKampoPhotoViewer(view.photo.index);
+  if(view.photo?.type==='info')openInfoPhotoViewer(view.photo.url,view.photo.label);
+  const y=Number(view.scrollY)||0;
+  requestAnimationFrame(()=>window.scrollTo({top:y,left:0,behavior:'auto'}));
+ }finally{appViewRestoring=false}
+}
+window.addEventListener('popstate',e=>{
+ const view=e.state?.[APP_VIEW_STATE_KEY];
+ if(view?.session===appViewSession)appRestoreView(view);
+});
+function closeInfoPhotoViewerDirect(){
+ const d=$('infoPhotoViewer');if(d?.open)d.close();
+}
+function openInfoPhotoViewer(url,label){
+ if(!url)return;
+ const d=$('infoPhotoViewer');if(!d||typeof d.showModal!=='function')return;
+ $('infoPhotoViewerImage').src=url;
+ $('infoPhotoViewerLabel').textContent=label||'写真を拡大';
+ if(!d.open){infoPhotoOverflow=document.documentElement.style.overflow;d.showModal();document.documentElement.style.overflow='hidden'}
+ appStoreView();
+}
+// 刻み生薬情報と漢方処方情報の写真は、別タブではなく同じ画面で拡大する。
+document.addEventListener('click',e=>{
+ const a=e.target.closest('#cutInfoDetail a[href],#kampoInfoDetail a[href]');
+ if(a){e.preventDefault();openInfoPhotoViewer(a.href,a.getAttribute('aria-label')||'刻み生薬写真');return}
+ const img=e.target.closest('#infoDetail .gallery img');
+ if(img){openInfoPhotoViewer(img.src,img.alt||'原型生薬写真')}
+});
+$('infoPhotoViewerClose').addEventListener('click',()=>appBackFromViewer('info'));
+$('infoPhotoViewer').addEventListener('cancel',e=>{e.preventDefault();appBackFromViewer('info')});
+$('infoPhotoViewer').addEventListener('close',()=>{document.documentElement.style.overflow=infoPhotoOverflow});
+// ネイティブの dialog の Android 戻るも、同一アプリ内の履歴へ戻す。
+$('kampoPhotoViewer').addEventListener('cancel',e=>{e.preventDefault();appBackFromViewer('kampo')});
+
 function setStatus(text,bad=false){const el=$('connectionState');el.textContent=text;el.classList.toggle('error',bad)}
 function readKampoProgress(){try{const data=JSON.parse(localStorage.getItem(KAMPO_PROGRESS_KEY)||'{}');return data&&typeof data==='object'&&!Array.isArray(data)?data:{}}catch(e){return {}}}
 function saveKampoProgress(){try{localStorage.setItem(KAMPO_PROGRESS_KEY,JSON.stringify(kampoProgress));return true}catch(err){alert('漢方処方の学習履歴を保存できません。端末の空き容量やブラウザ設定を確認してください。');return false}}
@@ -657,7 +750,7 @@ document.querySelectorAll('[data-nav-group]').forEach(b=>b.addEventListener('cli
  if(group==='admin'&&!isAdmin)return;
  switchTab(navLastTab[group]||NAV_DEFAULT[group]);
 }));
-function switchTab(tab,keepLinkedHistory=false){if(!keepLinkedHistory)linkedInfoHistory=[];if(!isAdmin&&['manage','list','backup','cutManage','kampoManage'].includes(tab))return;document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));syncMainNavigation(tab);['quiz','info','manage','list','backup','cutQuiz','cutManage','cutInfo','kampoManage','kampoQuiz','kampoInfo','progress'].forEach(id=>$(id).classList.toggle('hidden',id!==tab));if(tab==='list')renderList();if(tab==='cutManage')renderCutList();if(tab==='kampoManage'){renderKampoList();renderKampoIngredientOptions();renderKampoPreview()}if(tab==='cutInfo')renderCutInfo();if(tab==='kampoQuiz')renderKampoQuizProgress();if(tab==='kampoInfo')renderKampoInfo();if(tab==='info')renderHerbInfo();if(tab==='progress')renderLearningProgress();if(tab==='backup')$('backupStatus').textContent='学習履歴はこの端末のブラウザに保存されています。'}
+function switchTab(tab,keepLinkedHistory=false){if(!keepLinkedHistory)linkedInfoHistory=[];if(!isAdmin&&['manage','list','backup','cutManage','kampoManage'].includes(tab))return;document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));syncMainNavigation(tab);['quiz','info','manage','list','backup','cutQuiz','cutManage','cutInfo','kampoManage','kampoQuiz','kampoInfo','progress'].forEach(id=>$(id).classList.toggle('hidden',id!==tab));if(tab==='list')renderList();if(tab==='cutManage')renderCutList();if(tab==='kampoManage'){renderKampoList();renderKampoIngredientOptions();renderKampoPreview()}if(tab==='cutInfo')renderCutInfo();if(tab==='kampoQuiz')renderKampoQuizProgress();if(tab==='kampoInfo')renderKampoInfo();if(tab==='info')renderHerbInfo();if(tab==='progress')renderLearningProgress();if(tab==='backup')$('backupStatus').textContent='学習履歴はこの端末のブラウザに保存されています。';appStoreView()}
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
 function showIdle(){if(!db.herbs.length){$('quizArea').innerHTML='<div class="empty">登録された生薬がありません。生薬データと写真を登録してください。</div>';return}$('modeLabel').textContent='出題モードを選び、「開始」を押してください。';$('quizArea').innerHTML='<div class="empty">「開始」を押して解答スタート。<br><br><button class="primary" type="button" onclick="nextQuestion()">開始</button></div>'}
 function endQuiz(){currentId=null;answered=false;currentUseCorrect=[];selectedConstituent='';showIdle()}
@@ -837,6 +930,7 @@ function navigateLinkedInfo(kind,id,remember=true){
   linkedInfoHistory.push(source);
   if(linkedInfoHistory.length>20)linkedInfoHistory.shift();
  }
+ const previousSuspend=appViewSuspended;appViewSuspended=true;
  switchTab(target.tab,true);
  // 閲覧中の検索条件で目的の行が隠れていたら、検索を解除する。
  const findRow=()=>[...$(target.list).querySelectorAll(target.selector)].find(row=>row.dataset[target.key]===String(id));
@@ -855,6 +949,8 @@ function navigateLinkedInfo(kind,id,remember=true){
   const btn=row.querySelector('button[aria-controls]');
   if(btn)btn.focus({preventScroll:true});
  }
+ appViewSuspended=previousSuspend;
+ appStoreView();
 }
 // 既存の「詳細を見る」はそのまま利用し、追加したリンクだけを横断ナビゲーションにする。
 document.addEventListener('click',e=>{
@@ -881,6 +977,7 @@ function insertInfoDetailAfterRow(listId,detail,rowSelector,dataKey,id){
   return true;
 }
 function closeInlineInfoDetail(detailId,dataKey){
+   if(appCanBackFromDetail(detailId)){history.back();return}
   const detail=$(detailId);
   const row=detail.previousElementSibling;
   detail.classList.add('hidden');
@@ -918,6 +1015,7 @@ function showHerbInfo(id,toggle=true){
  ${infoRelatedForHerb(h)}${infoReturnButton()}
  <div class="row" style="margin-top:16px"><button class="secondary" type="button" onclick="window.scrollTo({top:0,behavior:'smooth'})">ページ上部へ</button><button class="secondary" type="button" onclick="closeInlineInfoDetail('infoDetail','herbId')">詳細を閉じる</button></div>`;
  insertInfoDetailAfterRow('infoList',root,'.entry','herbId',id);
+ if(toggle)appStoreView();
 }
 $('infoSearch').addEventListener('input',renderHerbInfo);
 function renderList(){const root=$('herbList');if(!root)return;if(!db.herbs.length){root.innerHTML='<div class="empty">まだ登録がありません。</div>';return}root.innerHTML=db.herbs.map(h=>{const s=statFor(h.id),imgs=h.images||[h.image].filter(Boolean);return `<div class="entry"><img class="thumb" src="${escapeHtml(imgs[0]||'')}" alt=""><div><h3>${escapeHtml(h.japaneseName||h.name)} ／ ${escapeHtml(h.latinName||'ラテン名未登録')}</h3><p>写真 ${imgs.length}枚</p><p>基原：${escapeHtml(h.originLatin||h.origin||'未登録')} ／ 科：${escapeHtml(h.familyLatin||'未登録')}</p><p>主成分：${escapeHtml(h.constituents||'未登録')} ／ 用途：${escapeHtml((h.uses||[]).join('、')||'未登録')}</p><p>正解 ${s.right} ／ 不正解 ${s.wrong} ／ 得点 ${s.score||0} ${isWeak(h)?'<span class="pill">復習対象</span>':''}</p></div><div class="entry-actions row"><button class="secondary" onclick="editHerb('${h.id}')">編集</button><button class="danger" onclick="deleteHerb('${h.id}')">削除</button></div></div>`}).join('')}
@@ -1080,6 +1178,7 @@ function showCutInfo(id,toggle=true){
  root.dataset.cutId=id;
  root.innerHTML=`${infoReturnButton()}<h2 class="cut-info-name">${cutRubyHtml(h)}</h2>${h.reading?'':'<p class="muted small">読みがなは未登録です。管理者は編集画面から登録できます。</p>'}<div class="row">${isAdmin?`<button type="button" class="secondary" onclick="editCutHerb('${h.id}')">この刻み生薬を編集</button>`:''}</div><div id="cutInfoGallery" class="cut-grid">${imgs.length?imgs.map((photo,i)=>`<div class="cut-card"><a href="${escapeHtml(photo.url)}" target="_blank" rel="noopener noreferrer" aria-label="写真 ${i+1} を拡大"><img class="cut-info-image" src="${escapeHtml(photo.url)}" alt="${escapeHtml(h.name)}の写真 ${i+1}"></a><p class="muted small">写真 ${i+1} / ${imgs.length}（タップで拡大）</p></div>`).join(''):'<p class="muted">写真は未登録です。</p>'}</div>${infoRelatedForCut(h)}${infoReturnButton()}<div class="row" style="margin-top:16px"><button class="secondary" type="button" onclick="window.scrollTo({top:0,behavior:'smooth'})">ページ上部へ</button><button class="secondary" type="button" onclick="closeInlineInfoDetail('cutInfoDetail','cutId')">詳細を閉じる</button></div>`;
  insertInfoDetailAfterRow('cutInfoList',root,'.entry','cutId',id);
+ if(toggle)appStoreView();
 }
 $('cutInfoSearch').addEventListener('input',renderCutInfo);
 
@@ -1217,6 +1316,7 @@ function showKampoPublicInfo(id){
  const search=$('kampoInfoSearch');
  if(!kampoPublicSearchMatches(formula,normalize(search.value))){search.value='';renderKampoInfo()}
  renderKampoInfoDetail(id);
+ appStoreView();
 }
 $('kampoInfoSearch').addEventListener('input',renderKampoInfo);
 $('kampoInfoList').addEventListener('click',e=>{
@@ -1358,7 +1458,7 @@ function kampoViewerRender(){
 function kampoViewerStep(direction){
   const n=kampoCurrent?.chosenPhotos?.length||0;
   const next=kampoViewerIndex+direction;
-  if(next>=0&&next<n){kampoViewerIndex=next;kampoViewerPointers.clear();kampoViewerGesture=null;kampoViewerRender()}
+  if(next>=0&&next<n){kampoViewerIndex=next;kampoViewerPointers.clear();kampoViewerGesture=null;kampoViewerRender();appStoreView('replace')}
 }
 function openKampoPhotoViewer(index){
   if(!kampoCurrent||kampoCurrent.config.type!=='photos'||!kampoCurrent.chosenPhotos.length)return;
@@ -1366,13 +1466,13 @@ function openKampoPhotoViewer(index){
   if(!d||typeof d.showModal!=='function')return;
   kampoViewerIndex=Math.max(0,Math.min(kampoCurrent.chosenPhotos.length-1,index));
   if(!d.open){kampoViewerBeforeOverflow=document.documentElement.style.overflow;d.showModal();document.documentElement.style.overflow='hidden'}
-  kampoViewerRender();
+  kampoViewerRender();appStoreView();
 }
 $('kampoQuizArea').addEventListener('click',e=>{
   const button=e.target.closest('button[data-kampo-photo-index]');
   if(button)openKampoPhotoViewer(Number(button.dataset.kampoPhotoIndex));
 });
-$('kampoViewerClose').addEventListener('click',closeKampoPhotoViewer);
+$('kampoViewerClose').addEventListener('click',()=>appBackFromViewer('kampo'));
 $('kampoViewerPrev').addEventListener('click',()=>kampoViewerStep(-1));
 $('kampoViewerNext').addEventListener('click',()=>kampoViewerStep(1));
 $('kampoViewerZoomIn').addEventListener('click',()=>kampoViewerSetZoom(kampoViewerScale+.5));
@@ -1812,6 +1912,7 @@ $('restoreLearningBtn').addEventListener('click',backupRestoreLearning);
 $('restoreSharedInput').addEventListener('change',e=>backupPreviewSharedFile(e.target.files[0]));
 $('restoreSharedBtn').addEventListener('click',backupRestoreShared);
 
+appViewReady=true;appStoreView('replace');
 initShared();
 </script>
 </body>
