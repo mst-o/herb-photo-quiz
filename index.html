@@ -606,13 +606,51 @@ function reviewPick(pool,lastId,statOf,weakOf){
  for(let i=0;i<available.length;i++){pick-=weights[i];if(pick<=0)return available[i]}
  return available[available.length-1];
 }
-function reviewChoose(pool,lastId,kind,mode,statOf,weakOf){
+// ランダム出題は「シャッフルした全項目を一巡する」方式。途中で閉じても残りを保持する。
+// 復習モードの苦手・復習日優先の重み付けは従来どおりにする。
+const RANDOM_CYCLE_KEY='herbPhotoQuiz.randomCycles.v1';
+let randomCycles=(()=>{try{const saved=JSON.parse(localStorage.getItem(RANDOM_CYCLE_KEY)||'{}');return saved&&typeof saved==='object'&&!Array.isArray(saved)?saved:{}}catch(e){return {}}})();
+function randomCyclePick(pool,cycleKey,lastId,forcedId=null){
+ if(!pool.length)return null;
+ const byId=new Map(pool.map(item=>[String(item.id),item]));
+ const ids=[...byId.keys()],signature=ids.slice().sort().join('|');
+ let state=randomCycles[cycleKey];
+ if(!state||state.signature!==signature||!Array.isArray(state.remaining)||state.remaining.some(id=>!byId.has(id))||new Set(state.remaining).size!==state.remaining.length){
+  state={signature,remaining:[],lastId:state?.lastId||null};
+ }
+ const avoidId=lastId===null||lastId===undefined?String(state.lastId||''):String(lastId);
+ // 全種類を出し終えた後にだけ再シャッフルする。新しい周回の初問も前問と重ねない。
+ if(!state.remaining.length){
+  state.remaining=shuffleValues(ids);
+  if(state.remaining.length>1&&state.remaining[0]===avoidId){
+   const other=state.remaining.findIndex(id=>id!==avoidId);
+   [state.remaining[0],state.remaining[other]]=[state.remaining[other],state.remaining[0]];
+  }
+ }
+ let chosenId;
+ if(forcedId!==null&&byId.has(String(forcedId))){
+  chosenId=String(forcedId);
+  state.remaining=state.remaining.filter(id=>id!==chosenId);
+ }else{
+  // 別の出題モードから戻ってきた場合も、残りが複数なら直前の項目を避ける。
+  let index=state.remaining.length>1&&state.remaining[0]===avoidId?
+    state.remaining.findIndex(id=>id!==avoidId):0;
+  if(index<0)index=0;
+  chosenId=state.remaining.splice(index,1)[0];
+ }
+ state.lastId=chosenId;
+ randomCycles[cycleKey]=state;
+ try{localStorage.setItem(RANDOM_CYCLE_KEY,JSON.stringify(randomCycles))}catch(e){/* 保存できない環境でも、その画面内では重複を防ぐ */}
+ return byId.get(chosenId);
+}
+function reviewChoose(pool,lastId,kind,mode,statOf,weakOf,cycleKey=kind){
  const target=pendingReviewTarget;
  if(target&&target.kind===kind){
   pendingReviewTarget=null;
   const matched=pool.find(x=>String(x.id)===String(target.id));
-  if(matched)return matched;
+  if(matched)return mode==='random'?randomCyclePick(pool,cycleKey,lastId,matched.id):matched;
  }
+ if(mode==='random')return randomCyclePick(pool,cycleKey,lastId);
  const nonRepeat=pool.filter(x=>String(x.id)!==String(lastId)),available=nonRepeat.length?nonRepeat:pool;
  return mode==='priority'?reviewPick(pool,lastId,statOf,weakOf):available[Math.floor(Math.random()*available.length)];
 }
@@ -1551,7 +1589,7 @@ function nextKampoQuestion(){
       config.type==='photos'?'写真識別に必要な刻み生薬写真が不足しています。上級では全構成生薬にラベル隠し範囲の設定が必要です。':'出題可能な漢方処方がありません。';
     $('kampoQuizArea').innerHTML=`<div class="empty">${message}</div>`;return;
   }
-  const formula=reviewChoose(pool,kampoLastId,'kampo',config.mode,x=>kampoProgress[kampoStatKey(x.id,config.type,config.style,config.difficulty)],x=>kampoIsWeak(x,config)),ingredients=kampoNormalizedIngredients(formula);
+  const formula=reviewChoose(pool,kampoLastId,'kampo',config.mode,x=>kampoProgress[kampoStatKey(x.id,config.type,config.style,config.difficulty)],x=>kampoIsWeak(x,config),'kampo:'+config.type+(config.type==='photos'?':'+config.difficulty:'')),ingredients=kampoNormalizedIngredients(formula);
   kampoLastId=formula.id;kampoAnswered=false;
   let answerHtml='',chosenPhotos=[];
   if(config.type==='ingredients'){
