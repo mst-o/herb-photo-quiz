@@ -318,6 +318,7 @@ body.is-admin .nav-main{grid-template-columns:repeat(4,minmax(0,1fr))}
  </div>
  <div class="rule small">構成生薬の問題では、正解の種類数は解答前に表示しません。<b>入力・選択の順序は採点に影響しません。</b>正解1種類につき1点、余分な生薬の解答は1種類につき1点減点（最低0点）です。すべて正しく答え、誤答がない場合のみ完全正解です。写真の上級では、採点後に全ラベルが一斉に現れます。</div>
  <p class="muted small">構成生薬の入力ヒント：「黄蓍」と「黄耆」はどちらでも正解です。「山梔子」の「梔」は「くちなし」で漢字変換できます。</p>
+ <p id="kampoCycleProgress" class="muted small random-cycle-status" aria-live="polite"></p>
  <div id="kampoQuizArea"><div class="empty">「開始」を押して解答スタート。<p><button class="primary" type="button" onclick="nextKampoQuestion()">開始</button></p></div></div>
  <p id="kampoQuizProgress" class="muted small"></p>
 </section>
@@ -612,6 +613,15 @@ function reviewPick(pool,lastId,statOf,weakOf){
 // 復習モードの苦手・復習日優先の重み付けは従来どおりにする。
 const RANDOM_CYCLE_KEY='herbPhotoQuiz.randomCycles.v1';
 let randomCycles=(()=>{try{const saved=JSON.parse(localStorage.getItem(RANDOM_CYCLE_KEY)||'{}');return saved&&typeof saved==='object'&&!Array.isArray(saved)?saved:{}}catch(e){return {}}})();
+// 同一種別で直近5問を共有し、漢方処方では問題の種類・難易度をまたいでも参照する。
+// 出題可能数が少ない場合は、一巡内の重複禁止を優先して最も以前の項目から選ぶ。
+function randomCycleCategory(cycleKey){return String(cycleKey).split(':')[0]}
+function randomCycleNotice(pool,cycleKey,unit){
+ const ids=[...new Set(pool.map(item=>String(item.id)))],signature=ids.slice().sort().join('|');
+ const state=randomCycles[cycleKey];
+ const remaining=state&&state.signature===signature&&Array.isArray(state.remaining)?state.remaining.length:ids.length;
+ return `ランダム出題：対象 ${ids.length}${unit}／この周回の残り ${remaining}${unit}（一巡後に再シャッフル・直近5問をできるだけ回避）`;
+}
 function randomCyclePick(pool,cycleKey,lastId,forcedId=null){
  if(!pool.length)return null;
  const byId=new Map(pool.map(item=>[String(item.id),item]));
@@ -620,28 +630,39 @@ function randomCyclePick(pool,cycleKey,lastId,forcedId=null){
  if(!state||state.signature!==signature||!Array.isArray(state.remaining)||state.remaining.some(id=>!byId.has(id))||new Set(state.remaining).size!==state.remaining.length){
   state={signature,remaining:[],lastId:state?.lastId||null};
  }
- const avoidId=lastId===null||lastId===undefined?String(state.lastId||''):String(lastId);
- // 全種類を出し終えた後にだけ再シャッフルする。新しい周回の初問も前問と重ねない。
- if(!state.remaining.length){
-  state.remaining=shuffleValues(ids);
-  if(state.remaining.length>1&&state.remaining[0]===avoidId){
-   const other=state.remaining.findIndex(id=>id!==avoidId);
-   [state.remaining[0],state.remaining[other]]=[state.remaining[other],state.remaining[0]];
-  }
- }
+ const kind=randomCycleCategory(cycleKey);
+ if(!randomCycles.__recent||typeof randomCycles.__recent!=='object'||Array.isArray(randomCycles.__recent))randomCycles.__recent={};
+ let recent=Array.isArray(randomCycles.__recent[kind])?randomCycles.__recent[kind].filter(id=>typeof id==='string').slice(-5):[];
+ // 旧バージョンから更新した際は前回の出題を最低1件引き継ぐ。
+ if(!recent.length&&state.lastId&&byId.has(String(state.lastId)))recent=[String(state.lastId)];
+ if(!state.remaining.length)state.remaining=shuffleValues(ids);
+ const recentLimit=Math.min(5,Math.max(0,ids.length-1));
+ let avoid=recent.filter(id=>byId.has(id)).slice(-recentLimit);
+ const previousId=lastId===null||lastId===undefined?String(state.lastId||''):String(lastId);
+ if(recentLimit>0&&previousId&&byId.has(previousId)&&!avoid.includes(previousId))avoid=[...avoid,previousId].slice(-recentLimit);
  let chosenId;
  if(forcedId!==null&&byId.has(String(forcedId))){
+  // 学習進捗の「この項目を復習」はユーザー指定を優先する。
   chosenId=String(forcedId);
   state.remaining=state.remaining.filter(id=>id!==chosenId);
  }else{
-  // 別の出題モードから戻ってきた場合も、残りが複数なら直前の項目を避ける。
-  let index=state.remaining.length>1&&state.remaining[0]===avoidId?
-    state.remaining.findIndex(id=>id!==avoidId):0;
-  if(index<0)index=0;
+  const avoidSet=new Set(avoid);
+  let index=state.remaining.findIndex(id=>!avoidSet.has(id));
+  if(index<0){
+   // 全候補が直近に含まれる場合も、可能な限り古い出題を優先する。
+   index=0;let best=Infinity;
+   for(let i=0;i<state.remaining.length;i++){
+    const ageIndex=avoid.indexOf(state.remaining[i]);
+    const rank=ageIndex<0?-1:ageIndex;
+    if(rank<best){index=i;best=rank}
+   }
+  }
   chosenId=state.remaining.splice(index,1)[0];
  }
  state.lastId=chosenId;
  randomCycles[cycleKey]=state;
+ recent.push(chosenId);
+ randomCycles.__recent[kind]=recent.slice(-5);
  try{localStorage.setItem(RANDOM_CYCLE_KEY,JSON.stringify(randomCycles))}catch(e){/* 保存できない環境でも、その画面内では重複を防ぐ */}
  return byId.get(chosenId);
 }
@@ -831,7 +852,7 @@ function nextQuestion(){
    form=choiceField('answerJapanese','① 生薬名・和名（1点）','japaneseName',h)+choiceField('answerLatin','① 生薬名・ラテン名（1点）','latinName',h);
    if(answerMode==='full')form+=choiceField('answerOrigin','② 基原植物・ラテン名（1点）','originLatin',h)+choiceField('answerFamily','③ 科名・ラテン名（1点）','familyLatin',h)+choiceField('answerConstituents','④ 主成分（1点）','constituents',h)+'<div class="field"><label>⑤ 用途（複数選択・最大2点）</label><div id="useOptions" class="check-grid"></div><span class="muted small">正しい用途を1つ以上選べば1点、正解をすべて選べば2点です（誤答を1つでも含む場合は0点）。</span></div>';
   }else selectedConstituent='';
- $('quizArea').innerHTML=`<div><span class="pill">${mode==='weak'?'苦手復習':'ランダム出題'}</span><span class="pill">${answerMode==='name'?'生薬名モード':`総合モード・${maxScore}点満点`}</span><span class="pill">${$('inputStyle').value==='choice'?'選択式':'記述式'}</span><span class="pill">登録 ${db.herbs.length} 種</span></div><img class="question-image" src="${escapeHtml(chosen)}" alt="識別する生薬の写真"><div id="extraPhotos" class="gallery"></div><form id="answerForm">${form}<div class="answer-actions"><button class="primary" type="submit">採点する</button><button class="secondary" type="button" onclick="endQuiz()">終了</button></div></form><div id="result"></div>`;
+ $('quizArea').innerHTML=`<div><span class="pill">${mode==='weak'?'苦手復習':'ランダム出題'}</span><span class="pill">${answerMode==='name'?'生薬名モード':`総合モード・${maxScore}点満点`}</span><span class="pill">${$('inputStyle').value==='choice'?'選択式':'記述式'}</span><span class="pill">登録 ${db.herbs.length} 種</span></div>${mode==='random'?`<p class="muted small random-cycle-status">${randomCycleNotice(pool,'herb','種')}</p>`:''}<img class="question-image" src="${escapeHtml(chosen)}" alt="識別する生薬の写真"><div id="extraPhotos" class="gallery"></div><form id="answerForm">${form}<div class="answer-actions"><button class="primary" type="submit">採点する</button><button class="secondary" type="button" onclick="endQuiz()">終了</button></div></form><div id="result"></div>`;
  const extra=$('extraPhotos');images.filter(src=>src!==chosen).slice(0,3).forEach(src=>{const im=document.createElement('img');im.src=src;im.alt='同じ生薬の別写真';extra.appendChild(im)});
  if(answerMode==='full'&&isChoice)renderUseOptions(h);
  $('answerForm').addEventListener('submit',e=>{e.preventDefault();checkAnswer(h.id,answerMode)});
@@ -1270,7 +1291,7 @@ function nextCutQuestion(){
     const names=shuffleValues([h.name,...shuffleValues(distinctValues(cutHerbs.filter(x=>x.id!==h.id).map(x=>x.name))).slice(0,5)]);
     input=`<select id="cutAnswer" required><option value="">選択してください</option>${names.map(n=>`<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('')}</select>`;
   }
-  $('cutQuizArea').innerHTML=cutPhotoHtml(photo)+`<form id="cutAnswerForm"><div class="field"><label for="cutAnswer">この刻み生薬の名前は？</label>${input}</div><div class="answer-actions"><button class="primary" type="submit">採点する</button><button class="secondary" type="button" onclick="cutIdle()">終了</button></div></form><div id="cutResult"></div>`;
+  $('cutQuizArea').innerHTML=(mode==='random'?`<p class="muted small random-cycle-status">${randomCycleNotice(pool,'cut','種')}</p>`:'')+cutPhotoHtml(photo)+`<form id="cutAnswerForm"><div class="field"><label for="cutAnswer">この刻み生薬の名前は？</label>${input}</div><div class="answer-actions"><button class="primary" type="submit">採点する</button><button class="secondary" type="button" onclick="cutIdle()">終了</button></div></form><div id="cutResult"></div>`;
   $('cutAnswerForm').addEventListener('submit',e=>{e.preventDefault();checkCutAnswer()});
 }
 function checkCutAnswer(){
@@ -1475,6 +1496,7 @@ function renderKampoQuizProgress(){
   const config=kampoCurrentConfig();let seen=0,perfect=0,weak=0,due=0;
   for(const f of kampoFormulas){const s=kampoProgress[kampoStatKey(f.id,config.type,config.style,config.difficulty)];if(!s)continue;seen+=s.seen||0;perfect+=s.perfect||0;if(s.lastPerfect===false)weak++;if(reviewIsDue(s,s.lastPerfect!==true))due++}
   box.textContent=`この形式の学習履歴（この端末のみ）：解答 ${seen}回／完全正解 ${perfect}回／復習対象 ${weak}処方／今日の復習 ${due}処方`;
+  $('kampoCycleProgress').textContent=config.mode==='random'?randomCycleNotice(kampoQuestionPool(config),'kampo:'+config.type+(config.type==='photos'?':'+config.difficulty:''),'処方'):'';
 }
 function kampoQuizIdle(){
   closeKampoPhotoViewer();
