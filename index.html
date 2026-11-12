@@ -276,6 +276,7 @@ body.is-admin .nav-main{grid-template-columns:repeat(4,minmax(0,1fr))}
 <section id="cutQuiz" class="panel hidden">
  <h2 style="margin-top:0">刻み生薬識別クイズ</h2><p class="muted">写真から刻み生薬の和名を答えます。登録写真の枚数に制限はありません。</p>
  <div class="row"><div class="field"><label for="cutStyle">回答形式</label><select id="cutStyle"><option value="written">記述式</option><option value="choice">選択式（最大6択）</option></select></div><div class="field"><label for="cutMode">出題方法</label><select id="cutMode"><option value="random">ランダム出題</option><option value="weak">苦手問題の復習</option><option value="priority">重点復習（苦手・復習時期を優先）</option><option value="due">今日の復習（復習予定のみ）</option></select></div></div>
+ <p class="muted small">漢字入力のヒント：「黄蓍」は「黄耆」でも正解です。「山梔子」の「梔」は、スマートフォンで「くちなし」と入力すると変換できます。</p>
  <div id="cutQuizArea" class="empty">「開始」を押して解答スタート。<p><button class="primary" type="button" onclick="nextCutQuestion()">開始</button></p></div>
 </section>
 <section id="cutInfo" class="panel hidden">
@@ -316,6 +317,7 @@ body.is-admin .nav-main{grid-template-columns:repeat(4,minmax(0,1fr))}
   <div class="field hidden" id="kampoQuizDifficultyField"><label for="kampoQuizDifficulty">写真の難易度</label><select id="kampoQuizDifficulty"><option value="beginner">初級：生薬名あり</option><option value="advanced">上級：生薬名を隠す</option></select></div>
  </div>
  <div class="rule small">構成生薬の問題では、正解の種類数は解答前に表示しません。<b>入力・選択の順序は採点に影響しません。</b>正解1種類につき1点、余分な生薬の解答は1種類につき1点減点（最低0点）です。すべて正しく答え、誤答がない場合のみ完全正解です。写真の上級では、採点後に全ラベルが一斉に現れます。</div>
+ <p class="muted small">構成生薬の入力ヒント：「黄蓍」と「黄耆」はどちらでも正解です。「山梔子」の「梔」は「くちなし」で漢字変換できます。</p>
  <div id="kampoQuizArea"><div class="empty">「開始」を押して解答スタート。<p><button class="primary" type="button" onclick="nextKampoQuestion()">開始</button></p></div></div>
  <p id="kampoQuizProgress" class="muted small"></p>
 </section>
@@ -870,6 +872,9 @@ function renderUseOptions(h){
 }
 function normalize(s){return String(s||'').normalize('NFKC').toLowerCase().replace(/[\s　・･,，、.。;；:：]/g,'').trim()}
 function exactAnswer(answer,targets){const a=normalize(answer);return !!a&&targets.filter(Boolean).some(t=>normalize(t)===a)}
+// 刻み生薬名の異体表記。原型生薬（カタカナ）や漢方処方名の判定には適用しない。
+function normalizeCutHerbName(value){const name=normalize(value);return name==='黄耆'?'黄蓍':name}
+function cutHerbNameMatches(answer,targets){const key=normalizeCutHerbName(answer);return !!key&&targets.filter(Boolean).some(name=>normalizeCutHerbName(name)===key)}
 function splitAliases(s){return String(s||'').split(/[,，、\n\r;；]/).map(x=>x.trim()).filter(Boolean)}
 async function checkAnswer(id,answerMode){
  if(answered)return;const h=db.herbs.find(x=>x.id===id);if(!h)return;answered=true;
@@ -1270,7 +1275,7 @@ function nextCutQuestion(){
 }
 function checkCutAnswer(){
   if(cutAnswered||!cutCurrent)return;cutAnswered=true;
-  const h=cutCurrent,ok=exactAnswer($('cutAnswer').value,[h.name]),stats=cutProgress(),s=stats[h.id]||{right:0,wrong:0};
+  const h=cutCurrent,ok=cutHerbNameMatches($('cutAnswer').value,[h.name]),stats=cutProgress(),s=stats[h.id]||{right:0,wrong:0};
   if(ok){s.right++;s.cleared=true}else{s.wrong++;s.cleared=false}
   reviewRecord(s,ok);stats[h.id]=s;try{localStorage.setItem(CUT_STATS_KEY,JSON.stringify(stats))}catch(e){console.warn(e)}
   // 採点後は覆いを取り除き、元の写真に写っているラベルを一斉に見せる。
@@ -1286,7 +1291,7 @@ $('cutStyle').addEventListener('change',cutIdle);$('cutMode').addEventListener('
 function parseKampoIngredients(value){
   const seen=new Set(),result=[];
   for(const raw of String(value||'').split(/[\n\r、,，;；]+/)){
-    const name=raw.trim(),key=normalize(name);
+    const name=raw.trim(),key=normalizeCutHerbName(name);
     if(name&&!seen.has(key)){seen.add(key);result.push(name)}
   }
   return result;
@@ -1295,8 +1300,8 @@ function renderKampoPreview(){
   const root=$('kampoIngredientPreview');if(!root)return;
   const ingredients=parseKampoIngredients($('kampoIngredients').value);
   if(!ingredients.length){root.textContent='構成生薬を入力するとここに一覧が表示されます。';return}
-  const photos=new Set(cutHerbs.filter(h=>cutImages(h).length).map(h=>normalize(h.name)));
-  const missing=ingredients.filter(name=>!photos.has(normalize(name)));
+  const photos=new Set(cutHerbs.filter(h=>cutImages(h).length).map(h=>normalizeCutHerbName(h.name)));
+  const missing=ingredients.filter(name=>!photos.has(normalizeCutHerbName(name)));
   root.innerHTML=`<b>構成生薬：${ingredients.length}種類</b><div style="margin-top:8px">${ingredients.map(x=>`<span class="pill">${escapeHtml(x)}</span>`).join('')}</div>`+
     (missing.length?`<p class="muted" style="margin:9px 0 0">写真未登録：${escapeHtml(missing.join('、'))}<br>処方の登録は可能です。写真識別クイズで使用するには、後から各生薬の写真を登録してください。</p>`:'<p class="muted" style="margin:9px 0 0">すべての構成生薬に写真が登録されています。</p>');
 }
@@ -1322,7 +1327,7 @@ function renderKampoList(){
   const matches=kampoFormulas.filter(f=>normalize(f.name).includes(q)||(Array.isArray(f.ingredients)?f.ingredients:[]).some(x=>normalize(x).includes(q)));
   root.innerHTML=matches.length?`<p class="muted">${matches.length}件の漢方処方</p>`+matches.map(f=>{
     const items=Array.isArray(f.ingredients)?f.ingredients:[];
-    const ready=items.filter(name=>cutHerbs.some(h=>normalize(h.name)===normalize(name)&&cutImages(h).length)).length;
+    const ready=items.filter(name=>cutHerbs.some(h=>normalizeCutHerbName(h.name)===normalizeCutHerbName(name)&&cutImages(h).length)).length;
     return `<div class="entry kampo-entry"><div class="kampo-entry-icon" aria-hidden="true">処</div><div><h3>${escapeHtml(f.name)}</h3><p>構成生薬 ${items.length}種類／写真登録済み ${ready}種類</p><p>${escapeHtml(items.join('・'))}</p></div><div class="entry-actions row"><button class="secondary" type="button" data-kampo-action="edit" data-kampo-id="${escapeHtml(f.id)}">編集</button><button class="danger" type="button" data-kampo-action="delete" data-kampo-id="${escapeHtml(f.id)}">削除</button></div></div>`;
   }).join(''):'<p class="empty">'+(q?'検索条件に一致する漢方処方がありません。':'漢方処方はまだ登録されていません。')+'</p>';
 }
@@ -1414,7 +1419,7 @@ $('kampoResetButton').addEventListener('click',resetKampoForm);
 $('kampoAddIngredient').addEventListener('click',()=>{
   const name=$('kampoIngredientSelect').value;if(!name)return;
   const ingredients=parseKampoIngredients($('kampoIngredients').value);
-  if(!ingredients.some(x=>normalize(x)===normalize(name)))ingredients.push(name);
+  if(!ingredients.some(x=>normalizeCutHerbName(x)===normalizeCutHerbName(name)))ingredients.push(name);
   $('kampoIngredients').value=ingredients.join('\n');renderKampoPreview();
 });
 $('kampoList').addEventListener('click',e=>{
@@ -1445,7 +1450,7 @@ function kampoNormalizedIngredients(formula){return parseKampoIngredients((formu
 function kampoStatKey(formulaId,type,style,difficulty){return [formulaId,type,style,type==='photos'?difficulty:''].join('|')}
 function kampoCurrentConfig(){return {type:$('kampoQuizType').value,style:$('kampoQuizStyle').value,mode:$('kampoQuizMode').value,difficulty:$('kampoQuizDifficulty').value}}
 function kampoIsWeak(f,config){const stat=kampoProgress[kampoStatKey(f.id,config.type,config.style,config.difficulty)];return !!stat&&stat.seen>0&&stat.lastPerfect!==true}
-function kampoCutHerbByName(name){return cutHerbs.find(h=>normalize(h.name)===normalize(name))}
+function kampoCutHerbByName(name){return cutHerbs.find(h=>normalizeCutHerbName(h.name)===normalizeCutHerbName(name))}
 function kampoUsablePhotos(formula,difficulty){
   const ingredients=kampoNormalizedIngredients(formula),result=[];
   for(const name of ingredients){
@@ -1594,11 +1599,13 @@ kampoViewerStage.addEventListener('wheel',e=>{
 },{passive:false});
 
 function kampoChoicePool(formula){
-  const correct=kampoNormalizedIngredients(formula),blocked=new Set(correct.map(normalize));
-  const distractors=distinctValues([
-    ...cutHerbs.map(h=>h.name),
-    ...kampoFormulas.flatMap(f=>Array.isArray(f.ingredients)?f.ingredients:[])
-  ]).filter(x=>!blocked.has(normalize(x)));
+  const correct=kampoNormalizedIngredients(formula),blocked=new Set(correct.map(normalizeCutHerbName));
+  const distinctCandidates=new Map();
+  for(const name of [...cutHerbs.map(h=>h.name),...kampoFormulas.flatMap(f=>Array.isArray(f.ingredients)?f.ingredients:[])]){
+    const key=normalizeCutHerbName(name);
+    if(key&&!blocked.has(key)&&!distinctCandidates.has(key))distinctCandidates.set(key,name);
+  }
+  const distractors=[...distinctCandidates.values()];
   const num=Math.max(14,correct.length+5);
   return shuffleValues([...correct,...shuffleValues(distractors).slice(0,Math.max(0,num-correct.length))]);
 }
@@ -1650,10 +1657,10 @@ function checkKampoAnswer(){
   if(config.type==='ingredients'){
     const answers=config.style==='written'?parseKampoIngredients($('kampoWrittenIngredients').value):
       [...document.querySelectorAll('input[name="kampoConstituentChoice"]:checked')].map(x=>x.value);
-    const got=new Map(answers.map(x=>[normalize(x),x]));
-    const correctKeys=new Set(ingredients.map(normalize));
-    const matched=ingredients.filter(x=>got.has(normalize(x)));
-    const missing=ingredients.filter(x=>!got.has(normalize(x)));
+    const got=new Map(answers.map(x=>[normalizeCutHerbName(x),x]));
+    const correctKeys=new Set(ingredients.map(normalizeCutHerbName));
+    const matched=ingredients.filter(x=>got.has(normalizeCutHerbName(x)));
+    const missing=ingredients.filter(x=>!got.has(normalizeCutHerbName(x)));
     const wrong=[...got.entries()].filter(([key])=>!correctKeys.has(key)).map(([,name])=>name);
     missingIngredients=missing;correctIngredients=matched;extraIngredients=wrong;
     score=Math.max(0,matched.length-wrong.length);
@@ -1671,11 +1678,11 @@ function checkKampoAnswer(){
   reviewRecord(next,perfect);
   if(config.type==='ingredients'){
     const ingredientStats={...(old.ingredientStats||{})};
-    for(const name of missingIngredients){const key=normalize(name),item=ingredientStats[key]||{name,missed:0,correct:0};ingredientStats[key]={...item,name,missed:progressNumber(item.missed)+1}}
-    for(const name of correctIngredients){const key=normalize(name),item=ingredientStats[key]||{name,missed:0,correct:0};ingredientStats[key]={...item,name,correct:progressNumber(item.correct)+1}}
+    for(const name of missingIngredients){const key=normalizeCutHerbName(name),item=ingredientStats[key]||{name,missed:0,correct:0};ingredientStats[key]={...item,name,missed:progressNumber(item.missed)+1}}
+    for(const name of correctIngredients){const key=normalizeCutHerbName(name),item=ingredientStats[key]||{name,missed:0,correct:0};ingredientStats[key]={...item,name,correct:progressNumber(item.correct)+1}}
     next.ingredientStats=ingredientStats;
     const extraStats={...(old.extraIngredients||{})};
-    for(const name of extraIngredients){const key=normalize(name),item=extraStats[key]||{name,count:0};extraStats[key]={name,count:progressNumber(item.count)+1}}
+    for(const name of extraIngredients){const key=normalizeCutHerbName(name),item=extraStats[key]||{name,count:0};extraStats[key]={name,count:progressNumber(item.count)+1}}
     next.extraIngredients=extraStats;
   }
   kampoProgress[key]=next;
