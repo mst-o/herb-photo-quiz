@@ -270,7 +270,7 @@ body.is-admin .nav-main{grid-template-columns:repeat(4,minmax(0,1fr))}
 </section>
 <section id="quiz" class="panel">
  <div class="row"><div><h2 style="margin:0">原型生薬識別クイズ</h2><p class="muted" id="modeLabel">出題モードを選び、「開始」を押してください。</p></div><div style="max-width:300px"><label for="answerMode">回答モード</label><select id="answerMode"><option value="name">生薬名だけ答える（和名・ラテン名）</option><option value="full">すべて答える（記述式6点／選択式7点）</option></select><label for="inputStyle" style="display:block;margin-top:10px">回答形式</label><select id="inputStyle"><option value="written">記述式</option><option value="choice">選択式（6択）</option></select><label for="quizMode" style="display:block;margin-top:10px">出題方法</label><select id="quizMode"><option value="random">ランダム出題</option><option value="weak">苦手問題の復習</option><option value="priority">重点復習（苦手・復習時期を優先）</option><option value="due">今日の復習（復習予定のみ）</option></select></div></div>
- <div class="rule small"><b>採点ルール</b><br>和名1点＋生薬ラテン名1点＋基原植物1点（ラテン名）＋科名1点（ラテン名）＋主成分1点。<b>記述式は用途1点を加えて6点満点</b>、<b>選択式は用途最大2点を加えて7点満点</b>です。記述式では基原植物・科名の和名回答は各0.5点、選択式ではラテン名のみを出題します。<b>生薬の和名が不正解の場合、その問題の得点はすべて0点</b>になります。記述式の用途は登録済みの用途を1つでも正しく記述できれば1点です。選択式の用途は従来どおり、正解を一部選択（誤答なし）で1点、今回の正解をすべて選択して誤答がなければ2点、誤答を1つでも選択した場合は0点です。<hr><b>入力上の注意</b><br>・生薬ラテン名は、原則として全て大文字で入力してください。各単語の頭文字のみ大文字でも正解とします。<br>・記号（例：-、[ ]）、数字、アルファベットは半角で入力してください。</div>
+ <div class="rule small"><b>採点ルール</b><br>和名1点＋生薬ラテン名1点＋基原植物1点（ラテン名）＋科名1点（ラテン名）＋主成分1点。<b>記述式は用途1点を加えて6点満点</b>、<b>選択式は用途最大2点を加えて7点満点</b>です。記述式では基原植物・科名の和名回答は各0.5点、選択式ではラテン名のみを出題します。<b>生薬の和名が不正解の場合、その問題の得点はすべて0点</b>になります。記述式の用途は登録済みの用途を1つでも正しく記述できれば1点です。選択式の用途は従来どおり、正しい用途を1つ以上選び（全正解ではなく誤答もない場合）1点、今回の正解をすべて選んで誤答がなければ2点、誤答を1つでも選んだ場合は0点です。<hr><b>入力上の注意</b><br>・生薬ラテン名は、原則として全て大文字で入力してください。各単語の頭文字のみ大文字でも正解とします。<br>・記号（例：-、[ ]）、数字、アルファベットは半角で入力してください。</div>
  <div id="quizArea"><div class="empty">共有データを読み込んでいます…</div></div>
 </section>
 <section id="cutQuiz" class="panel hidden">
@@ -827,7 +827,7 @@ function nextQuestion(){
   if($('inputStyle').value==='choice'){
    selectedConstituent='';
    form=choiceField('answerJapanese','① 生薬名・和名（1点）','japaneseName',h)+choiceField('answerLatin','① 生薬名・ラテン名（1点）','latinName',h);
-   if(answerMode==='full')form+=choiceField('answerOrigin','② 基原植物・ラテン名（1点）','originLatin',h)+choiceField('answerFamily','③ 科名・ラテン名（1点）','familyLatin',h)+choiceField('answerConstituents','④ 主成分（1点）','constituents',h)+'<div class="field"><label>⑤ 用途（複数選択・最大2点）</label><div id="useOptions" class="check-grid"></div></div>';
+   if(answerMode==='full')form+=choiceField('answerOrigin','② 基原植物・ラテン名（1点）','originLatin',h)+choiceField('answerFamily','③ 科名・ラテン名（1点）','familyLatin',h)+choiceField('answerConstituents','④ 主成分（1点）','constituents',h)+'<div class="field"><label>⑤ 用途（複数選択・最大2点）</label><div id="useOptions" class="check-grid"></div><span class="muted small">正しい用途を1つ以上選べば1点、正解をすべて選べば2点です（誤答を1つでも含む場合は0点）。</span></div>';
   }else selectedConstituent='';
  $('quizArea').innerHTML=`<div><span class="pill">${mode==='weak'?'苦手復習':'ランダム出題'}</span><span class="pill">${answerMode==='name'?'生薬名モード':`総合モード・${maxScore}点満点`}</span><span class="pill">${$('inputStyle').value==='choice'?'選択式':'記述式'}</span><span class="pill">登録 ${db.herbs.length} 種</span></div><img class="question-image" src="${escapeHtml(chosen)}" alt="識別する生薬の写真"><div id="extraPhotos" class="gallery"></div><form id="answerForm">${form}<div class="answer-actions"><button class="primary" type="submit">採点する</button><button class="secondary" type="button" onclick="endQuiz()">終了</button></div></form><div id="result"></div>`;
  const extra=$('extraPhotos');images.filter(src=>src!==chosen).slice(0,3).forEach(src=>{const im=document.createElement('img');im.src=src;im.alt='同じ生薬の別写真';extra.appendChild(im)});
@@ -896,7 +896,7 @@ async function checkAnswer(id,answerMode){
    const hasWrong=selected.some(u=>!correct.includes(u));
    if(selected.length>0&&!hasWrong&&correct.length>0){
     if(correct.every(u=>selected.includes(u))&&selected.length===correct.length){score+=2;lines.push('用途：全問正解（2点）／今回の正解をすべて選択し、誤答はありません')}
-    else{score+=1;usePartialCorrect=true;lines.push('用途：一部正解（1点）／選択した用途はすべて正解ですが、未選択の正解があります')}
+    else{score+=1;usePartialCorrect=true;lines.push('用途：正しい用途を1つ以上選択（1点）／選択した用途はすべて正解ですが、未選択の正解があります')}
    }else{
     const reason=selected.length===0?'選択なし':hasWrong?'誤った用途を選択しています':'正解用途が登録されていません';
     lines.push(`用途：不正解（0点）／${reason}／今回の正解：${escapeHtml((currentUseCorrect||[]).join('、')||'用途未登録')}`);
