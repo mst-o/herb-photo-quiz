@@ -72,6 +72,9 @@ progress{width:100%;height:20px}
 .kampo-question{background:#f3f6f2;border-radius:13px;padding:19px 14px;margin:14px 0;text-align:center}
 .kampo-question h3{font-size:1.8rem;margin:10px 0 5px;line-height:1.5}
 .kampo-question p{margin:8px 0}
+.kampo-photo-zoom-hint{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;margin:12px 0 4px;padding:10px 12px;border-radius:10px;background:#edf5ee;border:1px solid #cce0d0;line-height:1.5}
+.kampo-photo-zoom-hint strong{font-size:.92rem;color:#245e3d}
+.kampo-photo-zoom-hint span{font-size:.82rem;color:var(--muted)}
 .kampo-quiz-photos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:12px 0}
 .kampo-quiz-photos.is-many{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
 .kampo-photo-card{border:1px solid var(--line);border-radius:12px;padding:6px;min-width:0;background:#fff}
@@ -1666,7 +1669,7 @@ function nextKampoQuestion(){
       const names=shuffleValues([formula.name,...shuffleValues(otherNames).slice(0,5)]);
       answerHtml=`<div class="field"><label for="kampoPhotoAnswerChoice">漢方処方名を選択してください</label><select id="kampoPhotoAnswerChoice" required><option value="">選択してください</option>${names.map(x=>`<option value="${escapeHtml(x)}">${escapeHtml(x)}</option>`).join('')}</select></div>`;
     }else answerHtml='<div class="field"><label for="kampoPhotoAnswerWritten">漢方処方名を入力してください</label><input id="kampoPhotoAnswerWritten" autocomplete="off" placeholder="漢方処方名を入力" required></div>';
-    $('kampoQuizArea').innerHTML=`<div class="kampo-question"><span class="pill">写真識別・${config.difficulty==='beginner'?'初級':'上級'}</span><p>写真に写っている生薬で構成される漢方処方名を答えなさい。</p></div><div class="kampo-quiz-photos${chosenPhotos.length>=5?' is-many':''}">${photoCards}</div><form id="kampoAnswerForm">${answerHtml}<div class="answer-actions"><button type="submit" class="primary">採点する</button><button type="button" class="secondary" onclick="endKampoQuiz()">終了</button></div></form><div id="kampoResult" aria-live="polite"></div>`;
+    $('kampoQuizArea').innerHTML=`<div class="kampo-question"><span class="pill">写真識別・${config.difficulty==='beginner'?'初級':'上級'}</span><p>写真に写っている生薬で構成される漢方処方名を答えなさい。</p></div><p class="kampo-photo-zoom-hint" role="note"><strong>写真をタップすると拡大できます。</strong><span>拡大画面ではピンチ操作や＋／－ボタンで拡大・縮小できます。</span></p><div class="kampo-quiz-photos${chosenPhotos.length>=5?' is-many':''}">${photoCards}</div><form id="kampoAnswerForm">${answerHtml}<div class="answer-actions"><button type="submit" class="primary">採点する</button><button type="button" class="secondary" onclick="endKampoQuiz()">終了</button></div></form><div id="kampoResult" aria-live="polite"></div>`;
   }
   kampoCurrent={formula,ingredients,config,chosenPhotos};
   $('kampoAnswerForm').addEventListener('submit',e=>{e.preventDefault();checkKampoAnswer()});
