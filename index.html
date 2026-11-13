@@ -12,6 +12,16 @@ header{background:#183d2c;color:white;padding:22px 16px}header .wrap,main{max-wi
 main{padding:18px 14px 50px}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}.tab,button{border:0;border-radius:10px;padding:11px 14px;font:inherit;font-weight:650;cursor:pointer}.tab{background:#e4eae5;color:var(--ink)}.tab.active,button.primary{background:var(--green);color:white}button.secondary{background:var(--soft);color:var(--green)}button.danger{background:#fae9e7;color:var(--red)}button:disabled{opacity:.45;cursor:not-allowed}
 .panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px;box-shadow:0 3px 12px #1d38230a}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}.stat{background:white;border:1px solid var(--line);border-radius:12px;padding:12px}.stat b{display:block;font-size:1.35rem}.stat span{font-size:.83rem;color:var(--muted)}
 .question-image{width:100%;max-height:440px;object-fit:contain;background:#f0f2ef;border-radius:12px;display:block;margin:12px 0}.gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin:12px 0}.gallery img{width:100%;height:160px;object-fit:contain;background:#f0f2ef;border-radius:10px}.muted{color:var(--muted);font-size:.9rem}.field{display:flex;flex-direction:column;gap:6px;margin:12px 0}label{font-weight:650;font-size:.93rem}input,textarea,select{width:100%;border:1px solid #cbd6cd;border-radius:9px;padding:11px;font:inherit;background:white;color:var(--ink)}textarea{min-height:76px;resize:vertical}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.row>*{flex:1}.feedback{border-radius:10px;padding:13px;margin-top:12px}.good{background:#e5f5e8;border:1px solid #b5dfbe}.bad{background:#fff0e7;border:1px solid #f0c6ad}.hidden{display:none!important}.entry{display:grid;grid-template-columns:100px 1fr auto;gap:12px;align-items:center;border-top:1px solid var(--line);padding:12px 0}.thumb{width:100px;height:80px;object-fit:cover;border-radius:8px;background:#eee}.entry h3{margin:0 0 4px;font-size:1rem}.entry p{margin:3px 0;color:var(--muted);font-size:.83rem;white-space:pre-wrap}.small{font-size:.82rem}.pill{display:inline-block;background:#edf1ed;border-radius:99px;padding:3px 8px;font-size:.78rem;margin:2px}.empty{text-align:center;padding:26px 8px;color:var(--muted)}.answer-actions{display:flex;gap:8px;margin-top:10px}.answer-actions button{flex:1}.check-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px;margin:10px 0}.check-option{display:flex;gap:9px;align-items:flex-start;padding:10px;border:1px solid var(--line);border-radius:10px;font-weight:400}.check-option input{width:auto;margin-top:4px}.scoreline{font-size:1.2rem;font-weight:750}.rule{background:#f5f7f4;padding:12px;border-radius:10px}.preview-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}.preview-item{position:relative}.preview-item img{width:100%;height:115px;object-fit:contain;background:#f0f2ef;border-radius:8px}.preview-item button{width:100%;padding:6px;font-size:.8rem}
+/* 原型生薬の写真編集：既存写真も含め、スマホで順番と削除を操作可能にする。 */
+.herb-photo-grid{grid-template-columns:repeat(auto-fill,minmax(min(100%,165px),1fr));gap:12px}
+.herb-photo-grid .preview-item{border:1px solid var(--line);border-radius:10px;padding:8px;background:#fff;min-width:0}
+.herb-photo-grid .preview-item img{height:135px;width:100%;object-fit:contain}
+.herb-photo-caption{font-size:.78rem;color:var(--muted);margin:6px 0;min-height:1.6em}
+.herb-photo-actions{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.herb-photo-actions button{min-width:0;white-space:nowrap}
+.herb-photo-actions .photo-remove{grid-column:1/-1}
+.herb-photo-actions button:disabled{opacity:.35;cursor:not-allowed}
+.herb-photo-empty{grid-column:1/-1;padding:12px;border:1px dashed var(--line);border-radius:9px;color:var(--muted)}
 @media(max-width:560px){header{padding:18px 14px}.stats{grid-template-columns:repeat(2,1fr);gap:6px}.stat{padding:9px}.stat b{font-size:1.15rem}.panel{padding:14px}.entry{grid-template-columns:70px 1fr}.thumb{width:70px;height:68px}.entry .entry-actions{grid-column:2}.answer-actions{flex-direction:column}}
 
 #connectionState{padding:10px 14px;margin-bottom:10px;border-radius:9px;background:#e7f2e9;color:#194c37;font-size:.9rem}
@@ -365,7 +375,7 @@ body.is-admin .nav-main{grid-template-columns:repeat(4,minmax(0,1fr))}
   <input type="hidden" id="editId">
   <div class="field"><label for="herbName">生薬名・和名（必須／和名が採点の基準）</label><input id="herbName" required placeholder="例：カンゾウ"></div>
   <div class="field"><label for="herbLatin">生薬名・ラテン名（必須）</label><input id="herbLatin" required placeholder="例：GLYCYRRHIZAE RADIX"><span class="muted">原則として全て大文字で登録します。記号・数字・アルファベットは半角で入力。</span></div>
-  <div class="field"><label for="photo">写真（複数選択可）</label><input id="photo" type="file" accept="image/*" multiple><span class="muted">管理者が選んだ写真は共有ストレージに保存されます。既存写真を残したまま追加できます。</span><div id="photoPreview" class="preview-grid"></div></div>
+  <div class="field"><label for="photo">写真（複数選択可）</label><input id="photo" type="file" accept="image/*" multiple><span class="muted">登録済み写真も含めて、並び替え・削除・追加ができます。先頭の写真が登録一覧の代表写真です。変更は「保存する」を押すまで確定しません。削除後の復旧に備え、写真付きZIPのバックアップをおすすめします。</span><p id="photoDraftCount" class="muted small" aria-live="polite"></p><div id="photoPreview" class="preview-grid herb-photo-grid"></div><button id="resetHerbPhotoDraft" type="button" class="secondary hidden" style="margin-top:10px">写真の変更を取り消す</button></div>
   <div class="field"><label for="originLatin">基原植物・ラテン名（1点）</label><input id="originLatin" placeholder="例：Glycyrrhiza uralensis Fisch."></div>
   <div class="field"><label for="originJapanese">基原植物・和名（0.5点）</label><input id="originJapanese" placeholder="例：ウラルカンゾウ"></div>
   <div class="field"><label for="part">薬用部位（任意・学習用メモ）</label><input id="part" placeholder="例：根及びストロン"></div>
@@ -568,7 +578,45 @@ async function updateAdminSession(){if(!client)return;const {data,error}=await c
 function initClient(){if(!window.supabase?.createClient)throw new Error('Supabaseライブラリを読み込めません。通信状況を確認してください。');client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}})}
 async function uploadDataImage(src,path){if(!src.startsWith('data:image/'))return src;const response=await fetch(src);const blob=await response.blob();if(!blob.type.startsWith('image/'))throw new Error('対応していない画像形式です');const {error}=await client.storage.from('herb-images').upload(path,blob,{contentType:blob.type,upsert:true});if(error)throw error;const {data}=client.storage.from('herb-images').getPublicUrl(path);return data.publicUrl}
 async function upsertHerb(h){const {error}=await client.from('herbs').upsert(toRow(h),{onConflict:'id'});if(error)throw error}
-async function saveHerbToCloud(h){const uploaded=[];const images=[];try{for(const src of h.images){if(src.startsWith('data:image/')){const path=h.id+'/'+(globalThis.crypto?.randomUUID?.()||Date.now()+'-'+Math.random().toString(16).slice(2))+'.jpg';images.push(await uploadDataImage(src,path));uploaded.push(path)}else images.push(src)}h.images=images;await upsertHerb(h);await refreshHerbs()}catch(err){if(uploaded.length){await client.storage.from('herb-images').remove(uploaded).catch(()=>{})}throw err}}
+// 登録写真の変更はデータベース保存後に確定する。保存が成功した後は、通信エラーが起きても新写真を削除しない。
+async function saveHerbToCloud(h,previousImages=[]){
+ const uploaded=[],images=[];
+ try{
+  for(const src of h.images){
+   if(src.startsWith('data:image/')){
+    const path=h.id+'/'+(globalThis.crypto?.randomUUID?.()||Date.now()+'-'+Math.random().toString(16).slice(2))+'.jpg';
+    images.push(await uploadDataImage(src,path));uploaded.push(path);
+   }else images.push(src);
+  }
+  h.images=images;
+  await upsertHerb(h);
+ }catch(err){
+  if(uploaded.length){try{await client.storage.from('herb-images').remove(uploaded)}catch(cleanupErr){console.warn('未保存写真の片付けに失敗:',cleanupErr)}}
+  throw err;
+ }
+ const warnings=[];
+ let refreshed=true;
+ try{await refreshHerbs()}catch(err){refreshed=false;console.warn('保存後の再取得に失敗:',err);warnings.push('一覧を更新できませんでした。ページを再読み込みしてください。')}
+ // 他の登録データからも参照される写真や外部URLはストレージから削除しない。
+ // 自分のフォルダー内で、どこからも参照されなくなった画像だけ削除する。
+ if(refreshed&&previousImages.length){
+  const prefix=SUPABASE_URL+'/storage/v1/object/public/herb-images/'+h.id+'/';
+  const keep=new Set(images),paths=[];
+  for(const url of new Set(previousImages)){
+   if(keep.has(url)||!url.startsWith(prefix))continue;
+   const usedByHerb=db.herbs.some(other=>(other.images||[]).includes(url));
+   const usedByCut=cutHerbs.some(other=>JSON.stringify(other.images||[]).includes(url));
+   if(usedByHerb||usedByCut)continue;
+   try{paths.push(decodeURIComponent(url.slice((SUPABASE_URL+'/storage/v1/object/public/herb-images/').length)))}
+   catch(err){console.warn('写真URLの解析に失敗:',err)}
+  }
+  if(paths.length){
+   try{const {error}=await client.storage.from('herb-images').remove(paths);if(error)throw error}
+   catch(err){console.warn('不要写真のストレージ削除に失敗:',err);warnings.push('旧写真のストレージ削除に失敗しました。登録内容は更新済みです。')}
+  }
+ }
+ return warnings.join('\n');
+}
 async function initShared(){try{initClient();const s=getLocalProgress();db.stats=s.stats||{};db.attempts=Number(s.attempts)||0;db.correct=Number(s.correct)||0;db.totalScore=Number(s.totalScore)||0;await updateAdminSession();await refreshHerbs();await refreshCutHerbs();await refreshKampoFormulas().catch(err=>{kampoLoadError=err.message||String(err);console.warn('漢方処方の読み込みに失敗:',err);renderKampoList();renderKampoInfo();});client.auth.onAuthStateChange(()=>{setTimeout(()=>{updateAdminSession().catch(console.error)},0)})}catch(err){console.error(err);setStatus('接続できません：'+(err.message||String(err)),true);$('quizArea').innerHTML='<p class="empty">共有データの取得に失敗しました。接続状況を確認して、ページを再読み込みしてください。</p>'}}
 function escapeHtml(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 
@@ -946,12 +994,79 @@ async function checkAnswer(id,answerMode){
 }
 $('quizMode').addEventListener('change',()=>{currentId=null;showIdle()});$('answerMode').addEventListener('change',()=>{currentId=null;showIdle()});$('inputStyle').addEventListener('change',()=>{currentId=null;showIdle()});
 function compressImage(file){return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onerror=reject;reader.onload=()=>{const im=new Image();im.onerror=reject;im.onload=()=>{const max=900,scale=Math.min(1,max/Math.max(im.width,im.height)),canvas=document.createElement('canvas');canvas.width=Math.round(im.width*scale);canvas.height=Math.round(im.height*scale);canvas.getContext('2d').drawImage(im,0,0,canvas.width,canvas.height);resolve(canvas.toDataURL('image/jpeg',.62))};im.src=reader.result};reader.readAsDataURL(file)})}
-$('photo').addEventListener('change',async e=>{const files=[...e.target.files];if(!files.length)return;try{for(const f of files){if(!f.type.startsWith('image/'))continue;stagedImages.push(await compressImage(f))}renderPhotoPreview()}catch(err){alert('画像を読み込めませんでした')}e.target.value=''});
-function renderPhotoPreview(){const root=$('photoPreview');root.innerHTML='';stagedImages.forEach((src,i)=>{const d=document.createElement('div');d.className='preview-item';d.innerHTML=`<img src="${escapeHtml(src)}" alt="登録写真 ${i+1}"><button type="button" class="secondary">この写真を外す</button>`;d.querySelector('button').addEventListener('click',()=>{stagedImages.splice(i,1);renderPhotoPreview()});root.appendChild(d)})}
-$('herbForm').addEventListener('submit',async e=>{e.preventDefault();if(!isAdmin||isBusy)return;const editId=$('editId').value,old=db.herbs.find(h=>h.id===editId);const japaneseName=$('herbName').value.trim(),latinName=$('herbLatin').value.trim();if(!japaneseName||!latinName){alert('和名とラテン名を入力してください');return}const images=[...(old?.images||[]),...stagedImages];if(!images.length){alert('写真を1枚以上登録してください');return}const h={id:editId||('h'+Date.now()+Math.random().toString(16).slice(2,7)),japaneseName,latinName,aliases:old?.aliases||[],images,originLatin:$('originLatin').value.trim(),originJapanese:$('originJapanese').value.trim(),part:$('part').value.trim(),familyLatin:$('familyLatin').value.trim(),familyJapanese:$('familyJapanese').value.trim(),constituents:$('constituents').value.trim(),uses:splitAliases($('uses').value),notes:$('notes').value.trim()};isBusy=true;setStatus('共有データを保存しています…');try{await saveHerbToCloud(h);resetForm();alert(old?'共有生薬データを更新しました':'共有生薬データを登録しました');switchTab('list')}catch(err){console.error(err);alert('共有データの保存に失敗：'+(err.message||err));setStatus('保存エラー。入力内容を確認してください。',true)}finally{isBusy=false}});
-function resetForm(){ $('herbForm').reset();$('editId').value='';stagedImages=[];renderPhotoPreview();$('formTitle').textContent='原型生薬を登録'}
+// 登録済みURLと新規写真(data URL)を1つのドラフト配列で扱う。保存前には共有データを変更しない。
+$('photo').addEventListener('change',async e=>{
+ const files=[...e.target.files];
+ if(!files.length||isBusy)return;
+ try{
+  for(const f of files){if(!f.type.startsWith('image/'))continue;stagedImages.push(await compressImage(f))}
+  renderPhotoPreview();
+ }catch(err){alert('画像を読み込めませんでした')}
+ e.target.value='';
+});
+function renderPhotoPreview(){
+ const root=$('photoPreview');root.innerHTML='';
+ const editing=!!$('editId').value;
+ const count=$('photoDraftCount');
+ if(count)count.textContent=`保存予定：写真 ${stagedImages.length}枚`+(editing?'（登録済み写真の削除や並び替えも、保存するまで反映されません）':'');
+ $('resetHerbPhotoDraft').classList.toggle('hidden',!editing);
+ if(!stagedImages.length){root.innerHTML='<p class="herb-photo-empty">写真がありません。写真を1枚以上追加してください。</p>';return}
+ stagedImages.forEach((src,i)=>{
+  const d=document.createElement('div');d.className='preview-item';
+  const isNew=src.startsWith('data:image/');
+  d.innerHTML=`<img src="${escapeHtml(src)}" alt="保存予定の写真 ${i+1}"><p class="herb-photo-caption">${i+1}枚目${i===0?'（代表写真）':''}・${isNew?'追加予定':'登録済み'}</p><div class="herb-photo-actions"><button type="button" class="secondary" data-photo-action="up" data-photo-index="${i}" aria-label="${i+1}枚目の写真を上へ移動" ${i===0?'disabled':''}>↑ 上へ</button><button type="button" class="secondary" data-photo-action="down" data-photo-index="${i}" aria-label="${i+1}枚目の写真を下へ移動" ${i===stagedImages.length-1?'disabled':''}>↓ 下へ</button><button type="button" class="danger photo-remove" data-photo-action="remove" data-photo-index="${i}" aria-label="${i+1}枚目の写真を削除予定にする">この写真を削除</button></div>`;
+  root.appendChild(d);
+ });
+}
+$('photoPreview').addEventListener('click',e=>{
+ const btn=e.target.closest('button[data-photo-action]');if(!btn||isBusy)return;
+ const i=Number(btn.dataset.photoIndex),action=btn.dataset.photoAction;
+ if(!Number.isInteger(i)||i<0||i>=stagedImages.length)return;
+ if(action==='remove')stagedImages.splice(i,1);
+ else if(action==='up'&&i>0)[stagedImages[i-1],stagedImages[i]]=[stagedImages[i],stagedImages[i-1]];
+ else if(action==='down'&&i<stagedImages.length-1)[stagedImages[i+1],stagedImages[i]]=[stagedImages[i],stagedImages[i+1]];
+ else return;
+ renderPhotoPreview();
+});
+$('resetHerbPhotoDraft').addEventListener('click',()=>{
+ if(isBusy)return;
+ const h=db.herbs.find(x=>String(x.id)===String($('editId').value));
+ if(!h)return;
+ stagedImages=[...(h.images||[])];
+ renderPhotoPreview();
+});
+$('herbForm').addEventListener('submit',async e=>{
+ e.preventDefault();if(!isAdmin||isBusy)return;
+ const editId=$('editId').value,old=db.herbs.find(h=>h.id===editId);
+ const japaneseName=$('herbName').value.trim(),latinName=$('herbLatin').value.trim();
+ if(!japaneseName||!latinName){alert('和名とラテン名を入力してください');return}
+ const images=stagedImages.slice();
+ if(!images.length){alert('写真を1枚以上登録してください');return}
+ const removedCount=(old?.images||[]).filter(url=>!images.includes(url)).length;
+ if(removedCount&&!confirm(`登録済み写真 ${removedCount} 枚を削除します。保存後は元に戻せない場合があります。先に写真付きZIPのバックアップを保存しておくことをおすすめします。続行しますか？`))return;
+ const h={id:editId||('h'+Date.now()+Math.random().toString(16).slice(2,7)),japaneseName,latinName,aliases:old?.aliases||[],images,originLatin:$('originLatin').value.trim(),originJapanese:$('originJapanese').value.trim(),part:$('part').value.trim(),familyLatin:$('familyLatin').value.trim(),familyJapanese:$('familyJapanese').value.trim(),constituents:$('constituents').value.trim(),uses:splitAliases($('uses').value),notes:$('notes').value.trim()};
+ isBusy=true;setStatus('共有データを保存しています…');
+ try{
+  const warning=await saveHerbToCloud(h,old?.images||[]);
+  resetForm();alert((old?'共有生薬データを更新しました':'共有生薬データを登録しました')+(warning?'\n'+warning:''));switchTab('list');
+ }catch(err){console.error(err);alert('共有データの保存に失敗：'+(err.message||err));setStatus('保存エラー。入力内容を確認してください。',true)}
+ finally{isBusy=false}
+});
+function resetForm(){
+ $('herbForm').reset();$('editId').value='';stagedImages=[];renderPhotoPreview();$('formTitle').textContent='原型生薬を登録';
+}
 $('resetForm').addEventListener('click',resetForm);
-function editHerb(id){const h=db.herbs.find(x=>x.id===id);if(!h)return;switchTab('manage');$('editId').value=h.id;$('herbName').value=h.japaneseName||h.name||'';$('herbLatin').value=h.latinName||'';$('originLatin').value=h.originLatin||h.origin||'';$('originJapanese').value=h.originJapanese||'';$('part').value=h.part||'';$('familyLatin').value=h.familyLatin||'';$('familyJapanese').value=h.familyJapanese||h.family||'';$('constituents').value=h.constituents||'';$('uses').value=(h.uses||[]).join('\n');$('notes').value=h.notes||'';stagedImages=[];renderPhotoPreview();$('formTitle').textContent='原型生薬を編集';window.scrollTo({top:0,behavior:'smooth'})}
+function editHerb(id){
+ const h=db.herbs.find(x=>x.id===id);if(!h)return;
+ switchTab('manage');$('editId').value=h.id;
+ $('herbName').value=h.japaneseName||h.name||'';$('herbLatin').value=h.latinName||'';
+ $('originLatin').value=h.originLatin||h.origin||'';$('originJapanese').value=h.originJapanese||'';
+ $('part').value=h.part||'';$('familyLatin').value=h.familyLatin||h.family||'';
+ $('familyJapanese').value=h.familyJapanese||'';$('constituents').value=h.constituents||'';
+ $('uses').value=(h.uses||[]).join('\n');$('notes').value=h.notes||'';
+ stagedImages=[...(h.images||[])];renderPhotoPreview();
+ $('formTitle').textContent='原型生薬を編集';window.scrollTo({top:0,behavior:'smooth'});
+}
 async function deleteHerb(id){if(!isAdmin||isBusy)return;const h=db.herbs.find(x=>x.id===id);if(!h||!confirm(`「${h.japaneseName}」を共有データから削除しますか？写真も削除対象となります。元のJSONバックアップは変更されません。`))return;isBusy=true;try{const {error}=await client.from('herbs').delete().eq('id',id);if(error)throw error;const prefix=SUPABASE_URL+'/storage/v1/object/public/herb-images/';const paths=(h.images||[]).filter(x=>x.startsWith(prefix)).map(x=>decodeURIComponent(x.slice(prefix.length)));if(paths.length){const {error:photoError}=await client.storage.from('herb-images').remove(paths);if(photoError)console.warn('画像の削除に失敗しました',photoError)}await refreshHerbs();alert('共有データから削除しました')}catch(err){alert('削除できません：'+(err.message||err))}finally{isBusy=false}}
 // 詳細パネルを一覧の末尾ではなく、選択した行のすぐ下へ移動する。
 // 3つの情報画面を関連付ける。カタカナ・ひらがなの表記ゆれのみ吸収し、
