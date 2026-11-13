@@ -216,6 +216,61 @@ body.is-admin .nav-main{grid-template-columns:repeat(4,minmax(0,1fr))}
 .kampo-quiz-settings select{box-sizing:border-box;display:block;width:100%;max-width:100%;min-width:0}
 .info-photo-viewer .info-photo-stage{display:flex;flex:1;min-height:0;align-items:center;justify-content:center;overflow:auto;padding:14px}
 .info-photo-viewer .info-photo-stage img{display:block;width:auto;height:auto;max-width:100%;max-height:100%;object-fit:contain}
+
+/* 原型生薬クイズ：見出し・設定・採点案内をモバイル優先で整理 */
+#quiz.quiz-refined{padding:clamp(16px,2.6vw,26px)}
+#quiz .quiz-header{margin-bottom:22px;min-width:0}
+#quiz .quiz-kicker{display:inline-block;margin-bottom:8px;padding:5px 10px;border-radius:999px;background:#e7f2e9;color:#276749;font-size:.75rem;font-weight:750;letter-spacing:.035em}
+#quiz .quiz-header h2{font-size:clamp(1.35rem,2.7vw,1.75rem);letter-spacing:-.035em;line-height:1.35;margin:0 0 9px;overflow-wrap:normal}
+#quiz #modeLabel{margin:0;line-height:1.65;font-size:.88rem}
+#quiz .quiz-settings-heading{font-weight:800;font-size:.94rem;color:#26382c;margin:0 0 9px}
+#quiz .quiz-settings{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,.85fr) minmax(0,1.2fr);gap:12px;padding:16px;border:1px solid #e1eae2;border-radius:14px;background:#f6f9f6}
+#quiz .quiz-setting{display:flex;flex-direction:column;gap:7px;min-width:0}
+#quiz .quiz-setting label{color:#344d3d;font-size:.82rem;font-weight:760}
+#quiz .quiz-setting select{min-width:0;max-width:100%;min-height:49px;margin:0;padding:12px 10px;border:1px solid #c6d6cb;border-radius:10px;background:#fff;color:#202b24;font-size:.94rem;font-weight:550;overflow:hidden;text-overflow:ellipsis}
+#quiz .quiz-setting select:focus-visible{outline:3px solid #a4cbb0;outline-offset:1px;border-color:#317c55}
+#quiz .quiz-scoring{margin-top:16px;padding:16px 16px 0;background:#fff;border:1px solid #e2e8e3;border-radius:14px;overflow:hidden}
+#quiz .quiz-scoring-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:12px}
+#quiz .quiz-scoring-title{font-weight:800;font-size:.98rem}
+#quiz .quiz-scoring-note{font-size:.75rem;color:#65766a}
+#quiz .quiz-score-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+#quiz .quiz-score-item{background:#f0f6f1;border:1px solid #e2eee4;border-radius:11px;padding:11px 10px;display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}
+#quiz .quiz-score-item span{font-size:.79rem;font-weight:700;color:#3e6250;min-width:0}
+#quiz .quiz-score-item strong{font-size:1.6rem;line-height:1;font-weight:850;color:#276749;white-space:nowrap}
+#quiz .quiz-score-item strong small{font-size:.75rem;margin-left:2px}
+#quiz .quiz-score-item-name{background:#f7f8f6;border-color:#e7eae6}
+#quiz .quiz-score-item-name strong{color:#54685b}
+#quiz .quiz-important{margin:12px 1px 14px;color:#665044;font-size:.81rem;line-height:1.6}
+#quiz .quiz-rule-details{margin:0 -16px;border-top:1px solid #e4ebe5}
+#quiz .quiz-rule-details summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 16px;color:#256646;background:#f9fbf9;font-size:.87rem;font-weight:750}
+#quiz .quiz-rule-details summary::-webkit-details-marker{display:none}
+#quiz .quiz-rule-details summary::after{content:'⌄';font-size:1.25rem;line-height:.7;transition:transform .18s ease}
+#quiz .quiz-rule-details[open] summary::after{transform:rotate(180deg)}
+#quiz .quiz-rule-details summary:focus-visible{outline:3px solid #a4cbb0;outline-offset:-3px}
+#quiz .quiz-rule-content{padding:13px 16px 20px;border-top:1px solid #e4ebe5;font-size:.85rem;line-height:1.8;color:#42544a}
+#quiz .quiz-rule-content h3{margin:12px 0 8px;font-size:.91rem;color:#20382a}
+#quiz .quiz-rule-content p{margin:7px 0}
+#quiz .quiz-rule-content ul{margin:6px 0 0;padding-left:1.3em}
+#quiz .quiz-point-lines{border:1px solid #e5ebe5;border-radius:9px;overflow:hidden}
+#quiz .quiz-point-lines>div{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:7px 11px}
+#quiz .quiz-point-lines>div+div{border-top:1px solid #edf0ed}
+#quiz .quiz-point-lines strong{font-size:.83rem;color:#256646;white-space:nowrap}
+#quiz #quizArea>.empty{margin-top:16px;padding:25px 12px;border:1px dashed #b5d3bd;border-radius:14px;background:#f8fbf8;line-height:1.7}
+#quiz #quizArea>.empty button.primary{min-width:min(100%,210px);min-height:46px;margin-top:4px}
+@media(max-width:740px){
+ #quiz .quiz-settings{grid-template-columns:minmax(0,1fr);gap:12px;padding:14px}
+ #quiz .quiz-settings-heading{margin-bottom:8px}
+ #quiz .quiz-score-item{padding:10px 8px;gap:5px;flex-direction:column;align-items:flex-start}
+ #quiz .quiz-score-item strong{font-size:1.5rem}
+}
+@media(max-width:400px){
+ #quiz .quiz-header{margin-bottom:17px}
+ #quiz .quiz-scoring{padding:13px 13px 0}
+ #quiz .quiz-score-grid{gap:6px}
+ #quiz .quiz-score-item span{font-size:.75rem}
+ #quiz .quiz-rule-details{margin:0 -13px}
+ #quiz .quiz-settings{padding:12px}
+}
 </style>
 </head>
 <body>
@@ -281,9 +336,49 @@ body.is-admin .nav-main{grid-template-columns:repeat(4,minmax(0,1fr))}
  </details>
  <p class="progress-footnote">「復習対象」は直近の不正解などによる苦手判定、「今日の復習」は復習予定日が今日以前の項目です。漢方処方は回答形式・難易度別に履歴を管理します。復習間隔は正解が続くと1日→3日→7日→14日→30日、誤答時は当日から再復習できます。従来の正解履歴には復習予定日がないため、次の解答後から日付管理が始まります。記録はこの端末のブラウザにのみ保存され、別端末とは自動同期されません。</p>
 </section>
-<section id="quiz" class="panel">
- <div class="row"><div><h2 style="margin:0">原型生薬識別クイズ</h2><p class="muted" id="modeLabel">出題モードを選び、「開始」を押してください。</p></div><div style="max-width:300px"><label for="answerMode">回答モード</label><select id="answerMode"><option value="full" selected>すべて答える（記述式6点／選択式7点）</option><option value="name">生薬名だけ答える（和名・ラテン名）</option></select><label for="inputStyle" style="display:block;margin-top:10px">回答形式</label><select id="inputStyle"><option value="written">記述式</option><option value="choice">選択式（6択）</option></select><label for="quizMode" style="display:block;margin-top:10px">出題方法</label><select id="quizMode"><option value="random">ランダム出題</option><option value="weak">苦手問題の復習</option><option value="priority">重点復習（苦手・復習時期を優先）</option><option value="due">今日の復習（復習予定のみ）</option></select></div></div>
- <div class="rule small"><b>採点ルール</b><br>和名1点＋生薬ラテン名1点＋基原植物1点（ラテン名）＋科名1点（ラテン名）＋主成分1点。<b>記述式は用途1点を加えて6点満点</b>、<b>選択式は用途最大2点を加えて7点満点</b>です。記述式では基原植物・科名の和名回答は各0.5点、選択式ではラテン名のみを出題します。<b>生薬の和名が不正解の場合、その問題の得点はすべて0点</b>になります。記述式の用途は登録済みの用途を1つでも正しく記述できれば1点です。選択式の用途は従来どおり、正しい用途を1つ以上選び（全正解ではなく誤答もない場合）1点、今回の正解をすべて選んで誤答がなければ2点、誤答を1つでも選んだ場合は0点です。<hr><b>入力上の注意</b><br>・生薬ラテン名は、原則として全て大文字で入力してください。各単語の頭文字のみ大文字でも正解とします。<br>・記号（例：-、[ ]）、数字、アルファベットは半角で入力してください。</div>
+<section id="quiz" class="panel quiz-refined">
+ <div class="quiz-header">
+  <span class="quiz-kicker">写真で学ぶ・原型生薬</span>
+  <h2>原型生薬識別クイズ</h2>
+  <p class="muted" id="modeLabel">回答方法を選び、「開始」を押してください。</p>
+ </div>
+ <div class="quiz-settings-heading">回答設定</div>
+ <div class="quiz-settings">
+  <div class="quiz-setting"><label for="answerMode">回答モード</label><select id="answerMode"><option value="full" selected>すべて答える</option><option value="name">生薬名だけ答える</option></select></div>
+  <div class="quiz-setting"><label for="inputStyle">回答形式</label><select id="inputStyle"><option value="written">記述式</option><option value="choice">選択式（6択）</option></select></div>
+  <div class="quiz-setting"><label for="quizMode">出題方法</label><select id="quizMode"><option value="random">ランダム出題</option><option value="weak">苦手問題の復習</option><option value="priority">重点復習（苦手・復習時期を優先）</option><option value="due">今日の復習（復習予定のみ）</option></select></div>
+ </div>
+ <div class="quiz-scoring" aria-label="採点ルール">
+  <div class="quiz-scoring-head"><span class="quiz-scoring-title">採点ルール</span><span class="quiz-scoring-note">総合モードの満点</span></div>
+  <div class="quiz-score-grid">
+   <div class="quiz-score-item"><span>記述式</span><strong>6<small>点</small></strong></div>
+   <div class="quiz-score-item"><span>選択式</span><strong>7<small>点</small></strong></div>
+   <div class="quiz-score-item quiz-score-item-name"><span>名前のみ</span><strong>2<small>点</small></strong></div>
+  </div>
+  <div class="quiz-important">生薬の和名が不正解の場合、その問題の得点はすべて0点になります。</div>
+  <details class="quiz-rule-details">
+   <summary>配点と入力の注意を確認</summary>
+   <div class="quiz-rule-content">
+    <h3>共通の配点（総合モード）</h3>
+    <div class="quiz-point-lines">
+     <div><span>生薬名・和名</span><strong>1点</strong></div>
+     <div><span>生薬ラテン名</span><strong>1点</strong></div>
+     <div><span>基原植物（ラテン名）</span><strong>1点</strong></div>
+     <div><span>科名（ラテン名）</span><strong>1点</strong></div>
+     <div><span>主成分</span><strong>1点</strong></div>
+    </div>
+    <p>記述式では基原植物・科名を和名で答えると、それぞれ0.5点です。選択式ではラテン名だけを出題します。</p>
+    <h3>用途の採点</h3>
+    <p><b>記述式（1点）：</b>登録済みの用途をどれか1つでも正しく答えれば1点です。</p>
+    <p><b>選択式（最大2点）：</b>正しい用途を1つ以上選び、まだ全正解でない場合は1点。今回の正解をすべて選び、誤答がなければ2点。誤答を1つでも選ぶと0点です。</p>
+    <h3>入力上の注意</h3>
+    <ul>
+     <li>生薬ラテン名は原則すべて大文字で入力してください。各単語の頭文字のみ大文字でも正解です。</li>
+     <li>記号（例：-、[ ]）、数字、アルファベットは半角で入力してください。</li>
+    </ul>
+   </div>
+  </details>
+ </div>
  <div id="quizArea"><div class="empty">共有データを読み込んでいます…</div></div>
 </section>
 <section id="cutQuiz" class="panel hidden">
