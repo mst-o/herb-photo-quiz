@@ -271,6 +271,123 @@ body.is-admin .nav-main{grid-template-columns:repeat(4,minmax(0,1fr))}
  #quiz .quiz-rule-details{margin:0 -13px}
  #quiz .quiz-settings{padding:12px}
 }
+
+/* 2026-11: 原型生薬クイズと統一する全画面のモバイル優先UI */
+:root{--ui-surface:#f6f9f6;--ui-accent:#276749;--ui-border:#dce8df;--ui-ink:#24362a}
+main{width:100%;min-width:0}
+section.panel{min-width:0}
+section.panel>*{min-width:0}
+section.panel:not(#quiz){padding:clamp(16px,2.6vw,26px)}
+section.panel .study-hero{margin-bottom:22px;min-width:0}
+section.panel .study-kicker{display:inline-block;padding:5px 10px;margin-bottom:8px;border-radius:999px;background:#e7f2e9;color:#276749;font-size:.75rem;font-weight:750;letter-spacing:.035em}
+section.panel .study-hero h2{margin:0 0 9px!important;font-size:clamp(1.34rem,2.8vw,1.75rem);line-height:1.4;letter-spacing:-.025em;overflow-wrap:anywhere}
+section.panel .study-hero p{margin:0;font-size:.9rem;line-height:1.72;color:var(--muted)}
+.study-settings-heading{font-weight:800;font-size:.94rem;color:var(--ui-ink);margin:17px 0 10px;line-height:1.5}
+.study-settings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:16px;border:1px solid var(--ui-border);border-radius:14px;background:var(--ui-surface);margin-bottom:17px}
+.study-settings .field,.study-search-shell .field{margin:0;min-width:0;gap:8px}
+.study-settings .field label,.study-search-shell label{color:#344d3d;font-size:.84rem;font-weight:760}
+.study-settings select,.study-search-shell input{display:block;width:100%;min-width:0;max-width:100%;min-height:50px;margin:0;padding:11px 12px;border:1px solid #c6d6cb;border-radius:11px;background:white;color:#202b24;font-size:.94rem;text-overflow:ellipsis}
+.study-settings select:focus-visible,.study-search-shell input:focus-visible,section.panel input:focus-visible,section.panel textarea:focus-visible,section.panel button:focus-visible{outline:3px solid #90c5a1;outline-offset:2px}
+.study-note{padding:12px 14px;margin:14px 0 20px;border:1px solid #dce8df;background:#f6f9f6;border-radius:12px;color:#385342;font-size:.86rem;line-height:1.65}
+.study-note strong{display:block;font-size:.84rem;margin-bottom:3px;color:#276749}
+.study-note p{margin:0;font-size:inherit;line-height:inherit}
+.study-disclosure{border:1px solid var(--ui-border);border-radius:12px;background:var(--ui-surface);margin:15px 0;overflow:hidden}
+.study-disclosure summary{cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 15px;font-size:.91rem;font-weight:750;color:var(--ui-ink);list-style:none}
+.study-disclosure summary::-webkit-details-marker{display:none}
+.study-disclosure summary::after{content:'⌄';font-size:1.25rem;line-height:1;flex-shrink:0;color:#417457;transition:transform .15s}
+.study-disclosure[open] summary::after{transform:rotate(180deg)}
+.study-summary-hint{font-size:.73rem;color:var(--muted);font-weight:500;margin-left:auto;text-align:right}
+.study-disclosure-body{border-top:1px solid var(--ui-border);padding:13px 15px;line-height:1.85;font-size:.86rem;color:#39463d;background:#fff}
+.study-disclosure-body b{color:#23593c}
+#cutQuizArea.empty,#cutQuizArea .empty,#kampoQuizArea .empty{border:1px dashed #cfddd0;border-radius:14px;background:#fbfcfa;padding:24px 12px;line-height:1.6;margin:20px 0 0}
+#cutQuizArea.empty button,#cutQuizArea .empty button,#kampoQuizArea .empty button{width:min(100%,360px);min-height:50px;box-shadow:0 4px 10px #27674916}
+#kampoQuiz .study-settings.kampo-quiz-settings{grid-template-columns:repeat(2,minmax(0,1fr));margin-bottom:12px}
+#kampoQuiz .study-settings .field{max-width:none;min-width:0}
+#kampoQuiz .study-settings #kampoQuizDifficultyField.hidden{display:none!important}
+#kampoQuizProgress{padding:9px 12px;margin:16px 0 0;border-radius:10px;background:#f5f7f4;line-height:1.6}
+#kampoQuiz #kampoCycleProgress{line-height:1.55}
+.study-search-shell{padding:15px;border:1px solid var(--ui-border);border-radius:14px;background:var(--ui-surface);margin:16px 0 18px}
+.study-search-shell .study-settings-heading{margin:0 0 10px}
+.study-filter-shell{padding:15px;border:1px solid var(--ui-border);border-radius:14px;background:var(--ui-surface);margin:20px 0 16px}
+.study-filter-shell .study-settings-heading{margin:0 0 10px}
+.study-filter-shell .progress-filters{margin:0}
+.study-filter-shell .progress-filters .field{margin:0;min-width:0}
+.study-filter-shell select,.study-filter-shell input{min-width:0;width:100%;min-height:48px;background:white}
+#progress .review-today-panel{border-radius:14px;border:1px solid #d8e6da;background:#f0f7f0;padding:18px;margin:18px 0}
+#progress .review-today-panel h3{font-size:1.06rem;color:#1b5134}
+#progress .review-start-actions{margin-top:12px;gap:9px}
+#progress .review-start-actions button{background:#fff;color:#276749;border:1px solid #bfd7c5;line-height:1.55;min-height:47px}
+#progress .progress-card{border-radius:13px;box-shadow:0 2px 6px #243c2b07}
+#progress .progress-card.active{box-shadow:inset 0 0 0 1px #276749,0 2px 9px #243c2b0b}
+#progress .progress-summary-line{margin:14px 0 12px;line-height:1.6}
+#progress .study-bottom-info{margin-top:18px}
+#progress .study-bottom-info .progress-footnote{padding:14px 15px;margin:0;background:white;line-height:1.85}
+#progress #learningBackupPanel{background:#f8faf8;border-radius:13px;margin-top:22px}
+/* 検索・閲覧カードと管理画面の登録一覧 */
+#infoList .entry,#cutInfoList .entry,#herbList .entry,#cutList .entry,#kampoList .entry,#progressList .progress-entry{border:1px solid var(--ui-border);border-radius:13px;padding:14px;margin:10px 0;background:#fff;box-shadow:0 2px 8px #263a2d08;min-width:0}
+#infoList .entry h3,#cutInfoList .entry h3,#herbList .entry h3,#cutList .entry h3,#kampoList .entry h3{font-size:1rem;line-height:1.55;overflow-wrap:anywhere}
+#infoList .entry p,#cutInfoList .entry p,#herbList .entry p,#cutList .entry p,#kampoList .entry p{font-size:.82rem;line-height:1.65;overflow-wrap:anywhere;white-space:normal}
+#infoList .entry .thumb,#cutInfoList .entry .thumb,#herbList .entry .thumb,#cutList .entry .thumb{border-radius:11px;background:#f3f6f2;object-fit:contain;border:1px solid #e7ede7}
+#infoList .entry .entry-actions,#cutInfoList .entry .entry-actions,#herbList .entry .entry-actions,#cutList .entry .entry-actions,#kampoList .entry .entry-actions{min-width:0}
+#kampoInfoList .kampo-public-row{border:1px solid var(--ui-border);border-radius:13px;margin:10px 0;padding:15px;background:#fff;box-shadow:0 2px 8px #263a2d08}
+#kampoInfoList .kampo-public-row h3{line-height:1.5;overflow-wrap:anywhere}
+#kampoInfoList .kampo-public-row p{line-height:1.6;overflow-wrap:anywhere}
+#infoDetail,#cutInfoDetail,#kampoInfoDetail{min-width:0;overflow-wrap:anywhere}
+#infoDetail:not(.hidden),#cutInfoDetail:not(.hidden),#kampoInfoDetail:not(.hidden){border:1px solid #d2e3d5;border-radius:12px;background:#fbfdfb;padding:15px;margin:12px 0}
+/* 管理者向け編集フォーム：入力を主題ごとにまとめる */
+section.panel form .editor-section{border:1px solid var(--ui-border);border-radius:14px;background:#f9fbf9;padding:16px;margin:15px 0;min-width:0}
+section.panel form .editor-section h3{font-size:1rem;margin:0 0 13px;padding:0 0 10px;border-bottom:1px solid #dfebe1;color:#25583b;line-height:1.5}
+section.panel form .editor-section .field{min-width:0;margin:11px 0}
+section.panel form .editor-section .field input,section.panel form .editor-section .field textarea,section.panel form .editor-section .field select{min-width:0;max-width:100%;font-size:.93rem;line-height:1.55}
+section.panel form .editor-section .muted{line-height:1.7}
+section.panel form .editor-actions{padding:10px 0 0}
+section.panel form .editor-actions .row{gap:10px}
+section.panel form .editor-actions button{min-height:49px}
+#cutManage #cutPhotoPreview{margin:14px 0}
+#cutManage #cutMaskEditor{max-width:100%}
+#kampoManage #kampoIngredientPreview{line-height:1.75}
+#kampoManage .editor-section .row{align-items:stretch}
+#kampoManage #kampoIngredientSelect{min-width:0!important}
+#backup .backup-panel,#backup .backup-accordion{padding:18px;border-radius:14px;background:#f9fbf9;border-color:var(--ui-border);margin:16px 0}
+#backup .backup-panel h3{font-size:1rem;line-height:1.5;color:#24583b}
+#backup .backup-panel .muted{line-height:1.8}
+#backup .backup-panel button{line-height:1.5}
+#backup #backupStatus{line-height:1.7}
+@media(min-width:800px){
+ #manage .editor-section,#cutManage .editor-section,#kampoManage .editor-section{padding:18px 20px}
+ #infoList .entry,#cutInfoList .entry,#herbList .entry,#cutList .entry{grid-template-columns:110px minmax(0,1fr) auto;gap:16px}
+}
+@media(max-width:600px){
+ section.panel:not(#quiz){padding:16px}
+ .study-settings,.study-settings.kampo-quiz-settings,#kampoQuiz .study-settings.kampo-quiz-settings{grid-template-columns:minmax(0,1fr);padding:13px;gap:14px}
+ .study-settings-heading{margin:14px 0 9px}
+ .study-disclosure summary{padding:13px 12px}
+ .study-disclosure-body{padding:12px}
+ .study-summary-hint{font-size:.69rem}
+ #progress .progress-cards{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+ #progress .progress-card{padding:9px 6px}
+ #progress .progress-card.active{padding:8px 5px}
+ #progress .review-start-actions{flex-direction:column;align-items:stretch}
+ #progress .review-start-actions button{width:100%;flex:none}
+ #infoList .entry,#cutInfoList .entry,#herbList .entry,#cutList .entry{grid-template-columns:72px minmax(0,1fr);gap:10px;padding:12px}
+ #infoList .entry .thumb,#cutInfoList .entry .thumb,#herbList .entry .thumb,#cutList .entry .thumb{width:72px;height:74px}
+ #infoList .entry .entry-actions,#cutInfoList .entry .entry-actions,#herbList .entry .entry-actions,#cutList .entry .entry-actions{grid-column:2;justify-content:stretch;width:100%}
+ #infoList .entry .entry-actions button,#cutInfoList .entry .entry-actions button{width:100%;min-height:43px}
+ #herbList .entry .entry-actions button,#cutList .entry .entry-actions button{min-height:41px;min-width:0}
+ #kampoList .entry{grid-template-columns:50px minmax(0,1fr);padding:12px}
+ #kampoList .entry .entry-actions{grid-column:2;justify-self:stretch}
+ #kampoInfoList .kampo-public-row{padding:12px}
+ section.panel form .editor-section{padding:13px;margin:13px 0}
+ section.panel form .editor-actions .row{flex-direction:column}
+ section.panel form .editor-actions button{width:100%}
+ #backup .backup-panel,#backup .backup-accordion{padding:14px}
+}
+@media(max-width:350px){
+ #progress .progress-card strong{font-size:.7rem}
+ #progress .progress-card p{font-size:.64rem;line-height:1.5}
+ .study-summary-hint{display:none}
+}
+
 </style>
 </head>
 <body>
@@ -315,13 +432,18 @@ body.is-admin .nav-main{grid-template-columns:repeat(4,minmax(0,1fr))}
  </div>
 </nav>
 <section id="progress" class="panel hidden">
+ <div class="study-hero"><span class="study-kicker">学習の記録・復習</span>
  <h2 style="margin-top:0">学習進捗</h2>
  <p class="muted">原型生薬・刻み生薬・漢方処方の学習履歴をまとめて確認できます。データはこの端末のブラウザ内に保存されています。</p>
+ </div>
+ <div class="study-settings-heading">学習状況を選ぶ</div>
  <div id="progressCards" class="progress-cards" aria-label="クイズ別の学習状況"></div>
  <div class="review-today-panel"><h3 style="margin:0 0 8px">今日の復習</h3><p class="muted small" style="margin:0 0 10px">以前間違えたままの問題と、復習予定日になった問題を優先して解きます。正解を続けると、次の復習までの期間が延びます。</p><div id="reviewTodaySummary" class="review-today-summary"></div><div class="row review-start-actions"><button type="button" class="secondary" data-start-due="herb">生薬の復習を始める</button><button type="button" class="secondary" data-start-due="cut">刻み生薬の復習を始める</button><button type="button" class="secondary" data-start-due="kampo">漢方処方の復習を始める</button></div></div>
+ <div class="study-filter-shell"><div class="study-settings-heading">学習履歴を探す</div>
  <div class="progress-filters">
   <div class="field"><label for="progressStatus">表示する項目</label><select id="progressStatus"><option value="all">すべて</option><option value="weak">復習対象</option><option value="new">未学習</option><option value="done">復習不要</option><option value="due">今日の復習</option></select></div>
   <div class="field"><label for="progressSearch">名前で検索</label><input id="progressSearch" type="search" placeholder="生薬名・処方名など" autocomplete="off"></div>
+ </div>
  </div>
  <div id="progressSummary" class="progress-summary-line" role="status"></div>
  <div id="progressList"></div>
@@ -334,7 +456,7 @@ body.is-admin .nav-main{grid-template-columns:repeat(4,minmax(0,1fr))}
   <button type="button" class="primary" id="restoreLearningBtn" disabled>確認して学習履歴を復元</button>
   <p id="learningBackupStatus" class="muted small" role="status"></p>
  </details>
- <p class="progress-footnote">「復習対象」は直近の不正解などによる苦手判定、「今日の復習」は復習予定日が今日以前の項目です。漢方処方は回答形式・難易度別に履歴を管理します。復習間隔は正解が続くと1日→3日→7日→14日→30日、誤答時は当日から再復習できます。従来の正解履歴には復習予定日がないため、次の解答後から日付管理が始まります。記録はこの端末のブラウザにのみ保存され、別端末とは自動同期されません。</p>
+ <details class="study-disclosure study-bottom-info"><summary>復習の判定と間隔について</summary><p class="progress-footnote">「復習対象」は直近の不正解などによる苦手判定、「今日の復習」は復習予定日が今日以前の項目です。漢方処方は回答形式・難易度別に履歴を管理します。復習間隔は正解が続くと1日→3日→7日→14日→30日、誤答時は当日から再復習できます。従来の正解履歴には復習予定日がないため、次の解答後から日付管理が始まります。記録はこの端末のブラウザにのみ保存され、別端末とは自動同期されません。</p></details>
 </section>
 <section id="quiz" class="panel quiz-refined">
  <div class="quiz-header">
@@ -382,23 +504,34 @@ body.is-admin .nav-main{grid-template-columns:repeat(4,minmax(0,1fr))}
  <div id="quizArea"><div class="empty">共有データを読み込んでいます…</div></div>
 </section>
 <section id="cutQuiz" class="panel hidden">
+ <div class="study-hero"><span class="study-kicker">写真で学ぶ・刻み生薬</span>
  <h2 style="margin-top:0">刻み生薬識別クイズ</h2><p class="muted">写真から刻み生薬の和名を答えます。登録写真の枚数に制限はありません。</p>
- <div class="row"><div class="field"><label for="cutStyle">回答形式</label><select id="cutStyle"><option value="written">記述式</option><option value="choice">選択式（最大6択）</option></select></div><div class="field"><label for="cutMode">出題方法</label><select id="cutMode"><option value="random">ランダム出題</option><option value="weak">苦手問題の復習</option><option value="priority">重点復習（苦手・復習時期を優先）</option><option value="due">今日の復習（復習予定のみ）</option></select></div></div>
- <p class="muted small">漢字入力のヒント：「黄蓍」は「黄耆」でも正解です。「山梔子」の「梔」は、スマートフォンで「くちなし」と入力すると変換できます。</p>
+ </div>
+ <div class="study-settings-heading">回答設定</div>
+ <div class="study-settings"><div class="field"><label for="cutStyle">回答形式</label><select id="cutStyle"><option value="written">記述式</option><option value="choice">選択式（最大6択）</option></select></div><div class="field"><label for="cutMode">出題方法</label><select id="cutMode"><option value="random">ランダム出題</option><option value="weak">苦手問題の復習</option><option value="priority">重点復習（苦手・復習時期を優先）</option><option value="due">今日の復習（復習予定のみ）</option></select></div></div>
+ <div class="study-note"><strong>漢字入力のヒント</strong><p> 「黄蓍」は「黄耆」でも正解です。「山梔子」の「梔」は、スマートフォンで「くちなし」と入力すると変換できます。</p></div>
  <div id="cutQuizArea" class="empty">「開始」を押して解答スタート。<p><button class="primary" type="button" onclick="nextCutQuestion()">開始</button></p></div>
 </section>
 <section id="cutInfo" class="panel hidden">
+ <div class="study-hero"><span class="study-kicker">生薬図鑑・刻み生薬</span>
  <h2 style="margin-top:0">刻み生薬情報</h2>
  <p class="muted">登録した順番で刻み生薬を表示します。写真はラベルを隠さず、そのまま確認できます。</p>
- <div class="field"><label for="cutInfoSearch">刻み生薬名で検索</label><input id="cutInfoSearch" type="search" placeholder="例：甘草"></div>
+ </div>
+ <div class="study-search-shell"><div class="study-settings-heading">検索</div>
+ <div class="field"><label for="cutInfoSearch">刻み生薬名で検索</label><input id="cutInfoSearch" type="search" placeholder="例：甘草"></div></div>
  <div id="cutInfoList"></div><div id="cutInfoDetail" class="hidden"></div>
 </section>
 <section id="cutManage" class="panel hidden">
+ <div class="study-hero"><span class="study-kicker">データ管理・刻み生薬</span>
  <h2 id="cutFormTitle" style="margin-top:0">刻み生薬を登録</h2><p class="muted">生薬名は漢字で、読みがなはひらがなで登録します。写真に名前が写っている場合、登録画面で写真をタップして隠す位置を指定できます。実際にラベルを隠すのはクイズ出題中だけです。</p>
+ </div>
  <form id="cutForm"><input id="cutEditId" type="hidden">
-  <div class="field"><label for="cutName">生薬名・漢字（必須）</label><input id="cutName" required placeholder="例：甘草" autocomplete="off"></div>
+  <div class="editor-section"><h3>生薬名と読み</h3>
+ <div class="field"><label for="cutName">生薬名・漢字（必須）</label><input id="cutName" required placeholder="例：甘草" autocomplete="off"></div>
   <div class="field"><label for="cutReading">読みがな・ひらがな（必須）</label><input id="cutReading" required placeholder="例：かんぞう" autocomplete="off"><span class="muted small">刻み生薬情報では、読みがなを漢字の上に表示します。既存の登録済み生薬も編集時に読みを登録してください。</span></div>
-  <div class="field"><label for="cutPhoto">写真（複数選択可）</label><input id="cutPhoto" type="file" accept="image/*" multiple></div>
+  </div>
+ <div class="editor-section"><h3>写真とラベル位置</h3>
+ <div class="field"><label for="cutPhoto">写真（複数選択可）</label><input id="cutPhoto" type="file" accept="image/*" multiple></div>
   <div id="cutPhotoPreview" class="cut-grid"></div>
   <div id="cutMaskEditor" class="cut-mask-editor hidden">
     <h3 id="cutMaskEditorTitle" style="margin:0 0 6px">ラベルを隠す位置</h3>
@@ -409,42 +542,54 @@ body.is-admin .nav-main{grid-template-columns:repeat(4,minmax(0,1fr))}
     <button type="button" class="primary" onclick="closeCutMaskEditor()" style="width:100%">位置を確定して戻る</button>
   </div>
   <p class="muted small">隠す位置は写真ごとに保存されます。登録済み写真も編集から位置を調整できます。写真はクイズ採点後と情報画面ではラベル付きで表示します。</p>
-  <div class="row"><button class="primary" type="submit">保存する</button><button class="secondary" type="button" onclick="resetCutForm()">入力をクリア</button></div>
+  </div>
+ <div class="editor-actions"><div class="row"><button class="primary" type="submit">保存する</button><button class="secondary" type="button" onclick="resetCutForm()">入力をクリア</button></div>
+ </div>
  </form>
  <h3>登録済み刻み生薬</h3><div id="cutList"></div>
 </section>
 <section id="kampoQuiz" class="panel hidden">
+ <div class="study-hero"><span class="study-kicker">構成生薬と写真で学ぶ</span>
  <h2 style="margin-top:0">漢方処方クイズ</h2>
  <p class="muted">登録済みの漢方処方から出題します。構成生薬の解答順序は問いません。</p>
- <div class="kampo-quiz-settings">
+ </div>
+ <div class="study-settings-heading">出題設定</div>
+ <div class="study-settings kampo-quiz-settings">
   <div class="field"><label for="kampoQuizType">問題の種類</label><select id="kampoQuizType"><option value="ingredients">処方名 → 構成生薬を答える</option><option value="photos">刻み生薬写真 → 処方名</option></select></div>
   <div class="field"><label for="kampoQuizStyle">回答形式</label><select id="kampoQuizStyle"><option value="written">記述式</option><option value="choice">選択式</option></select></div>
- </div>
- <div class="row">
+
   <div class="field"><label for="kampoQuizMode">出題方法</label><select id="kampoQuizMode"><option value="random">ランダム出題</option><option value="weak">苦手問題の復習</option><option value="priority">重点復習（苦手・復習時期を優先）</option><option value="due">今日の復習（復習予定のみ）</option></select></div>
   <div class="field hidden" id="kampoQuizDifficultyField"><label for="kampoQuizDifficulty">写真の難易度</label><select id="kampoQuizDifficulty"><option value="beginner">初級：生薬名あり</option><option value="advanced">上級：生薬名を隠す</option></select></div>
  </div>
- <div class="rule small">構成生薬の問題では、正解の種類数は解答前に表示しません。<b>入力・選択の順序は採点に影響しません。</b>正解1種類につき1点、余分な生薬の解答は1種類につき1点減点（最低0点）です。すべて正しく答え、誤答がない場合のみ完全正解です。写真の上級では、採点後に全ラベルが一斉に現れます。</div>
- <p class="muted small">構成生薬の入力ヒント：「黄蓍」と「黄耆」はどちらでも正解です。「山梔子」の「梔」は「くちなし」で漢字変換できます。</p>
+ <details class="study-disclosure"><summary>採点ルールを見る<span class="study-summary-hint">配点・完全正解の条件</span></summary><div class="study-disclosure-body">構成生薬の問題では、正解の種類数は解答前に表示しません。<b>入力・選択の順序は採点に影響しません。</b>正解1種類につき1点、余分な生薬の解答は1種類につき1点減点（最低0点）です。すべて正しく答え、誤答がない場合のみ完全正解です。写真の上級では、採点後に全ラベルが一斉に現れます。</div></details>
+ <div class="study-note"><strong>漢字入力のヒント</strong><p>「黄蓍」と「黄耆」はどちらでも正解です。「山梔子」の「梔」は「くちなし」で漢字変換できます。</p></div>
  <p id="kampoCycleProgress" class="muted small random-cycle-status" aria-live="polite"></p>
  <div id="kampoQuizArea"><div class="empty">「開始」を押して解答スタート。<p><button class="primary" type="button" onclick="nextKampoQuestion()">開始</button></p></div></div>
  <p id="kampoQuizProgress" class="muted small"></p>
 </section>
 <section id="kampoInfo" class="panel hidden">
+ <div class="study-hero"><span class="study-kicker">生薬図鑑・漢方処方</span>
  <h2 style="margin-top:0">漢方処方情報</h2>
  <p class="muted">登録済みの処方を選ぶと、構成生薬と個別の刻み生薬写真を確認できます。写真の名前は隠しません。クイズの採点では構成生薬の順番を問いません。</p>
- <div class="field"><label for="kampoInfoSearch">漢方処方名・構成生薬で検索</label><input id="kampoInfoSearch" type="search" placeholder="例：葛根湯、甘草" autocomplete="off"></div>
+ </div>
+ <div class="study-search-shell"><div class="study-settings-heading">検索</div>
+ <div class="field"><label for="kampoInfoSearch">漢方処方名・構成生薬で検索</label><input id="kampoInfoSearch" type="search" placeholder="例：葛根湯、甘草" autocomplete="off"></div></div>
  <div id="kampoInfoList"><p class="muted">漢方処方を読み込んでいます…</p></div>
  <div id="kampoInfoDetail" class="hidden"></div>
 </section>
 
 <section id="kampoManage" class="panel hidden">
-  <h2 id="kampoFormTitle" style="margin-top:0">漢方処方を登録</h2>
+ <div class="study-hero"><span class="study-kicker">データ管理・漢方処方</span>
+ <h2 id="kampoFormTitle" style="margin-top:0">漢方処方を登録</h2>
   <p class="muted">処方名と構成生薬を登録します。構成生薬数は処方ごとに自動判定され、固定ではありません。ここで登録した情報を、漢方処方クイズで共通利用します。</p>
+ </div>
   <form id="kampoForm">
     <input type="hidden" id="kampoEditId">
-    <div class="field"><label for="kampoName">漢方処方名（必須）</label><input id="kampoName" required maxlength="100" autocomplete="off" placeholder="例：葛根湯"></div>
-    <div class="field">
+    <div class="editor-section"><h3>処方名</h3>
+ <div class="field"><label for="kampoName">漢方処方名（必須）</label><input id="kampoName" required maxlength="100" autocomplete="off" placeholder="例：葛根湯"></div>
+    </div>
+ <div class="editor-section"><h3>構成生薬を登録</h3>
+ <div class="field">
       <label for="kampoIngredients">構成生薬（必須）</label>
       <textarea id="kampoIngredients" required rows="7" placeholder="葛根&#10;麻黄&#10;桂皮&#10;芍薬&#10;大棗&#10;生姜&#10;甘草"></textarea>
       <p class="muted small" style="margin:0">1行に1種類ずつ入力してください。「、」や「,」区切りも使えます。登録順は問いません。重複した名前は自動的に1つにまとめます。</p>
@@ -456,43 +601,65 @@ body.is-admin .nav-main{grid-template-columns:repeat(4,minmax(0,1fr))}
     </div>
     <div id="kampoIngredientPreview" class="rule small" role="status" aria-live="polite">構成生薬を入力するとここに一覧が表示されます。</div>
     <p id="kampoFormMessage" class="muted" aria-live="polite"></p>
-    <div class="row"><button type="submit" class="primary" id="kampoSaveButton">保存する</button><button type="button" class="secondary" id="kampoResetButton">入力をクリア</button></div>
-  </form>
+    </div>
+ <div class="editor-actions"><div class="row"><button type="submit" class="primary" id="kampoSaveButton">保存する</button><button type="button" class="secondary" id="kampoResetButton">入力をクリア</button></div>
+  </div>
+ </form>
   <hr style="margin:22px 0;border:0;border-top:1px solid var(--line)">
   <h3>登録済み漢方処方</h3>
-  <div class="field"><label for="kampoSearch">処方名・構成生薬で検索</label><input id="kampoSearch" type="search" placeholder="例：葛根湯、甘草"></div>
+  <div class="study-search-shell"><div class="study-settings-heading">検索</div>
+ <div class="field"><label for="kampoSearch">処方名・構成生薬で検索</label><input id="kampoSearch" type="search" placeholder="例：葛根湯、甘草"></div></div>
   <div id="kampoList"><p class="muted">漢方処方を読み込んでいます…</p></div>
 </section>
 <section id="manage" class="panel hidden">
+ <div class="study-hero"><span class="study-kicker">データ管理・原型生薬</span>
  <h2 id="formTitle" style="margin-top:0">原型生薬を登録</h2>
  <p class="muted">ラテン名・主成分・用途も登録すると「すべて答える」モードで採点できます。写真は複数選択できます。</p>
+ </div>
  <form id="herbForm">
   <input type="hidden" id="editId">
-  <div class="field"><label for="herbName">生薬名・和名（必須／和名が採点の基準）</label><input id="herbName" required placeholder="例：カンゾウ"></div>
+  <div class="editor-section"><h3>生薬名</h3>
+ <div class="field"><label for="herbName">生薬名・和名（必須／和名が採点の基準）</label><input id="herbName" required placeholder="例：カンゾウ"></div>
   <div class="field"><label for="herbLatin">生薬名・ラテン名（必須）</label><input id="herbLatin" required placeholder="例：GLYCYRRHIZAE RADIX"><span class="muted">原則として全て大文字で登録します。記号・数字・アルファベットは半角で入力。</span></div>
-  <div class="field"><label for="photo">写真（複数選択可）</label><input id="photo" type="file" accept="image/*" multiple><span class="muted">登録済み写真も含めて、並び替え・削除・追加ができます。先頭の写真が登録一覧の代表写真です。変更は「保存する」を押すまで確定しません。削除後の復旧に備え、写真付きZIPのバックアップをおすすめします。</span><p id="photoDraftCount" class="muted small" aria-live="polite"></p><div id="photoPreview" class="preview-grid herb-photo-grid"></div><button id="resetHerbPhotoDraft" type="button" class="secondary hidden" style="margin-top:10px">写真の変更を取り消す</button></div>
-  <div class="field"><label for="originLatin">基原植物・ラテン名（1点）</label><input id="originLatin" placeholder="例：Glycyrrhiza uralensis Fisch."></div>
+  </div>
+ <div class="editor-section"><h3>写真の登録・入れ替え</h3>
+ <div class="field"><label for="photo">写真（複数選択可）</label><input id="photo" type="file" accept="image/*" multiple><span class="muted">登録済み写真も含めて、並び替え・削除・追加ができます。先頭の写真が登録一覧の代表写真です。変更は「保存する」を押すまで確定しません。削除後の復旧に備え、写真付きZIPのバックアップをおすすめします。</span><p id="photoDraftCount" class="muted small" aria-live="polite"></p><div id="photoPreview" class="preview-grid herb-photo-grid"></div><button id="resetHerbPhotoDraft" type="button" class="secondary hidden" style="margin-top:10px">写真の変更を取り消す</button></div>
+  </div>
+ <div class="editor-section"><h3>基原と分類</h3>
+ <div class="field"><label for="originLatin">基原植物・ラテン名（1点）</label><input id="originLatin" placeholder="例：Glycyrrhiza uralensis Fisch."></div>
   <div class="field"><label for="originJapanese">基原植物・和名（0.5点）</label><input id="originJapanese" placeholder="例：ウラルカンゾウ"></div>
   <div class="field"><label for="part">薬用部位（任意・学習用メモ）</label><input id="part" placeholder="例：根及びストロン"></div>
   <div class="field"><label for="familyLatin">科名・ラテン名（1点）</label><input id="familyLatin" placeholder="例：Fabaceae"></div>
   <div class="field"><label for="familyJapanese">科名・和名（0.5点）</label><input id="familyJapanese" placeholder="例：マメ科"></div>
-  <div class="field"><label for="constituents">主成分（日本語・1点。複数成分や別名は「、」「,」「改行」などで区切る）</label><input id="constituents" placeholder="例：d-リモネン、ナリンギン"></div>
+  </div>
+ <div class="editor-section"><h3>成分・用途・補足</h3>
+ <div class="field"><label for="constituents">主成分（日本語・1点。複数成分や別名は「、」「,」「改行」などで区切る）</label><input id="constituents" placeholder="例：d-リモネン、ナリンギン"></div>
   <div class="field"><label for="uses">用途（日本語・複数登録可、読点または改行区切り）</label><textarea id="uses" placeholder="例：去痰&#10;鎮咳&#10;抗炎症"></textarea><span class="muted">正解として認める用途を登録します。記述式では登録済みの用途を1つ答えれば1点、選択式では従来どおり複数選択問題になります。</span></div>
   <div class="field"><label for="notes">識別ポイント・補足（任意）</label><textarea id="notes" placeholder="外観、におい、味、試験での注意点など"></textarea></div>
-  <div class="row"><button class="primary" type="submit">保存する</button><button class="secondary" type="button" id="resetForm">入力をクリア</button></div>
+  </div>
+ <div class="editor-actions"><div class="row"><button class="primary" type="submit">保存する</button><button class="secondary" type="button" id="resetForm">入力をクリア</button></div>
+ </div>
  </form>
 </section>
 <section id="info" class="panel hidden">
+ <div class="study-hero"><span class="study-kicker">生薬図鑑・原型生薬</span>
  <h2 style="margin-top:0">原型生薬情報</h2>
  <p class="muted">登録済みの原型生薬を資料として閲覧できます。クイズと同じ原型生薬データ・写真を参照するため、登録・編集した内容はここにも反映されます。</p>
- <div class="field"><label for="infoSearch">生薬名・ラテン名・基原植物・科名・用途で検索</label><input id="infoSearch" type="search" placeholder="例：カンゾウ、Glycyrrhiza、去痰"></div>
+ </div>
+ <div class="study-search-shell"><div class="study-settings-heading">検索</div>
+ <div class="field"><label for="infoSearch">生薬名・ラテン名・基原植物・科名・用途で検索</label><input id="infoSearch" type="search" placeholder="例：カンゾウ、Glycyrrhiza、去痰"></div></div>
  <div id="infoList"></div>
  <div id="infoDetail" class="hidden"></div>
 </section>
-<section id="list" class="panel hidden"><h2 style="margin-top:0">登録一覧</h2><p class="muted">内容・写真の編集、削除ができます。</p><div id="herbList"></div></section>
+<section id="list" class="panel hidden">
+ <div class="study-hero"><span class="study-kicker">データ管理・登録一覧</span>
+ <h2 style="margin-top:0">登録一覧</h2><p class="muted">内容・写真の編集、削除ができます。</p>
+ </div><div id="herbList"></div></section>
 <section id="backup" class="panel hidden">
+ <div class="study-hero"><span class="study-kicker">データの保護・引き継ぎ</span>
  <h2 style="margin-top:0">バックアップと復元</h2>
  <p class="muted">共有データ（生薬・刻み生薬・漢方処方）は管理者が保存・復元します。学習履歴は「学習進捗」画面から、誰でも自分の端末に保存・復元できます。</p>
+ </div>
  <div class="backup-panel">
   <h3>1. 共有データを書き出す</h3>
   <p class="muted small"><b>写真付きZIP（推奨）</b>は写真の実ファイル・ラベル隠し位置・登録情報をまとめて保存します。<b>簡易JSON</b>は写真URLのみで、写真の保存先が消えると画像は復旧できません。どちらも現端末の学習履歴を含みますが、復元は別操作です。</p>
