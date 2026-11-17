@@ -388,6 +388,55 @@ section.panel form .editor-actions button{min-height:49px}
  .study-summary-hint{display:none}
 }
 
+
+/* 模擬テスト：既存のグリーン系デザインに統一。スマートフォンでは1カラム。 */
+#mockExam .mock-exam-overview{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:15px 0 10px}
+#mockExam .mock-overview-item{display:flex;flex-direction:column;justify-content:center;gap:5px;min-width:0;padding:14px 10px;border:1px solid var(--line);border-radius:13px;background:#f8faf8;text-align:center}
+#mockExam .mock-overview-item span{color:var(--muted);font-size:.83rem;font-weight:700}
+#mockExam .mock-overview-item strong{font-size:1.5rem;color:#25593f;line-height:1.3}
+#mockExam .mock-overview-item small{font-size:.73rem;color:var(--muted)}
+#mockExam .mock-overview-total{background:#e7f2e9;border-color:#bfdac7}
+#mockExam .mock-exam-note{font-size:.84rem;line-height:1.8;color:var(--muted);margin:12px 0 16px}
+#mockExam .mock-start{width:100%;min-height:54px;font-size:1.08rem}
+#mockExam .mock-quiz-header{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin:16px 0 12px}
+#mockExam .mock-quiz-header strong{font-size:1.12rem}
+#mockExam .mock-progress-track{height:8px;border-radius:99px;overflow:hidden;background:#e1eae2;margin-bottom:17px}
+#mockExam .mock-progress-fill{height:100%;background:var(--green);border-radius:99px;transition:width .2s}
+#mockExam .mock-question{border:1px solid var(--line);border-radius:15px;padding:16px;background:#fff}
+#mockExam .mock-question h3{font-size:1.15rem;line-height:1.5;margin:6px 0 12px}
+#mockExam .mock-question .question-image{max-height:370px}
+#mockExam .mock-answer-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 13px}
+#mockExam .mock-answer-grid .field{margin:9px 0;min-width:0}
+#mockExam .mock-answer-grid label{line-height:1.55}
+#mockExam .mock-question .kampo-quiz-photos{margin-bottom:17px}
+#mockExam .mock-quiz-nav{display:flex;align-items:stretch;gap:9px;margin-top:17px}
+#mockExam .mock-quiz-nav button{flex:1;min-height:49px}
+#mockExam .mock-quiz-nav button:only-child{flex:1}
+#mockExam .mock-progress-mini{color:var(--muted);font-size:.82rem}
+#mockExam .mock-ended-action{margin-top:26px;padding-top:14px;border-top:1px solid var(--line);text-align:center}
+#mockExam .mock-ended-action button{width:100%;max-width:360px}
+#mockExam .mock-result-summary{background:#e7f2e9;border:1px solid #bad8c3;border-radius:14px;padding:21px 15px;text-align:center;margin:15px 0}
+#mockExam .mock-score-big{font-size:2.25rem;font-weight:800;color:#1d5d3e;line-height:1.5}
+#mockExam .mock-result-item{border:1px solid var(--line);border-radius:14px;padding:15px;margin:12px 0;background:#fff}
+#mockExam .mock-result-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+#mockExam .mock-result-head h3{font-size:1.06rem;margin:0}
+#mockExam .mock-result-head strong{font-size:1.15rem;color:#276749}
+#mockExam .mock-result-item ul{padding-left:20px;line-height:1.8;font-size:.9rem;overflow-wrap:anywhere}
+#mockExam .mock-result-item .mock-correct-data{border-radius:10px;padding:11px;background:#f5f7f4;font-size:.85rem;line-height:1.75;overflow-wrap:anywhere}
+#mockExam .mock-result-item .cut-mask{opacity:0}
+#mockExam .mock-result-item .mock-photo-label{font-size:.85rem;font-weight:700;color:#286447;padding:2px;text-align:center}
+#mockExam .mock-quiz-photos.kampo-quiz-photos.is-many{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:560px){
+ #mockExam .mock-exam-overview{gap:6px}
+ #mockExam .mock-overview-item{padding:11px 4px}
+ #mockExam .mock-overview-item strong{font-size:1.3rem}
+ #mockExam .mock-overview-item small{font-size:.68rem;line-height:1.45}
+ #mockExam .mock-answer-grid{grid-template-columns:minmax(0,1fr)}
+ #mockExam .mock-question{padding:12px}
+ #mockExam .mock-quiz-nav{gap:7px}
+ #mockExam .mock-quiz-nav button{padding:10px 8px;font-size:.91rem}
+}
+
 </style>
 </head>
 <body>
@@ -415,6 +464,7 @@ section.panel form .editor-actions button{min-height:49px}
   <button class="tab active" type="button" data-tab="quiz">原型生薬</button>
   <button class="tab" type="button" data-tab="cutQuiz">刻み生薬</button>
   <button class="tab" type="button" data-tab="kampoQuiz">漢方処方</button>
+  <button class="tab" type="button" data-tab="mockExam">模擬テスト</button>
  </div>
  <div class="nav-subset hidden" data-nav-items="info" role="group" aria-label="情報の種類">
   <span class="nav-subtitle">調べる種類</span>
@@ -502,6 +552,20 @@ section.panel form .editor-actions button{min-height:49px}
   </details>
  </div>
  <div id="quizArea"><div class="empty">共有データを読み込んでいます…</div></div>
+</section>
+<section id="mockExam" class="panel hidden">
+ <div class="study-hero">
+  <span class="study-kicker">本番形式で実力を確認</span>
+  <h2 style="margin-top:0">模擬テスト</h2>
+  <p class="muted">原型生薬5種類と漢方処方1種類をランダムで選ぶ、全6問の記述式テストです。</p>
+ </div>
+ <div class="mock-exam-overview" aria-label="模擬テストの内容">
+  <div class="mock-overview-item"><span>原型生薬</span><strong>5問</strong><small>各6点／合計30点</small></div>
+  <div class="mock-overview-item"><span>漢方処方</span><strong>1問</strong><small>写真から構成生薬・4点</small></div>
+  <div class="mock-overview-item mock-overview-total"><span>総得点</span><strong>34点</strong><small>すべて記述式</small></div>
+ </div>
+ <p class="mock-exam-note">毎回独立してランダムに抽選し、同じテスト内で原型生薬は重複しません。漢方処方はラベルを隠した刻み生薬写真を見て、構成生薬を4種類答えます。大建中湯は3種類すべて正解すると4点です。<b>全6問の解答を終えてから、一括採点します。</b></p>
+ <div id="mockExamArea" aria-live="polite"></div>
 </section>
 <section id="cutQuiz" class="panel hidden">
  <div class="study-hero"><span class="study-kicker">写真で学ぶ・刻み生薬</span>
@@ -743,6 +807,7 @@ let linkedInfoHistory=[]; // 情報画面の相互リンクから戻るための
 let currentId=null,answered=false,stagedImages=[],currentUseCorrect=[];
 let cutHerbs=[],cutStaged=[],cutCurrent=null,cutAnswered=false,cutLastId=null;
 let kampoFormulas=[],kampoLoadError="";
+let mockExam=null; // 模擬テストは通常の学習進捗と独立
 const KAMPO_PROGRESS_KEY='herbPhotoQuiz.kampo.progress.v1';
 let kampoProgress=readKampoProgress(),kampoCurrent=null,kampoLastId=null,kampoAnswered=false;
 const $=id=>document.getElementById(id);
@@ -754,7 +819,7 @@ let infoPhotoOverflow='';
 function appVisibleTab(){return document.querySelector('section.panel:not(.hidden)')?.id||'quiz'}
 function appViewSnapshot(){
  const photo=$('infoPhotoViewer')?.open?{type:'info',url:$('infoPhotoViewerImage').getAttribute('src'),label:$('infoPhotoViewerLabel').textContent}:
-   $('kampoPhotoViewer')?.open?{type:'kampo',index:kampoViewerIndex}:null;
+   $('kampoPhotoViewer')?.open?{type:kampoViewerMock?'mockKampo':'kampo',index:kampoViewerIndex}:null;
  return {session:appViewSession,tab:appVisibleTab(),detail:infoCurrentLocation(),photo,scrollY:window.scrollY,linkedHistory:linkedInfoHistory.slice(-20)};
 }
 function appSameScreen(a,b){return !!a&&a.session===appViewSession&&a.tab===b.tab&&JSON.stringify(a.detail)===JSON.stringify(b.detail)&&JSON.stringify(a.photo)===JSON.stringify(b.photo)}
@@ -794,6 +859,7 @@ function appRestoreView(view){
   switchTab(view.tab||'quiz',true);
   if(view.detail){navigateLinkedInfo(view.detail.kind,view.detail.id,false)}
   if(view.photo?.type==='kampo')openKampoPhotoViewer(view.photo.index);
+  if(view.photo?.type==='mockKampo')openKampoPhotoViewer(view.photo.index,'mock');
   if(view.photo?.type==='info')openInfoPhotoViewer(view.photo.url,view.photo.label);
   const y=Number(view.scrollY)||0;
   requestAnimationFrame(()=>window.scrollTo({top:y,left:0,behavior:'auto'}));
@@ -879,6 +945,142 @@ async function saveHerbToCloud(h,previousImages=[]){
  }
  return warnings.join('\n');
 }
+// 模擬テスト：完全ランダム抽選・全6問の記述解答・最後に一括採点。
+// 通常クイズの randomCycles と学習履歴には触れない。
+function mockKampoAnswerCount(formula){
+ const count=kampoNormalizedIngredients(formula).length;
+ // 大建中湯だけは、登録された構成生薬が3種類でも出題可能。
+ return count>=4?4:(normalize(formula.name)===normalize('大建中湯')&&count===3?3:0);
+}
+function mockKampoFields(formula){return Array.from({length:mockKampoAnswerCount(formula)},(_,i)=>'ingredient'+(i+1))}
+function mockExamEligibility(){
+  const herbs=db.herbs.filter(h=>(h.images&&h.images.some(Boolean))||h.image);
+  const formulas=kampoFormulas.filter(f=>mockKampoAnswerCount(f)>0&&!!kampoUsablePhotos(f,'advanced'));
+  return {herbs,formulas};
+}
+function mockExamPhotos(){return mockExam?.items?.find(item=>item.kind==='kampo')?.photos||[]}
+function mockAnswerValue(item,field){return String(mockExam?.answers?.[mockExam.index]?.[field]||'')}
+function mockScoreHerb(h,a={}){
+  const jaOK=exactAnswer(a.ja,[h.japaneseName]);
+  const points=[
+    {label:'生薬名・和名',score:jaOK?1:0,max:1,correct:h.japaneseName},
+    {label:'生薬名・ラテン名',score:exactAnswer(a.latin,[h.latinName])?1:0,max:1,correct:h.latinName},
+    {label:'基原植物',score:exactAnswer(a.origin,[h.originLatin])?1:exactAnswer(a.origin,[h.originJapanese])?.5:0,max:1,correct:[h.originLatin,h.originJapanese].filter(Boolean).join(' ／ ')},
+    {label:'科名',score:exactAnswer(a.family,[h.familyLatin])?1:exactAnswer(a.family,[h.familyJapanese])?.5:0,max:1,correct:[h.familyLatin,h.familyJapanese].filter(Boolean).join(' ／ ')},
+    {label:'主成分',score:exactAnswer(a.component,splitAliases(h.constituents))?1:0,max:1,correct:h.constituents},
+    {label:'用途',score:isWrittenUseCorrect(a.use,h.uses)?1:0,max:1,correct:(h.uses||[]).join('、')}
+  ];
+  // 通常の記述式と同じルール：和名が不正解なら全得点0点。
+  if(!jaOK)for(const p of points)p.score=0;
+  return {score:points.reduce((n,p)=>n+p.score,0),max:6,points,blocked:!jaOK};
+}
+function mockScoreKampo(formula,a={}){
+ const correct=kampoNormalizedIngredients(formula);
+ const correctKeys=new Set(correct.map(normalizeCutHerbName));
+ const used=new Set();
+ const fields=mockKampoFields(formula);
+ const points=fields.map((field,i)=>{
+  const answer=String(a[field]||'').trim(),key=normalizeCutHerbName(answer);
+  const ok=!!key&&correctKeys.has(key)&&!used.has(key);
+  if(ok)used.add(key);
+  return {label:'構成生薬 '+(i+1),score:ok?1:0,max:1,answer,correct:''};
+ });
+ // 3種類のみの大建中湯は、3種をすべて正答した場合に1点を加えて4点満点。
+ if(fields.length===3){
+  const complete=used.size===3;
+  points.push({label:'全3種類正解ボーナス',score:complete?1:0,max:1,answer:'',correct:''});
+ }
+ return {score:points.reduce((n,p)=>n+p.score,0),max:4,points,blocked:false};
+}
+function startMockExam(){
+ const {herbs,formulas}=mockExamEligibility();
+ if(herbs.length<5||!formulas.length){renderMockExam();return}
+ closeKampoPhotoViewer();
+ const drawn=shuffleValues(herbs).slice(0,5).map(h=>{
+  const photos=(h.images?.length?h.images:[h.image]).filter(Boolean);
+  return {kind:'herb',id:String(h.id),herb:h,photo:photos[Math.floor(Math.random()*photos.length)]};
+ });
+ const formula=shuffleValues(formulas)[0];
+ const entries=kampoUsablePhotos(formula,'advanced');
+ const photos=shuffleValues(entries.map(x=>({name:x.name,photo:x.photos[Math.floor(Math.random()*x.photos.length)]})));
+ const items=shuffleValues([...drawn,{kind:'kampo',id:String(formula.id),formula,photos}]);
+ mockExam={items,answers:items.map(()=>({})),index:0,finished:false,results:null};
+ renderMockExam();
+ $('mockExam').scrollIntoView({block:'start',behavior:'auto'});
+}
+function mockFieldHtml(field,label,placeholder='回答を入力'){
+ return `<div class="field"><label for="mock-${field}">${label}</label><input id="mock-${field}" data-mock-field="${field}" autocomplete="off" value="${escapeHtml(mockAnswerValue(null,field))}" placeholder="${escapeHtml(placeholder)}"></div>`;
+}
+function mockPhotoCards(item,reveal=false){
+ return `<div class="kampo-quiz-photos mock-quiz-photos${item.photos.length>=5?' is-many':''}">${item.photos.map(({photo,name},i)=>`<div class="kampo-photo-card"><button class="kampo-photo-trigger" type="button" data-mock-photo-index="${i}" aria-label="写真 ${i+1} を拡大">${cutPhotoHtml(photo,'quiz')}</button>${reveal?`<div class="mock-photo-label">${escapeHtml(name)}</div>`:''}</div>`).join('')}</div>`;
+}
+function renderMockExam(){
+ const area=$('mockExamArea');if(!area)return;
+ if(!mockExam){
+  const {herbs,formulas}=mockExamEligibility(),possible=herbs.length>=5&&formulas.length>0;
+  const notReady=herbs.length<5?`出題できる原型生薬が${herbs.length}種類です。写真付きで5種類以上登録してください。`:formulas.length<1?'4種類以上（大建中湯は3種類）の構成生薬があり、全構成生薬のラベルを隠せる刻み写真がそろった漢方処方がありません。刻み生薬写真とマスク範囲を確認してください。':'';
+  area.innerHTML=`<div class="mock-start-panel">${notReady?`<div class="feedback bad">${escapeHtml(notReady)}</div>`:`<p class="muted">出題可能：原型生薬 ${herbs.length}種類／写真識別できる漢方処方 ${formulas.length}種類。問題の順番も毎回シャッフルします。</p>`}<button class="primary mock-start" type="button" data-mock-action="start" ${possible?'':'disabled'}>模擬テストを開始</button></div>`;
+  return;
+ }
+ if(mockExam.finished){renderMockResults();return}
+ const {items,index}=mockExam,item=items[index],isHerb=item.kind==='herb',pct=Math.round((index+1)/items.length*100);
+ let question='';
+ if(isHerb){
+  question=`<div class="mock-question"><span class="pill">原型生薬・6点</span><h3>写真の原型生薬について、各項目を記述しなさい。</h3><img class="question-image" src="${escapeHtml(item.photo)}" alt="識別する原型生薬の写真"><div class="mock-answer-grid">${mockFieldHtml('ja','生薬名・和名（必須・1点）','カタカナで入力')}${mockFieldHtml('latin','生薬名・ラテン名（1点）','ラテン名を入力')}${mockFieldHtml('origin','基原植物（ラテン名1点／和名0.5点）')}${mockFieldHtml('family','科名（ラテン名1点／和名0.5点）')}${mockFieldHtml('component','主成分（1点）')}${mockFieldHtml('use','用途（1点）','登録用途を1つ入力')}</div><p class="muted small">用途は登録されたものを1つ書ければ1点です。和名が不正解の場合、この問題は0点です。</p></div>`;
+ }else{
+  const fields=mockKampoFields(item.formula);
+  const isThree=fields.length===3;
+  question=`<div class="mock-question"><span class="pill">漢方処方・4点</span><h3>写真を見て、構成生薬を${fields.length}種類記述しなさい。</h3><p class="kampo-photo-zoom-hint" role="note"><strong>写真をタップすると拡大できます。</strong><span>ラベルは全6問の採点終了まで隠します。＋／－やピンチで拡大できます。</span></p>${mockPhotoCards(item)}<div class="mock-answer-grid">${fields.map((field,i)=>mockFieldHtml(field,`構成生薬 ${i+1}（漢字・1点）`,'漢字で生薬名を入力')).join('')}</div><p class="muted small">${isThree?'この問題は3種類をすべて正解すると、1点加算して4点満点になります。':'写真に写っている構成生薬から、異なる4種類を記述してください。正解1種類につき1点です。'} 同じ生薬を繰り返し書いても重複して得点にはなりません。</p></div>`;
+ }
+ area.innerHTML=`<div class="mock-quiz-header"><strong>第${index+1}問 / 全${items.length}問</strong><span class="mock-progress-mini">記述式・解答は最後に採点</span></div><div class="mock-progress-track" role="progressbar" aria-valuenow="${index+1}" aria-valuemin="0" aria-valuemax="${items.length}" aria-label="模擬テストの進捗"><div class="mock-progress-fill" style="width:${pct}%"></div></div>${question}<div class="mock-quiz-nav">${index>0?'<button type="button" class="secondary" data-mock-action="prev">前の問題</button>':''}<button type="button" class="primary" data-mock-action="${index===items.length-1?'finish':'next'}">${index===items.length-1?'採点して結果を見る':'次の問題へ'}</button></div><div class="mock-ended-action"><button type="button" class="secondary" data-mock-action="quit">テストを中断する</button></div>`;
+}
+function renderMockResults(){
+ if(!mockExam)return;
+ const area=$('mockExamArea');
+ const total=mockExam.results.reduce((n,r)=>n+r.score,0),max=34;
+ const rows=mockExam.items.map((item,i)=>{
+  const result=mockExam.results[i],answer=mockExam.answers[i],isHerb=item.kind==='herb';
+  const name=isHerb?item.herb.japaneseName:item.formula.name;
+  const photos=isHerb?`<img class="question-image" loading="lazy" src="${escapeHtml(item.photo)}" alt="原型生薬の写真">`:`<p class="muted small">採点後はラベルを表示します。写真をタップすると拡大できます。</p>${mockPhotoCards(item,true)}`;
+  const fields=isHerb?['ja','latin','origin','family','component','use']:mockKampoFields(item.formula);
+  const pointList=result.points.map((p,j)=>`<li><b>${escapeHtml(p.label)}：</b>${p.score} / ${p.max}点${j<fields.length?`　<span class="muted">解答：${escapeHtml(answer[fields[j]]||'（未回答）')}</span>`:''}</li>`).join('');
+  const correctData=isHerb?`<b>正解：${escapeHtml(name)}</b>${result.points.map(p=>`<div>${escapeHtml(p.label)}：${escapeHtml(p.correct||'未登録')}</div>`).join('')}`:`<b>正解の漢方処方：${escapeHtml(name)}</b><div>構成生薬：${escapeHtml(kampoNormalizedIngredients(item.formula).join('、'))}</div>`;
+  return `<article class="mock-result-item"><div class="mock-result-head"><h3>第${i+1}問｜${isHerb?'原型生薬':'漢方処方'}</h3><strong>${result.score} / ${result.max}点</strong></div>${photos}${result.blocked?'<p class="feedback bad">生薬名の和名が不正解のため、この問題はすべて0点です。</p>':''}<ul>${pointList}</ul><div class="mock-correct-data">${correctData}</div></article>`;
+ }).join('');
+ area.innerHTML=`<div class="mock-result-summary"><div class="muted">模擬テストの結果</div><div class="mock-score-big">${total} <span style="font-size:1.05rem">/ ${max}点</span></div><div>正答率（配点比） ${Math.round(total/max*100)}%</div></div><p class="muted small">問題ごとの採点結果と正解を確認できます。模擬テストは通常の復習履歴には加算されません。</p>${rows}<div class="mock-quiz-nav"><button class="primary" type="button" data-mock-action="restart">別の問題で再挑戦</button><button class="secondary" type="button" data-mock-action="quit">終了</button></div>`;
+}
+function finishMockExam(){
+ if(!mockExam||mockExam.finished)return;
+ const blankCount=mockExam.items.reduce((n,item,i)=>{
+  const fields=item.kind==='herb'?['ja','latin','origin','family','component','use']:mockKampoFields(item.formula);
+  return n+fields.filter(field=>!String(mockExam.answers[i][field]||'').trim()).length;
+ },0);
+ if(blankCount&&!confirm(`未回答の項目が${blankCount}件あります。未回答は0点として採点しますか？`))return;
+ mockExam.results=mockExam.items.map((item,i)=>item.kind==='herb'?mockScoreHerb(item.herb,mockExam.answers[i]):mockScoreKampo(item.formula,mockExam.answers[i]));
+ mockExam.finished=true;
+ renderMockResults();
+ $('mockExam').scrollIntoView({block:'start',behavior:'auto'});
+}
+$('mockExamArea').addEventListener('input',e=>{
+ const field=e.target.closest('[data-mock-field]');
+ if(mockExam&&!mockExam.finished&&field)mockExam.answers[mockExam.index][field.dataset.mockField]=field.value;
+});
+$('mockExamArea').addEventListener('click',e=>{
+ const zoom=e.target.closest('button[data-mock-photo-index]');
+ if(zoom){openKampoPhotoViewer(Number(zoom.dataset.mockPhotoIndex),'mock');return}
+ const button=e.target.closest('button[data-mock-action]');if(!button)return;
+ const action=button.dataset.mockAction;
+ if(action==='start'||action==='restart'){startMockExam();return}
+ if(action==='quit'){
+  if(mockExam&&!mockExam.finished&&!confirm('解答途中の模擬テストを終了しますか？'))return;
+  closeKampoPhotoViewer();mockExam=null;renderMockExam();return;
+ }
+ if(!mockExam||mockExam.finished)return;
+ if(action==='prev'){mockExam.index=Math.max(0,mockExam.index-1);renderMockExam()}
+ if(action==='next'){mockExam.index=Math.min(mockExam.items.length-1,mockExam.index+1);renderMockExam()}
+ if(action==='finish')finishMockExam();
+});
+
 async function initShared(){try{initClient();const s=getLocalProgress();db.stats=s.stats||{};db.attempts=Number(s.attempts)||0;db.correct=Number(s.correct)||0;db.totalScore=Number(s.totalScore)||0;await updateAdminSession();await refreshHerbs();await refreshCutHerbs();await refreshKampoFormulas().catch(err=>{kampoLoadError=err.message||String(err);console.warn('漢方処方の読み込みに失敗:',err);renderKampoList();renderKampoInfo();});client.auth.onAuthStateChange(()=>{setTimeout(()=>{updateAdminSession().catch(console.error)},0)})}catch(err){console.error(err);setStatus('接続できません：'+(err.message||String(err)),true);$('quizArea').innerHTML='<p class="empty">共有データの取得に失敗しました。接続状況を確認して、ページを再読み込みしてください。</p>'}}
 function escapeHtml(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 
@@ -1103,7 +1305,7 @@ function statFor(id){return db.stats[id]||(db.stats[id]={seen:0,wrong:0,right:0,
 function isWeak(h){const s=statFor(h.id);if(s.reviewCleared===true)return false;if(s.reviewCleared===false)return true;return s.wrong>s.right||(s.seen>0&&s.streak===0)}
 function updateStats(){ $('countStat').textContent=db.herbs.length;$('accuracyStat').textContent=db.attempts?Math.round(db.correct/db.attempts*100)+'%':'—';$('scoreStat').textContent=String(db.totalScore||0);$('weakStat').textContent=db.herbs.filter(isWeak).length;renderList();if(!$('info').classList.contains('hidden'))renderHerbInfo();if(!$('progress').classList.contains('hidden'))renderLearningProgress();}
 // メインメニューと小メニューを同期。直接の画面移動（進捗から復習、情報リンク等）も反映する。
-const NAV_GROUP_TABS={quiz:['quiz','cutQuiz','kampoQuiz'],info:['info','cutInfo','kampoInfo'],progress:['progress'],admin:['manage','cutManage','kampoManage','list','backup']};
+const NAV_GROUP_TABS={quiz:['quiz','cutQuiz','kampoQuiz','mockExam'],info:['info','cutInfo','kampoInfo'],progress:['progress'],admin:['manage','cutManage','kampoManage','list','backup']};
 const NAV_DEFAULT={quiz:'quiz',info:'info',progress:'progress',admin:'manage'};
 const navLastTab={...NAV_DEFAULT};
 function syncMainNavigation(tab){
@@ -1124,7 +1326,7 @@ document.querySelectorAll('[data-nav-group]').forEach(b=>b.addEventListener('cli
  if(group==='admin'&&!isAdmin)return;
  switchTab(navLastTab[group]||NAV_DEFAULT[group]);
 }));
-function switchTab(tab,keepLinkedHistory=false){if(!keepLinkedHistory)linkedInfoHistory=[];if(!isAdmin&&['manage','list','backup','cutManage','kampoManage'].includes(tab))return;document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));syncMainNavigation(tab);['quiz','info','manage','list','backup','cutQuiz','cutManage','cutInfo','kampoManage','kampoQuiz','kampoInfo','progress'].forEach(id=>$(id).classList.toggle('hidden',id!==tab));if(tab==='list')renderList();if(tab==='cutManage')renderCutList();if(tab==='kampoManage'){renderKampoList();renderKampoIngredientOptions();renderKampoPreview()}if(tab==='cutInfo')renderCutInfo();if(tab==='kampoQuiz')renderKampoQuizProgress();if(tab==='kampoInfo')renderKampoInfo();if(tab==='info')renderHerbInfo();if(tab==='progress')renderLearningProgress();if(tab==='backup')$('backupStatus').textContent='学習履歴はこの端末のブラウザに保存されています。';appStoreView()}
+function switchTab(tab,keepLinkedHistory=false){if(!keepLinkedHistory)linkedInfoHistory=[];if(!isAdmin&&['manage','list','backup','cutManage','kampoManage'].includes(tab))return;document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));syncMainNavigation(tab);['quiz','info','manage','list','backup','cutQuiz','cutManage','cutInfo','kampoManage','kampoQuiz','kampoInfo','progress','mockExam'].forEach(id=>$(id).classList.toggle('hidden',id!==tab));if(tab==='list')renderList();if(tab==='cutManage')renderCutList();if(tab==='kampoManage'){renderKampoList();renderKampoIngredientOptions();renderKampoPreview()}if(tab==='cutInfo')renderCutInfo();if(tab==='kampoQuiz')renderKampoQuizProgress();if(tab==='mockExam')renderMockExam();if(tab==='kampoInfo')renderKampoInfo();if(tab==='info')renderHerbInfo();if(tab==='progress')renderLearningProgress();if(tab==='backup')$('backupStatus').textContent='学習履歴はこの端末のブラウザに保存されています。';appStoreView()}
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
 function showIdle(){if(!db.herbs.length){$('quizArea').innerHTML='<div class="empty">登録された生薬がありません。生薬データと写真を登録してください。</div>';return}$('modeLabel').textContent='出題モードを選び、「開始」を押してください。';$('quizArea').innerHTML='<div class="empty">「開始」を押して解答スタート。<br><br><button class="primary" type="button" onclick="nextQuestion()">開始</button></div>'}
 function endQuiz(){currentId=null;answered=false;currentUseCorrect=[];selectedConstituent='';showIdle()}
@@ -1719,7 +1921,7 @@ function resetKampoForm(){
 async function refreshKampoFormulas(){
   const {data,error}=await client.from('kampo_formulas').select('id,name,ingredients,created_at').order('created_at',{ascending:true});
   if(error)throw error;
-  kampoFormulas=data||[];kampoLoadError='';renderKampoList();renderKampoQuizProgress();renderKampoInfo();if(!$('progress').classList.contains('hidden'))renderLearningProgress();
+  kampoFormulas=data||[];kampoLoadError='';renderKampoList();renderKampoQuizProgress();renderKampoInfo();if(!$('progress').classList.contains('hidden'))renderLearningProgress();if(!$('mockExam').classList.contains('hidden'))renderMockExam();
 }
 function renderKampoList(){
   const root=$('kampoList');if(!root)return;
@@ -1889,10 +2091,12 @@ function kampoQuizIdle(){
 function endKampoQuiz(){kampoLastId=null;kampoQuizIdle()}
 // 写真ビューアー：既存の刻み生薬写真とラベル範囲をそのまま拡大する。
 let kampoViewerIndex=0,kampoViewerScale=1,kampoViewerPanX=0,kampoViewerPanY=0;
+let kampoViewerMock=false;
 let kampoViewerBeforeOverflow='',kampoViewerGesture=null;
 const kampoViewerPointers=new Map();
 function closeKampoPhotoViewer(){
   const d=$('kampoPhotoViewer');if(d?.open)d.close();
+  kampoViewerMock=false;
 }
 function kampoViewerResetZoom(){
   kampoViewerScale=1;kampoViewerPanX=0;kampoViewerPanY=0;kampoViewerApplyZoom();
@@ -1911,14 +2115,14 @@ function kampoViewerSetZoom(value){
   kampoViewerApplyZoom();
 }
 function kampoViewerRender(){
-  const imgs=kampoCurrent?.chosenPhotos||[];
+  const imgs=kampoViewerMock?mockExamPhotos():kampoCurrent?.chosenPhotos||[];
   if(!imgs.length){closeKampoPhotoViewer();return}
   kampoViewerIndex=Math.max(0,Math.min(imgs.length-1,kampoViewerIndex));
   const {photo,name}=imgs[kampoViewerIndex];
-  const showNames=kampoCurrent.config.difficulty==='beginner'||kampoAnswered;
+  const showNames=kampoViewerMock?!!mockExam?.finished:(kampoCurrent.config.difficulty==='beginner'||kampoAnswered);
   $('kampoViewerCounter').textContent=`写真 ${kampoViewerIndex+1} / ${imgs.length}`;
   $('kampoViewerPhoto').innerHTML=cutPhotoHtml(photo,'quiz');
-  $('kampoViewerPhoto').classList.toggle('kampo-photo-beginner',kampoCurrent.config.difficulty==='beginner');
+  $('kampoViewerPhoto').classList.toggle('kampo-photo-beginner',!kampoViewerMock&&kampoCurrent.config.difficulty==='beginner');
   if(showNames){$('kampoViewerPhoto').querySelectorAll('.cut-mask').forEach(el=>el.classList.add('revealed'))}
   $('kampoViewerName').textContent=showNames?name:'採点後に生薬名を表示します';
   $('kampoViewerPrev').disabled=kampoViewerIndex===0;
@@ -1926,15 +2130,19 @@ function kampoViewerRender(){
   kampoViewerResetZoom();
 }
 function kampoViewerStep(direction){
-  const n=kampoCurrent?.chosenPhotos?.length||0;
+  const n=kampoViewerMock?mockExamPhotos().length:(kampoCurrent?.chosenPhotos?.length||0);
   const next=kampoViewerIndex+direction;
   if(next>=0&&next<n){kampoViewerIndex=next;kampoViewerPointers.clear();kampoViewerGesture=null;kampoViewerRender();appStoreView('replace')}
 }
-function openKampoPhotoViewer(index){
-  if(!kampoCurrent||kampoCurrent.config.type!=='photos'||!kampoCurrent.chosenPhotos.length)return;
+function openKampoPhotoViewer(index,source='kampo'){
+  const isMock=source==='mock';
+  const imgs=isMock?mockExamPhotos():kampoCurrent?.chosenPhotos||[];
+  if(!isMock&&(!kampoCurrent||kampoCurrent.config.type!=='photos'))return;
+  if(!imgs.length)return;
   const d=$('kampoPhotoViewer');
   if(!d||typeof d.showModal!=='function')return;
-  kampoViewerIndex=Math.max(0,Math.min(kampoCurrent.chosenPhotos.length-1,index));
+  kampoViewerMock=isMock;
+  kampoViewerIndex=Math.max(0,Math.min(imgs.length-1,index));
   if(!d.open){kampoViewerBeforeOverflow=document.documentElement.style.overflow;d.showModal();document.documentElement.style.overflow='hidden'}
   kampoViewerRender();appStoreView();
 }
@@ -1942,7 +2150,7 @@ $('kampoQuizArea').addEventListener('click',e=>{
   const button=e.target.closest('button[data-kampo-photo-index]');
   if(button)openKampoPhotoViewer(Number(button.dataset.kampoPhotoIndex));
 });
-$('kampoViewerClose').addEventListener('click',()=>appBackFromViewer('kampo'));
+$('kampoViewerClose').addEventListener('click',()=>appBackFromViewer(kampoViewerMock?'mockKampo':'kampo'));
 $('kampoViewerPrev').addEventListener('click',()=>kampoViewerStep(-1));
 $('kampoViewerNext').addEventListener('click',()=>kampoViewerStep(1));
 $('kampoViewerZoomIn').addEventListener('click',()=>kampoViewerSetZoom(kampoViewerScale+.5));
