@@ -564,7 +564,7 @@ section.panel form .editor-actions button{min-height:49px}
   <div class="mock-overview-item"><span>漢方処方</span><strong>1問</strong><small>処方名1点＋構成生薬4点</small></div>
   <div class="mock-overview-item mock-overview-total"><span>総得点</span><strong>35点</strong><small>すべて記述式</small></div>
  </div>
- <p class="mock-exam-note">原型生薬5問を解いた後、第6問に漢方処方を出題します。出題する生薬・処方は毎回ランダムに抽選し、同じテスト内で原型生薬は重複しません。漢方処方はラベルを隠した刻み生薬写真を見て、処方名（1点）と構成生薬4種類（4点）を答えます。大建中湯は構成生薬3種類すべて正解で構成生薬分が4点です。<b>原型生薬の和名、または漢方処方名が不正解ならその問題全体が0点になります。</b><b>全6問の解答を終えてから、一括採点します。</b></p>
+ <p class="mock-exam-note">原型生薬5問を解いた後、第6問に漢方処方を出題します。出題する生薬・処方は毎回ランダムに抽選し、同じテスト内で原型生薬は重複しません。漢方処方はラベルを隠した刻み生薬写真を見て、処方名（1点）と構成生薬4種類（4点）を答えます。構成生薬の「釣藤鈎／釣藤鉤」「黄蓍／黄耆」はどちらの表記でも正解です。大建中湯は構成生薬3種類すべて正解で構成生薬分が4点です。<b>原型生薬の和名、または漢方処方名が不正解ならその問題全体が0点になります。</b><b>全6問の解答を終えてから、一括採点します。</b></p>
  <div id="mockExamArea" aria-live="polite"></div>
 </section>
 <section id="cutQuiz" class="panel hidden">
@@ -573,7 +573,7 @@ section.panel form .editor-actions button{min-height:49px}
  </div>
  <div class="study-settings-heading">回答設定</div>
  <div class="study-settings"><div class="field"><label for="cutStyle">回答形式</label><select id="cutStyle"><option value="written">記述式</option><option value="choice">選択式（最大6択）</option></select></div><div class="field"><label for="cutMode">出題方法</label><select id="cutMode"><option value="random">ランダム出題</option><option value="weak">苦手問題の復習</option><option value="priority">重点復習（苦手・復習時期を優先）</option><option value="due">今日の復習（復習予定のみ）</option></select></div></div>
- <div class="study-note"><strong>漢字入力のヒント</strong><p> 「黄蓍」は「黄耆」でも正解です。「山梔子」の「梔」は、スマートフォンで「くちなし」と入力すると変換できます。</p></div>
+ <div class="study-note"><strong>漢字入力のヒント</strong><p> 「黄蓍／黄耆」「釣藤鈎／釣藤鉤」は、どちらの表記でも正解です。「山梔子」の「梔」は、スマートフォンで「くちなし」と入力すると変換できます。</p></div>
  <div id="cutQuizArea" class="empty">「開始」を押して解答スタート。<p><button class="primary" type="button" onclick="nextCutQuestion()">開始</button></p></div>
 </section>
 <section id="cutInfo" class="panel hidden">
@@ -581,6 +581,7 @@ section.panel form .editor-actions button{min-height:49px}
  <h2 style="margin-top:0">刻み生薬情報</h2>
  <p class="muted">登録した順番で刻み生薬を表示します。写真はラベルを隠さず、そのまま確認できます。</p>
  </div>
+ <div class="study-note"><strong>生薬名の表記について</strong><p>「釣藤鈎」と「釣藤鉤」はどちらも正しい表記として扱います。刻み生薬クイズや漢方処方クイズで、どちらを記述しても正解です。「黄蓍」と「黄耆」も同様です。</p></div>
  <div class="study-search-shell"><div class="study-settings-heading">検索</div>
  <div class="field"><label for="cutInfoSearch">刻み生薬名で検索</label><input id="cutInfoSearch" type="search" placeholder="例：甘草"></div></div>
  <div id="cutInfoList"></div><div id="cutInfoDetail" class="hidden"></div>
@@ -626,7 +627,7 @@ section.panel form .editor-actions button{min-height:49px}
   <div class="field hidden" id="kampoQuizDifficultyField"><label for="kampoQuizDifficulty">写真の難易度</label><select id="kampoQuizDifficulty"><option value="beginner">初級：生薬名あり</option><option value="advanced">上級：生薬名を隠す</option></select></div>
  </div>
  <details class="study-disclosure"><summary>採点ルールを見る<span class="study-summary-hint">配点・完全正解の条件</span></summary><div class="study-disclosure-body">構成生薬の問題では、正解の種類数は解答前に表示しません。<b>入力・選択の順序は採点に影響しません。</b>正解1種類につき1点、余分な生薬の解答は1種類につき1点減点（最低0点）です。すべて正しく答え、誤答がない場合のみ完全正解です。写真の上級では、採点後に全ラベルが一斉に現れます。</div></details>
- <div class="study-note"><strong>漢字入力のヒント</strong><p>「黄蓍」と「黄耆」はどちらでも正解です。「山梔子」の「梔」は「くちなし」で漢字変換できます。</p></div>
+ <div class="study-note"><strong>漢字入力のヒント</strong><p>「黄蓍／黄耆」「釣藤鈎／釣藤鉤」はどちらの表記でも正解です。「山梔子」の「梔」は「くちなし」で漢字変換できます。</p></div>
  <p id="kampoCycleProgress" class="muted small random-cycle-status" aria-live="polite"></p>
  <div id="kampoQuizArea"><div class="empty">「開始」を押して解答スタート。<p><button class="primary" type="button" onclick="nextKampoQuestion()">開始</button></p></div></div>
  <p id="kampoQuizProgress" class="muted small"></p>
@@ -1414,7 +1415,7 @@ function renderUseOptions(h){
 function normalize(s){return String(s||'').normalize('NFKC').toLowerCase().replace(/[\s　・･,，、.。;；:：]/g,'').trim()}
 function exactAnswer(answer,targets){const a=normalize(answer);return !!a&&targets.filter(Boolean).some(t=>normalize(t)===a)}
 // 刻み生薬名の異体表記。原型生薬（カタカナ）や漢方処方名の判定には適用しない。
-function normalizeCutHerbName(value){const name=normalize(value);return name==='黄耆'?'黄蓍':name}
+function normalizeCutHerbName(value){const name=normalize(value);return name==='黄耆'?'黄蓍':name==='釣藤鉤'?'釣藤鈎':name}
 function cutHerbNameMatches(answer,targets){const key=normalizeCutHerbName(answer);return !!key&&targets.filter(Boolean).some(name=>normalizeCutHerbName(name)===key)}
 function splitAliases(s){return String(s||'').split(/[,，、\n\r;；]/).map(x=>x.trim()).filter(Boolean)}
 async function checkAnswer(id,answerMode){
@@ -1837,7 +1838,8 @@ function renderCutInfo(){
  const selected=detail.dataset.cutId;
  detachInfoDetailForRender(root,detail);
  const q=($('cutInfoSearch').value||'').trim().toLocaleLowerCase();
- const found=cutHerbs.filter(h=>[h.name||'',h.reading||''].some(v=>v.toLocaleLowerCase().includes(q)));
+ const canonicalQuery=normalizeCutHerbName(q);
+ const found=cutHerbs.filter(h=>[h.name||'',h.reading||''].some(v=>v.toLocaleLowerCase().includes(q))||(canonicalQuery&&normalizeCutHerbName(h.name).includes(canonicalQuery)));
  root.innerHTML=found.length?`<p class="muted">${found.length}件</p>`+found.map(h=>{
    const imgs=cutImages(h);
    return `<div class="entry" data-cut-id="${escapeHtml(h.id)}"><img class="thumb" src="${escapeHtml(imgs[0]?.url||'')}" alt=""><div><h3 class="cut-info-name">${cutRubyHtml(h)}</h3><p>写真 ${imgs.length}枚</p></div><div class="entry-actions"><button type="button" class="primary" aria-controls="cutInfoDetail" aria-expanded="false" onclick="showCutInfo('${h.id}')">詳細を見る</button></div></div>`;
