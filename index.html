@@ -564,7 +564,7 @@ section.panel form .editor-actions button{min-height:49px}
   <div class="mock-overview-item"><span>漢方処方</span><strong>1問</strong><small>写真から構成生薬・4点</small></div>
   <div class="mock-overview-item mock-overview-total"><span>総得点</span><strong>34点</strong><small>すべて記述式</small></div>
  </div>
- <p class="mock-exam-note">毎回独立してランダムに抽選し、同じテスト内で原型生薬は重複しません。漢方処方はラベルを隠した刻み生薬写真を見て、構成生薬を4種類答えます。大建中湯は3種類すべて正解すると4点です。<b>全6問の解答を終えてから、一括採点します。</b></p>
+ <p class="mock-exam-note">原型生薬5問を解いた後、第6問に漢方処方を出題します。出題する生薬・処方は毎回ランダムに抽選し、同じテスト内で原型生薬は重複しません。漢方処方はラベルを隠した刻み生薬写真を見て、構成生薬を4種類答えます。大建中湯は3種類すべて正解すると4点です。<b>全6問の解答を終えてから、一括採点します。</b></p>
  <div id="mockExamArea" aria-live="polite"></div>
 </section>
 <section id="cutQuiz" class="panel hidden">
@@ -1003,7 +1003,8 @@ function startMockExam(){
  const formula=shuffleValues(formulas)[0];
  const entries=kampoUsablePhotos(formula,'advanced');
  const photos=shuffleValues(entries.map(x=>({name:x.name,photo:x.photos[Math.floor(Math.random()*x.photos.length)]})));
- const items=shuffleValues([...drawn,{kind:'kampo',id:String(formula.id),formula,photos}]);
+ // 出題順は原型生薬5問→漢方処方1問に固定。原型生薬の抽選順と処方の抽選自体は毎回ランダム。
+ const items=[...drawn,{kind:'kampo',id:String(formula.id),formula,photos}];
  mockExam={items,answers:items.map(()=>({})),index:0,finished:false,results:null};
  renderMockExam();
  $('mockExam').scrollIntoView({block:'start',behavior:'auto'});
@@ -1019,7 +1020,7 @@ function renderMockExam(){
  if(!mockExam){
   const {herbs,formulas}=mockExamEligibility(),possible=herbs.length>=5&&formulas.length>0;
   const notReady=herbs.length<5?`出題できる原型生薬が${herbs.length}種類です。写真付きで5種類以上登録してください。`:formulas.length<1?'4種類以上（大建中湯は3種類）の構成生薬があり、全構成生薬のラベルを隠せる刻み写真がそろった漢方処方がありません。刻み生薬写真とマスク範囲を確認してください。':'';
-  area.innerHTML=`<div class="mock-start-panel">${notReady?`<div class="feedback bad">${escapeHtml(notReady)}</div>`:`<p class="muted">出題可能：原型生薬 ${herbs.length}種類／写真識別できる漢方処方 ${formulas.length}種類。問題の順番も毎回シャッフルします。</p>`}<button class="primary mock-start" type="button" data-mock-action="start" ${possible?'':'disabled'}>模擬テストを開始</button></div>`;
+  area.innerHTML=`<div class="mock-start-panel">${notReady?`<div class="feedback bad">${escapeHtml(notReady)}</div>`:`<p class="muted">出題可能：原型生薬 ${herbs.length}種類／写真識別できる漢方処方 ${formulas.length}種類。出題順は原型生薬5問→漢方処方1問です。出題する生薬・処方は毎回ランダムに選びます。</p>`}<button class="primary mock-start" type="button" data-mock-action="start" ${possible?'':'disabled'}>模擬テストを開始</button></div>`;
   return;
  }
  if(mockExam.finished){renderMockResults();return}
