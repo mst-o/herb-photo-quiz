@@ -437,6 +437,21 @@ section.panel form .editor-actions button{min-height:49px}
  #mockExam .mock-quiz-nav button{padding:10px 8px;font-size:.91rem}
 }
 
+
+/* 模擬テスト：各分野の合格基準を、合計得点とは独立して表示。 */
+.mock-result-judgement{display:flex;flex-direction:column;align-items:center;gap:7px;padding:20px 14px}
+.mock-result-verdict{font-size:1.45rem;font-weight:850;border-radius:100px;padding:5px 24px;background:#e4f2e8;color:#205a3f}
+.mock-result-failed .mock-result-verdict{background:#fae9e7;color:#962f2b}
+.mock-section-scores{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:8px}
+.mock-section-score{border:1px solid var(--line);border-radius:12px;background:var(--card);display:flex;flex-direction:column;align-items:stretch;gap:5px;padding:13px 10px;text-align:center;min-width:0}
+.mock-section-score>span:first-child{font-size:.85rem;font-weight:650}
+.mock-section-score strong{font-size:1.3rem;font-weight:800;font-variant-numeric:tabular-nums}
+.mock-section-score small{color:var(--muted);font-size:.77rem}
+.mock-section-judgement{font-size:.76rem;font-weight:700;line-height:1.4;padding:5px;border-radius:9px}
+.mock-section-passed{background:#e4f2e8;color:#205a3f}
+.mock-section-failed{background:#fae9e7;color:#962f2b}
+.mock-judgement-rule{font-size:.83rem;line-height:1.65;margin:6px 0 0;color:var(--muted);text-align:left}
+@media(max-width:390px){.mock-section-scores{gap:7px}.mock-section-score{padding:11px 6px}.mock-section-score strong{font-size:1.13rem}.mock-section-judgement{font-size:.68rem}}
 </style>
 </head>
 <body>
@@ -562,9 +577,9 @@ section.panel form .editor-actions button{min-height:49px}
  <div class="mock-exam-overview" aria-label="模擬テストの内容">
   <div class="mock-overview-item"><span>原型生薬</span><strong>5問</strong><small>各6点／合計30点</small></div>
   <div class="mock-overview-item"><span>漢方処方</span><strong>1問</strong><small>処方名1点＋構成生薬4点</small></div>
-  <div class="mock-overview-item mock-overview-total"><span>総得点</span><strong>35点</strong><small>すべて記述式</small></div>
+  <div class="mock-overview-item mock-overview-total"><span>総得点</span><strong>35点</strong><small>2分野とも6割以上で合格</small></div>
  </div>
- <p class="mock-exam-note">原型生薬5問を解いた後、第6問に漢方処方を出題します。出題する生薬・処方は毎回ランダムに抽選し、同じテスト内で原型生薬は重複しません。漢方処方はラベルを隠した刻み生薬写真を見て、処方名（1点）と構成生薬4種類（4点）を答えます。構成生薬の「釣藤鈎／釣藤鉤」「黄蓍／黄耆」はどちらの表記でも正解です。大建中湯は構成生薬3種類すべて正解で構成生薬分が4点です。<b>原型生薬の和名、または漢方処方名が不正解ならその問題全体が0点になります。</b><b>全6問の解答を終えてから、一括採点します。</b></p>
+ <p class="mock-exam-note">原型生薬5問を解いた後、第6問に漢方処方を出題します。出題する生薬・処方は毎回ランダムに抽選し、同じテスト内で原型生薬は重複しません。漢方処方はラベルを隠した刻み生薬写真を見て、処方名（1点）と構成生薬4種類（4点）を答えます。構成生薬の「釣藤鈎／釣藤鉤」「黄蓍／黄耆」はどちらの表記でも正解です。大建中湯は構成生薬3種類すべて正解で構成生薬分が4点です。<b>原型生薬の和名、または漢方処方名が不正解ならその問題全体が0点になります。</b><b>全6問の解答を終えてから、一括採点します。</b> 合格するには、<b>原型生薬18／30点以上と漢方処方3／5点以上の両方</b>が必要です。満点に届かなかった問題は通常クイズの復習対象に引き継ぎます。</p>
  <div id="mockExamArea" aria-live="polite"></div>
 </section>
 <section id="cutQuiz" class="panel hidden">
@@ -808,7 +823,7 @@ let linkedInfoHistory=[]; // 情報画面の相互リンクから戻るための
 let currentId=null,answered=false,stagedImages=[],currentUseCorrect=[];
 let cutHerbs=[],cutStaged=[],cutCurrent=null,cutAnswered=false,cutLastId=null;
 let kampoFormulas=[],kampoLoadError="";
-let mockExam=null; // 模擬テストは通常の学習進捗と独立
+let mockExam=null; // 採点後は通常の学習履歴にも正誤を反映する
 const KAMPO_PROGRESS_KEY='herbPhotoQuiz.kampo.progress.v1';
 let kampoProgress=readKampoProgress(),kampoCurrent=null,kampoLastId=null,kampoAnswered=false;
 const $=id=>document.getElementById(id);
@@ -1040,10 +1055,17 @@ function renderMockExam(){
  }
  area.innerHTML=`<div class="mock-quiz-header"><strong>第${index+1}問 / 全${items.length}問</strong><span class="mock-progress-mini">記述式・解答は最後に採点</span></div><div class="mock-progress-track" role="progressbar" aria-valuenow="${index+1}" aria-valuemin="0" aria-valuemax="${items.length}" aria-label="模擬テストの進捗"><div class="mock-progress-fill" style="width:${pct}%"></div></div>${question}<div class="mock-quiz-nav">${index>0?'<button type="button" class="secondary" data-mock-action="prev">前の問題</button>':''}<button type="button" class="primary" data-mock-action="${index===items.length-1?'finish':'next'}">${index===items.length-1?'採点して結果を見る':'次の問題へ'}</button></div><div class="mock-ended-action"><button type="button" class="secondary" data-mock-action="quit">テストを中断する</button></div>`;
 }
+function mockExamJudgement(items,results){
+ const herbScore=results.reduce((sum,r,i)=>sum+(items[i].kind==='herb'?r.score:0),0);
+ const kampoScore=results.reduce((sum,r,i)=>sum+(items[i].kind==='kampo'?r.score:0),0);
+ const herbPassed=herbScore>=18,kampoPassed=kampoScore>=3;
+ return {herbScore,kampoScore,total:herbScore+kampoScore,herbPassed,kampoPassed,passed:herbPassed&&kampoPassed};
+}
 function renderMockResults(){
  if(!mockExam)return;
  const area=$('mockExamArea');
- const total=mockExam.results.reduce((n,r)=>n+r.score,0),max=35;
+ const outcome=mockExamJudgement(mockExam.items,mockExam.results),total=outcome.total,max=35;
+ const missedItems=mockExam.items.filter((item,i)=>mockExam.results[i].score<mockExam.results[i].max);
  const rows=mockExam.items.map((item,i)=>{
   const result=mockExam.results[i],answer=mockExam.answers[i],isHerb=item.kind==='herb';
   const name=isHerb?item.herb.japaneseName:item.formula.name;
@@ -1053,7 +1075,56 @@ function renderMockResults(){
   const correctData=isHerb?`<b>正解：${escapeHtml(name)}</b>${result.points.map(p=>`<div>${escapeHtml(p.label)}：${escapeHtml(p.correct||'未登録')}</div>`).join('')}`:`<b>正解の漢方処方：${escapeHtml(name)}</b><div>構成生薬：${escapeHtml(kampoNormalizedIngredients(item.formula).join('、'))}</div>`;
   return `<article class="mock-result-item"><div class="mock-result-head"><h3>第${i+1}問｜${isHerb?'原型生薬':'漢方処方'}</h3><strong>${result.score} / ${result.max}点</strong></div>${photos}${result.blocked?`<p class="feedback bad">${isHerb?'生薬名・和名':'漢方処方名'}が不正解のため、この問題はすべて0点です。</p>`:''}<ul>${pointList}</ul><div class="mock-correct-data">${correctData}</div></article>`;
  }).join('');
- area.innerHTML=`<div class="mock-result-summary"><div class="muted">模擬テストの結果</div><div class="mock-score-big">${total} <span style="font-size:1.05rem">/ ${max}点</span></div><div>正答率（配点比） ${Math.round(total/max*100)}%</div></div><p class="muted small">問題ごとの採点結果と正解を確認できます。模擬テストは通常の復習履歴には加算されません。</p>${rows}<div class="mock-quiz-nav"><button class="primary" type="button" data-mock-action="restart">別の問題で再挑戦</button><button class="secondary" type="button" data-mock-action="quit">終了</button></div>`;
+ const judgementLabel=pass=>pass?'合格基準クリア':'合格基準未達';
+ area.innerHTML=`<div class="mock-result-summary mock-result-judgement ${outcome.passed?'mock-result-passed':'mock-result-failed'}"><div class="mock-result-verdict" role="status">${outcome.passed?'合格':'不合格'}</div><div class="muted">模擬テストの結果</div><div class="mock-score-big">${total} <span style="font-size:1.05rem">/ ${max}点</span></div><div>正答率（配点比） ${Math.round(total/max*100)}%</div><div class="mock-section-scores"><div class="mock-section-score"><span>原型生薬（5問）</span><strong>${outcome.herbScore} / 30点</strong><span class="mock-section-judgement ${outcome.herbPassed?'mock-section-passed':'mock-section-failed'}">${judgementLabel(outcome.herbPassed)}</span><small>合格基準：18点以上</small></div><div class="mock-section-score"><span>漢方処方（1問）</span><strong>${outcome.kampoScore} / 5点</strong><span class="mock-section-judgement ${outcome.kampoPassed?'mock-section-passed':'mock-section-failed'}">${judgementLabel(outcome.kampoPassed)}</span><small>合格基準：3点以上</small></div></div><p class="mock-judgement-rule">原型生薬18点以上・漢方処方3点以上の<b>両方を満たした場合のみ合格</b>です。総得点だけでは判定しません。</p></div><p class="muted small">問題ごとの採点結果と正解を確認できます。${mockExam.progressSaved?'満点未満の問題は通常クイズの「復習対象」と「今日の復習」に反映されました。':'学習履歴の保存に失敗しました。表示されている結果は確認できますが、復習対象への反映は完了していません。'}</p>${rows}<div class="mock-quiz-nav">${mockExam.progressSaved&&missedItems.length?'<button class="secondary" type="button" data-mock-action="review">復習対象を見る</button>':''}<button class="primary" type="button" data-mock-action="restart">別の問題で再挑戦</button><button class="secondary" type="button" data-mock-action="quit">終了</button></div>`;
+}
+// 模擬テストの各問を通常の学習履歴に1回の解答として登録する。
+// 満点未満の問題は復習対象・今日の復習へ、満点なら通常の正解履歴へ反映。
+// 漢方処方は構成生薬の復習に使える「構成生薬・記述式」に記録する。
+function saveMockExamProgress(){
+ const previous={stats:JSON.parse(JSON.stringify(db.stats)),attempts:db.attempts,correct:db.correct,totalScore:db.totalScore,kampo:JSON.parse(JSON.stringify(kampoProgress))};
+ let previousHerbText=null,previousKampoText=null;
+ try{
+  previousHerbText=localStorage.getItem(LOCAL_STATS_KEY);
+  previousKampoText=localStorage.getItem(KAMPO_PROGRESS_KEY);
+  mockExam.items.forEach((item,i)=>{
+   const result=mockExam.results[i],perfect=result.score===result.max;
+   if(item.kind==='herb'){
+    const stat=statFor(item.id);
+    stat.seen=progressNumber(stat.seen)+1;
+    if(perfect){stat.right=progressNumber(stat.right)+1;stat.streak=progressNumber(stat.streak)+1;stat.reviewCleared=true}
+    else{stat.wrong=progressNumber(stat.wrong)+1;stat.streak=0;stat.reviewCleared=false}
+    stat.score=(Number(stat.score)||0)+result.score;
+    reviewRecord(stat,perfect);
+    db.attempts=(Number(db.attempts)||0)+1;
+    if(perfect)db.correct=(Number(db.correct)||0)+1;
+    db.totalScore=(Number(db.totalScore)||0)+result.score;
+   }else{
+    // 通常の構成生薬クイズは「全構成生薬」を問うため、模擬テストで4種類だけ
+    // 正解しても、登録が5種類以上の処方を完全正解として上書きしない。
+    // ただし満点未満なら、どの処方でも復習対象に設定する。
+    if(perfect&&kampoNormalizedIngredients(item.formula).length>mockKampoFields(item.formula).length)return;
+    const key=kampoStatKey(item.formula.id,'ingredients','written','beginner');
+    const old=kampoProgress[key]||{seen:0,perfect:0};
+    const stat={...old,seen:progressNumber(old.seen)+1,perfect:progressNumber(old.perfect)+(perfect?1:0),lastPerfect:perfect};
+    reviewRecord(stat,perfect);
+    kampoProgress[key]=stat;
+   }
+  });
+  localStorage.setItem(LOCAL_STATS_KEY,JSON.stringify({stats:db.stats,attempts:db.attempts,correct:db.correct,totalScore:db.totalScore}));
+  localStorage.setItem(KAMPO_PROGRESS_KEY,JSON.stringify(kampoProgress));
+ }catch(err){
+  db.stats=previous.stats;db.attempts=previous.attempts;db.correct=previous.correct;db.totalScore=previous.totalScore;
+  kampoProgress=previous.kampo;
+  try{
+   if(previousHerbText===null)localStorage.removeItem(LOCAL_STATS_KEY);else localStorage.setItem(LOCAL_STATS_KEY,previousHerbText);
+   if(previousKampoText===null)localStorage.removeItem(KAMPO_PROGRESS_KEY);else localStorage.setItem(KAMPO_PROGRESS_KEY,previousKampoText);
+  }catch(e){console.warn('模擬テストの学習履歴を復旧できませんでした',e)}
+  console.error('模擬テストの学習履歴保存に失敗',err);
+  return false;
+ }
+ updateStats();renderKampoQuizProgress();
+ return true;
 }
 function finishMockExam(){
  if(!mockExam||mockExam.finished)return;
@@ -1063,6 +1134,7 @@ function finishMockExam(){
  },0);
  if(blankCount&&!confirm(`未回答の項目が${blankCount}件あります。未回答は0点として採点しますか？`))return;
  mockExam.results=mockExam.items.map((item,i)=>item.kind==='herb'?mockScoreHerb(item.herb,mockExam.answers[i]):mockScoreKampo(item.formula,mockExam.answers[i]));
+ mockExam.progressSaved=saveMockExamProgress();
  mockExam.finished=true;
  renderMockResults();
  $('mockExam').scrollIntoView({block:'start',behavior:'auto'});
@@ -1080,6 +1152,14 @@ $('mockExamArea').addEventListener('click',e=>{
  if(action==='quit'){
   if(mockExam&&!mockExam.finished&&!confirm('解答途中の模擬テストを終了しますか？'))return;
   closeKampoPhotoViewer();mockExam=null;renderMockExam();return;
+ }
+ if(action==='review'&&mockExam?.finished){
+  const wrongHerbs=mockExam.items.some((item,i)=>item.kind==='herb'&&mockExam.results[i].score<mockExam.results[i].max);
+  progressCurrentKind=wrongHerbs?'herb':'kampo';
+  $('progressStatus').value='weak';$('progressSearch').value='';
+  switchTab('progress');renderLearningProgress();
+  $('progress').scrollIntoView({block:'start',behavior:'auto'});
+  return;
  }
  if(!mockExam||mockExam.finished)return;
  if(action==='prev'){mockExam.index=Math.max(0,mockExam.index-1);renderMockExam()}
