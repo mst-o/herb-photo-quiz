@@ -536,6 +536,36 @@ section.panel form .editor-actions button{min-height:49px}
 #progress #progressIndividual{scroll-margin-top:12px}
 @media(min-width:760px){#progress .progress-cards{grid-template-columns:repeat(3,minmax(0,1fr))}#progress .progress-card-title{flex-wrap:wrap}}
 
+
+/* 学習進捗専用：復習・学習状況・模擬テストを独立表示 */
+#progress .study-hero{margin-bottom:12px}
+#progress .progress-subnav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;background:#edf2ee;border:1px solid var(--line);border-radius:12px;padding:4px;margin:0 0 16px}
+#progress .progress-subnav button,#progress .progress-review-kinds button,#progress .exam-trend-tabs button{min-width:0;min-height:43px;background:transparent;color:var(--muted);padding:7px 3px;font-size:.84rem;border:1px solid transparent;border-radius:8px;white-space:normal;line-height:1.35}
+#progress .progress-subnav button[aria-pressed=true]{background:#276749;color:#fff}
+#progress #studyDashboard{padding:0;margin:0 0 12px;border:0;background:transparent;box-shadow:none}
+#progress .dash-review-buttons{gap:8px;margin:0 0 12px}
+#progress .dash-review-buttons button{display:flex;flex-direction:column;align-items:flex-start;gap:3px;background:#f5f7f5;border:1px solid var(--line);color:var(--ink);padding:11px 12px;min-height:74px;font-size:.83rem;text-align:left}
+#progress .dash-review-buttons span{margin:0;color:var(--muted)}
+#progress .dash-review-buttons strong{font-size:.86rem;font-weight:600}#progress .dash-review-buttons b{font-size:1.55rem}
+#progress .dash-review-buttons button[aria-pressed=true]{border-color:#79a98c;background:#e4f0e7;color:#215e43;box-shadow:inset 0 -3px #438564}
+#progress .progress-review-kinds,#progress .exam-trend-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;background:#f0f3f0;border-radius:9px;padding:3px}
+#progress .progress-review-kinds button{font-size:.75rem;min-height:40px}#progress .progress-review-kinds button[aria-pressed=true],#progress .exam-trend-tabs button[aria-pressed=true]{background:#fff;border-color:#abc7b4;color:#215e43;font-weight:700}
+#progress #dashReviewList{border:0;margin:0;padding:0}#progress .dash-review-info{font-size:.8rem;margin:11px 0}
+#progress .dash-review-scroll{max-height:none;overflow:visible;overscroll-behavior:auto}
+#progress .dash-review-group{background:#fff;border:1px solid var(--line);border-radius:12px;padding:0 12px;margin:10px 0}
+#progress .dash-group-head{display:flex;align-items:center;justify-content:space-between;gap:7px;padding:10px 0}
+#progress .dash-group-head h4{font-size:.9rem;color:var(--ink);margin:0;min-width:0}#progress .dash-group-head button{flex-shrink:0;font-size:.78rem;min-height:40px;padding:8px 10px}
+#progress .dash-review-item{padding:10px 0;gap:10px}#progress .dash-review-item b{font-size:.96rem}#progress .dash-review-item small{font-size:.74rem;line-height:1.45}#progress .dash-review-item button{min-height:44px;color:#215e43;background:#edf4ef;font-size:.83rem}
+#progress .progress-cards{grid-template-columns:1fr;gap:10px}#progress .progress-card,#progress .progress-card.active{background:#fff;border:1px solid var(--line);padding:14px;text-align:left;border-radius:12px;box-shadow:none}
+#progress .progress-card:hover{border-color:#79a98c}#progress .progress-metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:11px 0}#progress .progress-metrics span{display:block;font-size:.77rem;color:var(--muted)}#progress .progress-metrics b{display:block;font-size:1.4rem;color:var(--ink);line-height:1.35}
+#progress .progress-stacked{display:flex;height:9px;border-radius:5px;overflow:hidden;background:#e5e9e5}#progress .progress-stacked i{display:block;height:100%;flex-shrink:0}#progress .progress-stacked .done{background:#438564}#progress .progress-stacked .weak{background:#c89543}#progress .progress-stacked .new{background:#c4cbc6}
+#progress .progress-stack-legend{display:flex;flex-wrap:wrap;gap:5px 12px;font-size:.74rem;color:var(--muted);margin:8px 0}#progress .progress-stack-legend span{display:inline-flex;align-items:center;gap:5px}#progress .progress-stack-legend i{display:inline-block;width:8px;height:8px;border-radius:2px}#progress .progress-stack-legend .done{background:#438564}#progress .progress-stack-legend .weak{background:#c89543}#progress .progress-stack-legend .new{background:#c4cbc6}
+#progress .progress-card-link{font-size:.8rem;border-top:1px solid var(--line);padding-top:8px;margin-top:9px}
+#progress .progress-detail-head h3{margin:12px 0;font-size:1.05rem}#progress .progress-detail-head button{font-size:.83rem;min-height:42px}#progress .progress-entry{display:block;padding:12px}#progress .progress-entry-actions{display:flex;gap:8px;margin-top:10px}#progress .progress-entry-actions button{flex:1;min-height:42px}
+#progress .dash-history-panel{margin:0 0 12px;padding:12px}#progress .dash-latest{border-top:0;border-bottom:1px solid var(--line);padding:0 0 12px;margin-bottom:12px}#progress .dash-latest strong{font-size:1.45rem}#progress .exam-trend-tabs{grid-template-columns:repeat(3,minmax(0,1fr));margin:8px 0}#progress .exam-chart{width:100%;display:block;max-height:230px}#progress .exam-chart-note{margin:4px 0 14px;font-size:.75rem}#progress .exam-history-scroll{max-height:none}#progress .progress-exam-start{width:100%;min-height:44px}#progress .exam-history-heading{font-size:.95rem;margin:15px 0 4px}
+#progress .progress-review-empty{padding:18px 12px;border:1px solid var(--line);border-radius:12px;background:#f7faf7;text-align:center;color:var(--muted)}
+#progress #learningBackupPanel{margin-top:20px}
+
 </style>
 </head>
 <body>
@@ -576,22 +606,23 @@ section.panel form .editor-actions button{min-height:49px}
  </div>
 </nav>
 <section id="progress" class="panel hidden">
- <div class="study-hero"><span class="study-kicker">学習の記録・復習</span>
+ <div class="study-hero">
  <h2 style="margin-top:0">学習進捗</h2>
- <p class="muted">復習する項目、3種類の学習状況、模擬テストの成績をまとめて確認できます。記録はこの端末に保存されます。</p>
+ <p class="muted small">学習記録はこの端末に保存されます。</p>
  </div>
+ <nav class="progress-subnav" aria-label="学習進捗の表示切り替え">
+  <button type="button" data-progress-view="review" aria-pressed="true">復習</button><button type="button" data-progress-view="learning" aria-pressed="false">学習状況</button><button type="button" data-progress-view="exam" aria-pressed="false">模擬テスト</button>
+ </nav>
+ <div id="progressReviewPane" data-progress-pane="review">
  <section id="studyDashboard" aria-label="復習">
-  <div class="dash-head"><strong>復習する</strong><span class="muted small">全3種類</span></div>
-  <div class="dash-review-buttons"><button type="button" data-dash-filter="weak" aria-expanded="false" aria-controls="dashReviewList">復習対象 <b id="dashWeak">—</b> 件 <span>›</span></button><button type="button" data-dash-filter="due" aria-expanded="false" aria-controls="dashReviewList">今日の復習 <b id="dashDue">—</b> 件 <span>›</span></button></div>
-  <div id="dashReviewList" class="hidden" aria-label="復習対象一覧"></div>
-  <p class="muted small progress-review-description">件数をタップすると対象の一覧が開きます。選んだ項目から直接復習できます。</p>
-  <details class="study-disclosure progress-batch"><summary>種類別に今日の復習を始める</summary><div class="study-disclosure-body"><div id="reviewTodaySummary" class="review-today-summary"></div><div class="row review-start-actions"><button type="button" class="secondary" data-start-due="herb">生薬の復習を始める</button><button type="button" class="secondary" data-start-due="cut">刻み生薬の復習を始める</button><button type="button" class="secondary" data-start-due="kampo">漢方処方の復習を始める</button></div></div></details>
- </section>
- <div class="study-settings-heading">種類別の学習状況</div>
- <p class="muted small progress-card-help">学習済み数・正答率を確認できます。種類をタップすると下の個別履歴へ移動します。</p>
- <div id="progressCards" class="progress-cards" aria-label="クイズ別の学習状況"></div>
- <section class="dash-history-panel" id="mockHistoryPanel" aria-label="模擬テスト受験履歴"><h3>模擬テストの受験履歴</h3><div id="dashLatestMock"></div><div id="mockHistoryContent"></div></section>
- <div class="study-filter-shell" id="progressIndividual"><div class="study-settings-heading">個別の学習履歴</div>
+ <div class="dash-review-buttons"><button type="button" data-dash-filter="due" aria-pressed="true"><span>今日の復習</span><strong><b id="dashDue">—</b> 件</strong></button><button type="button" data-dash-filter="weak" aria-pressed="false"><span>復習対象</span><strong><b id="dashWeak">—</b> 件</strong></button></div>
+ <div class="progress-review-kinds" aria-label="復習する種類"><button type="button" data-dash-category="all" aria-pressed="true">すべて</button><button type="button" data-dash-category="herb" aria-pressed="false">原型生薬</button><button type="button" data-dash-category="cut" aria-pressed="false">刻み生薬</button><button type="button" data-dash-category="kampo" aria-pressed="false">漢方処方</button></div>
+ <div id="dashReviewList" aria-label="復習対象一覧"></div>
+ </section></div>
+ <div id="progressLearningPane" class="hidden" data-progress-pane="learning">
+ <div id="progressOverview"><div class="study-settings-heading">種類別の学習状況</div><div id="progressCards" class="progress-cards" aria-label="クイズ別の学習状況"></div><p class="muted small">学習済みは1回以上解答した項目、正答率は通常の採点で正解扱いになった解答の割合です。復習不要でも今後の復習予定日が設定されています。</p></div>
+ <div id="progressIndividualPane" class="hidden">
+ <div class="study-filter-shell" id="progressIndividual"><div class="progress-detail-head"><button type="button" class="secondary" data-progress-overview>‹ 学習状況に戻る</button><h3 id="progressIndividualTitle">個別の学習履歴</h3></div>
  <div class="progress-filters">
   <div class="field"><label for="progressStatus">表示する項目</label><select id="progressStatus"><option value="all">すべて</option><option value="weak">復習対象</option><option value="new">未学習</option><option value="done">復習不要</option><option value="due">今日の復習</option></select></div>
   <div class="field"><label for="progressSearch">名前で検索</label><input id="progressSearch" type="search" placeholder="生薬名・処方名など" autocomplete="off"></div>
@@ -599,6 +630,8 @@ section.panel form .editor-actions button{min-height:49px}
  </div>
  <div id="progressSummary" class="progress-summary-line" role="status"></div>
  <div id="progressList"></div>
+ </div></div>
+ <div id="progressExamPane" class="hidden" data-progress-pane="exam"><section class="dash-history-panel" id="mockHistoryPanel" aria-label="模擬テスト受験履歴"><h3>模擬テストの成績</h3><div id="dashLatestMock"></div><div id="mockHistoryContent"></div></section><button type="button" class="primary progress-exam-start" id="progressExamStart">模擬テストを受ける</button></div>
  <details class="backup-accordion" id="learningBackupPanel">
   <summary>学習履歴のバックアップ・復元</summary>
   <p class="muted small">この端末の生薬・刻み生薬・漢方処方の学習記録（復習予定日・模擬テスト受験履歴を含む）をJSONに保存します。共有データや写真は変更しません。</p>
@@ -1257,7 +1290,7 @@ $('mockExamArea').addEventListener('click',e=>{
  }
  if(action==='review'&&mockExam?.finished){
   const wrongHerbs=mockExam.items.some((item,i)=>item.kind==='herb'&&mockExam.results[i].score<mockExam.results[i].max);
-  progressCurrentKind=wrongHerbs?'herb':'kampo';
+  progressCurrentKind=wrongHerbs?'herb':'kampo';progressView='review';dashFilter='weak';dashCategory='all';progressDetail=false;
   $('progressStatus').value='weak';$('progressSearch').value='';
   switchTab('progress');renderLearningProgress();
   $('progress').scrollIntoView({block:'start',behavior:'auto'});
@@ -1420,7 +1453,7 @@ function progressStatusText(status){return {new:'未学習',weak:'復習対象',
 
 const MOCK_HISTORY_KEY='herbPhotoQuiz.mockHistory.v1';
 const DASH_KINDS=[['herb','原型生薬','種類'],['cut','刻み生薬','種類'],['kampo','漢方処方','処方']];
-let dashFilter=null;
+let dashFilter='due',dashCategory='all',progressView='review',progressDetail=false,examTrend='total';
 function validMockHistory(v){return Array.isArray(v)&&v.every(r=>r&&Number.isFinite(r.at)&&r.at>0&&Number.isFinite(r.herbScore)&&r.herbScore>=0&&r.herbScore<=30&&Number.isFinite(r.kampoScore)&&r.kampoScore>=0&&r.kampoScore<=5)}
 function readMockHistory(){try{const h=JSON.parse(localStorage.getItem(MOCK_HISTORY_KEY)||'[]');return validMockHistory(h)?h:[]}catch(e){return []}}
 function saveMockHistory(outcome){try{const history=readMockHistory();history.push({at:Date.now(),herbScore:outcome.herbScore,kampoScore:outcome.kampoScore});localStorage.setItem(MOCK_HISTORY_KEY,JSON.stringify(history));return true}catch(e){console.warn('模擬テスト履歴の保存に失敗',e);return false}}
@@ -1428,11 +1461,29 @@ function mockHistoryPassed(r){return r.herbScore>=18&&r.kampoScore>=3}
 function mockHistoryDate(r){return new Date(r.at).toLocaleString('ja-JP',{year:'numeric',month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})}
 function renderMockHistory(){
  const root=$('mockHistoryContent');if(!root)return;const history=readMockHistory();
- if(!history.length){root.innerHTML='<p class="muted small">まだ受験履歴はありません。この更新後の模擬テストから記録します。</p>';return}
- const best=Math.max(...history.map(r=>r.herbScore+r.kampoScore)),pass=history.filter(mockHistoryPassed).length;
- const recent=history.slice(-10);
- root.innerHTML=`<div class="dash-history-stats"><div><small>受験回数</small><b>${history.length}回</b></div><div><small>最高得点</small><b>${best}/35</b></div><div><small>合格率</small><b>${Math.round(pass/history.length*100)}%</b></div></div><p class="muted small">直近${recent.length}回の得点推移（左から古い順）</p><div class="dash-history-plot" aria-hidden="true">${recent.map(r=>`<div><b>${r.herbScore+r.kampoScore}</b><i class="${mockHistoryPassed(r)?'':'fail'}" style="height:${(r.herbScore+r.kampoScore)/35*70}%"></i></div>`).join('')}</div><details class="study-disclosure"><summary>受験履歴を見る（${history.length}回）</summary><div class="study-disclosure-body">${history.slice().reverse().map(r=>`<div class="dash-history-row"><div>${escapeHtml(mockHistoryDate(r))}<small>原型 ${r.herbScore}/30点・漢方 ${r.kampoScore}/5点</small></div><div><b>${r.herbScore+r.kampoScore}/35点</b><small class="${mockHistoryPassed(r)?'dash-pass':'dash-fail'}">${mockHistoryPassed(r)?'合格':'不合格'}</small></div></div>`).join('')}</div></details>`;
+ if(!history.length){root.innerHTML='<p class="muted small">まだ受験履歴はありません。模擬テストを受けると成績がここに記録されます。</p>';return}
+ const best=Math.max(...history.map(r=>r.herbScore+r.kampoScore)),pass=history.filter(mockHistoryPassed).length,recent=history.slice(-10);
+ const max=examTrend==='herb'?30:examTrend==='kampo'?5:35,threshold=examTrend==='herb'?18:examTrend==='kampo'?3:null;
+ const values=recent.map(r=>examTrend==='herb'?r.herbScore:examTrend==='kampo'?r.kampoScore:r.herbScore+r.kampoScore);
+ const x=i=>values.length===1?180:38+i*268/(values.length-1),y=v=>141-v/max*110;
+ const ticks=examTrend==='kampo'?[0,1,2,3,4,5]:examTrend==='herb'?[0,10,20,30]:[0,10,20,30,35];
+ const chart=`<svg class="exam-chart" viewBox="0 0 330 170" role="img" aria-label="${escapeHtml(values.join('、'))}点の推移（${max}点満点）">${ticks.map(v=>`<line x1="29" x2="314" y1="${y(v)}" y2="${y(v)}" stroke="#dce4dd"/><text x="24" y="${y(v)+4}" font-size="10" text-anchor="end" fill="#657269">${v}</text>`).join('')}${threshold===null?'':`<line x1="29" x2="314" y1="${y(threshold)}" y2="${y(threshold)}" stroke="#b17b31" stroke-dasharray="4 4"/>`}<polyline points="${values.map((v,i)=>`${x(i)},${y(v)}`).join(' ')}" fill="none" stroke="#438564" stroke-width="2.5" stroke-linejoin="round"/>${values.map((v,i)=>`<circle cx="${x(i)}" cy="${y(v)}" r="3.6" fill="#438564"/><text x="${x(i)}" y="${y(v)-8}" font-size="10" text-anchor="middle" fill="#224b36">${v}</text><text x="${x(i)}" y="158" font-size="9" text-anchor="middle" fill="#657269">${history.length-recent.length+i+1}</text>`).join('')}</svg>`;
+ root.innerHTML=`<div class="dash-history-stats"><div><small>受験回数</small><b>${history.length}回</b></div><div><small>最高得点</small><b>${best}/35</b></div><div><small>合格率</small><b>${Math.round(pass/history.length*100)}%</b></div></div><h3 class="exam-history-heading">得点の推移</h3><div class="exam-trend-tabs" aria-label="得点の種類">${[['total','総合'],['herb','原型生薬'],['kampo','漢方処方']].map(([key,label])=>`<button type="button" data-exam-trend="${key}" aria-pressed="${examTrend===key}">${label}</button>`).join('')}</div>${chart}<p class="muted exam-chart-note">直近${recent.length}回・横軸は受験回数。${threshold===null?'合否は原型18点・漢方3点の両方で判定します。':`破線は合格基準（${threshold}点）です。`}</p><h3 class="exam-history-heading">受験履歴</h3><div class="exam-history-scroll">${history.slice().reverse().map(r=>`<div class="dash-history-row"><div>${escapeHtml(mockHistoryDate(r))}<small>原型 ${r.herbScore}/30点・漢方 ${r.kampoScore}/5点</small></div><div><b>${r.herbScore+r.kampoScore}/35点</b><small class="${mockHistoryPassed(r)?'dash-pass':'dash-fail'}">${mockHistoryPassed(r)?'合格':'不合格'}</small></div></div>`).join('')}</div>`;
 }
+function syncProgressView(){
+ document.querySelectorAll('[data-progress-view]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.progressView===progressView)));
+ document.querySelectorAll('[data-progress-pane]').forEach(el=>el.classList.toggle('hidden',el.dataset.progressPane!==progressView));
+ $('progressOverview').classList.toggle('hidden',progressDetail);
+ $('progressIndividualPane').classList.toggle('hidden',!progressDetail);
+ $('progressIndividualTitle').textContent=(DASH_KINDS.find(g=>g[0]===progressCurrentKind)?.[1]||'')+'の学習履歴';
+}
+$('progress').addEventListener('click',e=>{
+ const b=e.target.closest('button');if(!b)return;
+ if(b.dataset.progressView){progressView=b.dataset.progressView;if(progressView==='learning')progressDetail=false;renderLearningProgress();return}
+ if(b.hasAttribute('data-progress-overview')){progressDetail=false;renderLearningProgress();return}
+ if(b.dataset.examTrend){examTrend=b.dataset.examTrend;renderMockHistory();return}
+ if(b.id==='progressExamStart'){switchTab('mockExam');$('mockExam').scrollIntoView({block:'start',behavior:'auto'})}
+});
 function dashMatching(r,mode){return mode==='due'?r.due:r.status==='weak'}
 function renderStudyDashboard(){
  const root=$('studyDashboard');if(!root)return;
@@ -1440,15 +1491,16 @@ function renderStudyDashboard(){
  const rows=groups.flatMap(g=>g.rows);$('dashWeak').textContent=rows.filter(r=>r.status==='weak').length;$('dashDue').textContent=rows.filter(r=>r.due).length;
  const last=readMockHistory().slice(-1)[0];
  $('dashLatestMock').innerHTML=last?`<div class="dash-latest"><div>前回の模擬テスト　<b class="${mockHistoryPassed(last)?'dash-pass':'dash-fail'}">${mockHistoryPassed(last)?'合格':'不合格'}</b></div><strong>${last.herbScore+last.kampoScore} / 35点</strong><div class="muted small">原型 ${last.herbScore}/30点・漢方 ${last.kampoScore}/5点</div></div>`:'<div class="dash-latest">前回の模擬テスト：記録なし</div>';
- const list=$('dashReviewList');list.classList.toggle('hidden',!dashFilter);
- document.querySelectorAll('[data-dash-filter]').forEach(b=>b.setAttribute('aria-expanded',String(b.dataset.dashFilter===dashFilter)));
- if(!dashFilter)return;
- const filtered=groups.map(g=>({...g,rows:g.rows.filter(r=>dashMatching(r,dashFilter))})).filter(g=>g.rows.length);
- list.innerHTML=`<div class="dash-review-header"><h3>${dashFilter==='due'?'今日の復習':'復習対象'}の一覧</h3><button class="secondary" type="button" data-dash-close>閉じる</button></div><p class="dash-review-info">${dashFilter==='due'?'復習予定日が今日以前の項目':'苦手判定の項目'}。復習したい項目を選んでください。</p>`+(filtered.length?`<div class="dash-review-scroll">${filtered.map(g=>`<div class="dash-review-group"><h4>${g.label}（${g.rows.length}件）</h4>${g.rows.map(r=>`<div class="dash-review-item"><div><b>${escapeHtml(r.name)}</b>${r.kind==='kampo'?`<small>${escapeHtml((r.modes||[]).filter(m=>dashFilter==='due'?m.due:m.weak).map(m=>m.name).join('・'))}</small>`:''}</div><button type="button" class="secondary" data-dash-kind="${r.kind}" data-dash-id="${escapeHtml(r.id)}">復習する</button></div>`).join('')}</div>`).join('')}</div>`:'<p class="muted small">該当する項目はありません。</p>');
+ const list=$('dashReviewList');
+ document.querySelectorAll('[data-dash-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.dashFilter===dashFilter)));
+ document.querySelectorAll('[data-dash-category]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.dashCategory===dashCategory)));
+ const filtered=groups.filter(g=>dashCategory==='all'||g.kind===dashCategory).map(g=>({...g,rows:g.rows.filter(r=>dashMatching(r,dashFilter))})).filter(g=>g.rows.length);
+ list.innerHTML=`<p class="dash-review-info">${dashFilter==='due'?'復習予定日が今日以前の項目':'まだ克服できていない問題'} ・ ${filtered.reduce((n,g)=>n+g.rows.length,0)}件</p>`+(filtered.length?`<div class="dash-review-scroll">${filtered.map(g=>`<div class="dash-review-group"><div class="dash-group-head"><h4>${g.label}（${g.rows.length}件）</h4><button type="button" class="primary" data-dash-batch="${g.kind}">まとめて復習</button></div>${g.rows.map(r=>`<div class="dash-review-item"><div><b>${escapeHtml(r.name)}</b><small>${r.kind==='kampo'?escapeHtml((r.modes||[]).filter(m=>dashFilter==='due'?m.due:m.weak).map(m=>m.name).join('・')):escapeHtml(r.nextText)}</small></div><button type="button" class="secondary" data-dash-kind="${r.kind}" data-dash-id="${escapeHtml(r.id)}">復習する</button></div>`).join('')}</div>`).join('')}</div>${filtered.some(g=>g.kind==='kampo')?'<p class="muted small">漢方処方のまとめて復習は、復習が必要な回答形式から開始します。別形式の対象は一覧に戻って続けられます。</p>':''}`:`<div class="progress-review-empty">${dashFilter==='due'?'今日の復習予定はありません。':'該当する苦手問題はありません。'}</div>`);
 }
 function startDashboardReview(kind,id,mode){
  const row=progressRows(kind).find(r=>r.id===String(id));if(!row||!dashMatching(row,mode)){renderStudyDashboard();return}
  if(kind==='herb'){
+  if(!db.herbs.some(h=>String(h.id)===String(id)&&((h.images||[]).some(Boolean)||h.image))){alert('出題用写真がありません。');return}
   $('answerMode').value='full';$('inputStyle').value='written';$('quizMode').value=mode;
  }else if(kind==='cut'){
   if(!cutHerbs.some(h=>String(h.id)===String(id)&&cutImages(h).length)){alert('出題用写真がありません。');return}
@@ -1462,19 +1514,38 @@ function startDashboardReview(kind,id,mode){
   if(!configs.length){alert('この処方は現在出題できる復習形式がありません。写真の登録状況を確認してください。');return}
   const c=configs[0];$('kampoQuizType').value=c.type;$('kampoQuizStyle').value=c.style;$('kampoQuizDifficulty').value=c.difficulty;$('kampoQuizMode').value=mode;kampoQuizIdle();
  }else return;
- dashFilter=null;renderStudyDashboard();pendingReviewTarget={kind,id};
+ pendingReviewTarget={kind,id};
  const tab=kind==='herb'?'quiz':kind==='cut'?'cutQuiz':'kampoQuiz';switchTab(tab);
  if(kind==='herb')nextQuestion();else if(kind==='cut')nextCutQuestion();else nextKampoQuestion();
  $(tab).scrollIntoView({block:'start',behavior:'auto'});
 }
 $('studyDashboard').addEventListener('click',e=>{
  const b=e.target.closest('button');if(!b)return;
- if(b.dataset.dashFilter){dashFilter=dashFilter===b.dataset.dashFilter?null:b.dataset.dashFilter;renderStudyDashboard();return}
- if(b.hasAttribute('data-dash-close')){dashFilter=null;renderStudyDashboard();return}
+ if(b.dataset.dashFilter){dashFilter=b.dataset.dashFilter;renderStudyDashboard();return}
+ if(b.dataset.dashCategory){dashCategory=b.dataset.dashCategory;renderStudyDashboard();return}
+ if(b.dataset.dashBatch){
+  const kind=b.dataset.dashBatch;
+  const rows=progressRows(kind).filter(r=>dashMatching(r,dashFilter));
+  if(!rows.length)return;
+  // Original/cut questions have a single written format; kampo must choose an eligible format.
+  const eligible=rows.filter(r=>kind==='herb'?db.herbs.some(h=>String(h.id)===r.id&&((h.images||[]).some(Boolean)||h.image)):kind==='cut'?cutHerbs.some(h=>String(h.id)===r.id&&cutImages(h).length):kampoFormulas.some(f=>String(f.id)===r.id&&r.modes.some(m=>dashFilter==='due'?m.due:m.weak)));
+  if(!eligible.length){alert('出題できる復習対象がありません。写真の登録状況を確認してください。');return}
+  if(kind==='kampo'){
+   const configs=[];
+   for(const type of ['ingredients','photos'])for(const style of ['written','choice'])for(const difficulty of (type==='photos'?['beginner','advanced']:['beginner'])){
+    const cfg={type,style,difficulty};const pool=kampoQuestionPool(cfg).filter(f=>{const st=kampoProgress[kampoStatKey(f.id,type,style,difficulty)];return st&&st.seen>0&&(dashFilter==='due'?reviewIsDue(st,st.lastPerfect!==true):st.lastPerfect!==true)});
+    if(pool.length)configs.push({...cfg,n:pool.length});
+   }
+   const c=configs.sort((a,b)=>b.n-a.n)[0];if(!c){alert('出題できる復習形式がありません。写真の登録状況を確認してください。');return}
+   $('kampoQuizType').value=c.type;$('kampoQuizStyle').value=c.style;$('kampoQuizDifficulty').value=c.difficulty;$('kampoQuizMode').value=dashFilter;kampoQuizIdle();pendingReviewTarget=null;switchTab('kampoQuiz');nextKampoQuestion();$('kampoQuiz').scrollIntoView({block:'start',behavior:'auto'});return;
+  }
+  startDashboardReview(kind,eligible[Math.floor(Math.random()*eligible.length)].id,dashFilter);return;
+ }
  if(b.dataset.dashKind){startDashboardReview(b.dataset.dashKind,b.dataset.dashId,dashFilter);return}
 });
 
 function renderLearningProgress(){
+ syncProgressView();
  renderStudyDashboard();
  renderMockHistory();
  const cards=$('progressCards'),list=$('progressList');if(!cards||!list)return;
@@ -1483,10 +1554,10 @@ function renderLearningProgress(){
   const rows=progressRows(kind),total=rows.length,learned=rows.filter(r=>r.status!=='new').length,weak=rows.filter(r=>r.status==='weak').length,done=rows.filter(r=>r.status==='done').length;
   const percent=total?Math.round(learned/total*100):0;
   const seen=rows.reduce((n,r)=>n+r.seen,0),right=rows.reduce((n,r)=>n+r.right,0),rate=seen?Math.round(right/seen*100)+'%':'—';
-  return `<button type="button" class="progress-card${kind===progressCurrentKind?' active':''}" data-progress-type="${kind}" aria-pressed="${kind===progressCurrentKind}" aria-label="${label}：${total}件のうち${learned}件学習済み"><div class="progress-card-title"><strong>${label}</strong><span class="progress-card-rate">正答率 <b>${rate}</b></span></div><span class="progress-count">${learned}<span> / ${kind==='kampo'&&kampoLoadError?'—':total}${kind==='kampo'?'処方':'種類'} 学習済み（${percent}%）</span></span><div class="progress-track" role="progressbar" aria-label="${label}の学習率" aria-valuenow="${percent}" aria-valuemin="0" aria-valuemax="100"><div class="progress-track-fill" style="width:${percent}%"></div></div><p>復習対象 ${weak}・今日の復習 ${rows.filter(r=>r.due).length}・復習不要 ${done}</p><span class="progress-card-link">個別履歴を見る ›</span></button>`;
+  const fresh=rows.filter(r=>r.status==='new').length,part=n=>total?n/total*100:0;
+  if(kind==='kampo'&&kampoLoadError)return `<button type="button" class="progress-card" data-progress-type="kampo"><strong>${label}</strong><p>データの取得に失敗しました。</p></button>`;
+  return `<button type="button" class="progress-card" data-progress-type="${kind}"><div class="progress-card-title"><strong>${label}</strong><span class="muted small">全${total}${kind==='kampo'?'処方':'種類'}</span></div><div class="progress-metrics"><div><span>学習済み ${learned}/${total}</span><b>${total?percent+'%':'—'}</b></div><div><span>累計正答率</span><b>${rate}</b></div></div><div class="progress-stacked" aria-label="復習不要 ${done}、苦手 ${weak}、未学習 ${fresh}"><i class="done" style="width:${part(done)}%"></i><i class="weak" style="width:${part(weak)}%"></i><i class="new" style="width:${part(fresh)}%"></i></div><div class="progress-stack-legend"><span><i class="done"></i>復習不要 ${done}</span><span><i class="weak"></i>苦手 ${weak}</span><span><i class="new"></i>未学習 ${fresh}</span></div><span class="progress-card-link">個別の学習履歴・検索 ›</span></button>`;
  }).join('');
- const todayCounts=Object.fromEntries(types.map(([kind])=>[kind,progressRows(kind).filter(r=>r.due).length]));
- $('reviewTodaySummary').textContent=`原型生薬 ${todayCounts.herb}件 ／ 刻み生薬 ${todayCounts.cut}件 ／ 漢方処方 ${todayCounts.kampo}処方`;
  const rows=progressRows(progressCurrentKind),status=$('progressStatus').value,q=normalize($('progressSearch').value);
  if(progressCurrentKind==='kampo'&&kampoLoadError){$('progressSummary').textContent='漢方処方のデータを取得できません。';list.innerHTML=`<p class="feedback bad">漢方処方の読み込みに失敗しました：${escapeHtml(kampoLoadError)}</p>`;return}
  const filtered=rows.filter(r=>(status==='all'||(status==='due'?r.due:r.status===status))&&(!q||normalize(r.name).includes(q)||normalize(r.subtitle).includes(q)));
@@ -1504,13 +1575,13 @@ $('progressStatus').addEventListener('change',renderLearningProgress);
 $('progressSearch').addEventListener('input',renderLearningProgress);
 $('progressCards').addEventListener('click',e=>{
  const btn=e.target.closest('button[data-progress-type]');if(!btn)return;
- progressCurrentKind=btn.dataset.progressType;
+ progressCurrentKind=btn.dataset.progressType;progressView='learning';progressDetail=true;
  $('progressStatus').value='all';$('progressSearch').value='';
  renderLearningProgress();
- $('progressIndividual').scrollIntoView({block:'start',behavior:'auto'});
+ $('progress').scrollIntoView({block:'start',behavior:'auto'});
 });
 $('progressList').addEventListener('click',e=>{
- const review=e.target.closest('button[data-review-item]');if(review){startItemReview(review.dataset.reviewItem,review.dataset.progressId);return}
+ const review=e.target.closest('button[data-review-item]');if(review){const kind=review.dataset.reviewItem,id=review.dataset.progressId,row=progressRows(kind).find(r=>r.id===id);if(row?.status==='weak'||row?.due){startDashboardReview(kind,id,row.status==='weak'?'weak':'due')}else startItemReview(kind,id);return}
  const btn=e.target.closest('button[data-progress-info]');if(!btn)return;
  // 情報ページを閉じたあと、進捗の同じ項目まで戻れるようにする。
  linkedInfoHistory.push({kind:'progress',id:btn.dataset.progressId,progressKind:btn.dataset.progressInfo});
@@ -1663,7 +1734,7 @@ function nextQuestion(){
    form=choiceField('answerJapanese','① 生薬名・和名（1点）','japaneseName',h)+choiceField('answerLatin','① 生薬名・ラテン名（1点）','latinName',h);
    if(answerMode==='full')form+=choiceField('answerOrigin','② 基原植物・ラテン名（1点）','originLatin',h)+choiceField('answerFamily','③ 科名・ラテン名（1点）','familyLatin',h)+choiceField('answerConstituents','④ 主成分（1点）','constituents',h)+'<div class="field"><label>⑤ 用途（複数選択・最大2点）</label><div id="useOptions" class="check-grid"></div><span class="muted small">正しい用途を1つ以上選べば1点、正解をすべて選べば2点です（誤答を1つでも含む場合は0点）。</span></div>';
   }else selectedConstituent='';
- $('quizArea').innerHTML=`<div><span class="pill">${mode==='weak'?'苦手復習':'ランダム出題'}</span><span class="pill">${answerMode==='name'?'生薬名モード':`総合モード・${maxScore}点満点`}</span><span class="pill">${$('inputStyle').value==='choice'?'選択式':'記述式'}</span><span class="pill">登録 ${db.herbs.length} 種</span></div>${mode==='random'?`<p class="muted small random-cycle-status">${randomCycleNotice(pool,'herb','種')}</p>`:''}<img class="question-image" src="${escapeHtml(chosen)}" alt="識別する生薬の写真"><div id="extraPhotos" class="gallery"></div><form id="answerForm">${form}<div class="answer-actions"><button class="primary" type="submit">採点する</button><button class="secondary" type="button" onclick="endQuiz()">終了</button></div></form><div id="result"></div>`;
+ $('quizArea').innerHTML=`<div><span class="pill">${({weak:'苦手復習',due:'今日の復習',priority:'重点復習',random:'ランダム出題'})[mode]||'ランダム出題'}</span><span class="pill">${answerMode==='name'?'生薬名モード':`総合モード・${maxScore}点満点`}</span><span class="pill">${$('inputStyle').value==='choice'?'選択式':'記述式'}</span><span class="pill">登録 ${db.herbs.length} 種</span></div>${mode==='random'?`<p class="muted small random-cycle-status">${randomCycleNotice(pool,'herb','種')}</p>`:''}<img class="question-image" src="${escapeHtml(chosen)}" alt="識別する生薬の写真"><div id="extraPhotos" class="gallery"></div><form id="answerForm">${form}<div class="answer-actions"><button class="primary" type="submit">採点する</button><button class="secondary" type="button" onclick="endQuiz()">終了</button></div></form><div id="result"></div>`;
  const extra=$('extraPhotos');images.filter(src=>src!==chosen).slice(0,3).forEach(src=>{const im=document.createElement('img');im.src=src;im.alt='同じ生薬の別写真';extra.appendChild(im)});
  if(answerMode==='full'&&isChoice)renderUseOptions(h);
  $('answerForm').addEventListener('submit',e=>{e.preventDefault();checkAnswer(h.id,answerMode)});
@@ -1922,7 +1993,7 @@ function navigateLinkedInfo(kind,id,remember=true){
 // 既存の「詳細を見る」はそのまま利用し、追加したリンクだけを横断ナビゲーションにする。
 document.addEventListener('click',e=>{
  const back=e.target.closest('button[data-info-return]');
- if(back){const prev=linkedInfoHistory.pop();if(prev){if(prev.kind==='progress'){switchTab('progress',true);const row=[...$('progressList').querySelectorAll('.progress-entry')].find(x=>x.dataset.progressId===String(prev.id)&&x.dataset.progressKind===prev.progressKind);if(row)row.scrollIntoView({behavior:'auto',block:'start'})}else navigateLinkedInfo(prev.kind,prev.id,false)}return}
+ if(back){const prev=linkedInfoHistory.pop();if(prev){if(prev.kind==='progress'){progressView='learning';progressDetail=true;progressCurrentKind=prev.progressKind;switchTab('progress',true);const row=[...$('progressList').querySelectorAll('.progress-entry')].find(x=>x.dataset.progressId===String(prev.id)&&x.dataset.progressKind===prev.progressKind);if(row)row.scrollIntoView({behavior:'auto',block:'start'})}else navigateLinkedInfo(prev.kind,prev.id,false)}return}
  const button=e.target.closest('button[data-info-link]');
  if(button)navigateLinkedInfo(button.dataset.infoLink,button.dataset.infoId);
 });
