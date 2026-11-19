@@ -495,21 +495,41 @@ section.panel form .editor-actions button{min-height:49px}
  .admin-editor-toolbar{flex-direction:column;align-items:stretch}
  .admin-editor-toolbar button{align-self:flex-start}
 }
+
+/* Compact study dashboard */
+.dashboard-utility{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;flex-wrap:wrap}
+.dashboard-utility #connectionState{margin:0;padding:5px 8px;font-size:.74rem;line-height:1.5;flex:1;min-width:0;overflow-wrap:anywhere}
+.dashboard-utility #adminBar{margin:0;padding:0;border:0;background:transparent;flex:0 0 auto;max-width:100%}
+.dashboard-utility #adminBar .row{gap:5px;flex-wrap:nowrap}.dashboard-utility #adminState{font-size:.72rem;white-space:nowrap;flex:0 0 auto}
+.dashboard-utility #adminBar button{font-size:.75rem;padding:7px 9px;min-height:35px;white-space:nowrap;flex:0 0 auto}
+.dashboard-utility #adminBar:has(#loginBox:not(.hidden)){flex:1 1 100%;padding:10px;border:1px solid var(--line);background:white}.dashboard-utility #loginBox{margin-top:8px}
+#studyDashboard{background:#fff;border:1px solid var(--line);border-radius:13px;padding:10px 11px;margin-bottom:12px;min-width:0}
+.dash-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px;font-size:.92rem}
+.dash-toggle{background:transparent;color:var(--green);font-size:.76rem;min-height:32px;padding:5px 7px}
+.dash-counts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.dash-count{background:#f2f6f2;border-radius:8px;padding:6px 3px;text-align:center;min-width:0;line-height:1.35}.dash-count span{display:block;font-size:.73rem;color:var(--muted)}.dash-count b{font-size:1.16rem;font-variant-numeric:tabular-nums}.dash-count small{font-size:.69rem;color:var(--muted);margin-left:2px}
+.dash-review-buttons{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:7px}.dash-review-buttons button{background:#edf4ef;color:var(--green);font-size:.75rem;padding:8px 5px;min-height:39px;white-space:nowrap;border:1px solid #e2ebe4}.dash-review-buttons b{font-size:1.03rem;font-variant-numeric:tabular-nums}.dash-review-buttons button[aria-expanded=true]{background:#d6e9dc;border-color:#9bbfa8}.dash-review-buttons span{margin-left:2px}
+#dashDetails,#dashReviewList{border-top:1px solid var(--line);margin-top:10px;padding-top:9px}.dash-learn-row{margin:0 0 9px}.dash-learn-top{display:flex;justify-content:space-between;gap:5px;align-items:center;font-size:.81rem}.dash-learn-top small{color:var(--muted);font-size:.73rem}.dash-bar{height:6px;border-radius:5px;background:#e7eee8;overflow:hidden;margin:5px 0}.dash-bar i{display:block;background:#438564;height:100%;border-radius:5px}.dash-review-header{display:flex;align-items:center;justify-content:space-between;gap:5px}.dash-review-header h3{font-size:.9rem;margin:0}.dash-review-header button{font-size:.74rem;padding:6px 10px}.dash-review-scroll{max-height:min(310px,50vh);overflow:auto;overscroll-behavior:contain}.dash-review-group{margin:9px 0}.dash-review-group h4{font-size:.8rem;margin:0 0 4px;color:var(--muted)}.dash-review-item{display:flex;align-items:center;justify-content:space-between;gap:8px;border-top:1px solid var(--line);padding:7px 0}.dash-review-item div{min-width:0;overflow-wrap:anywhere}.dash-review-item b{font-size:.88rem}.dash-review-item small{font-size:.7rem;display:block;color:var(--muted)}.dash-review-item button{flex:0 0 auto;padding:7px 10px;font-size:.76rem;min-height:36px}.dash-progress-link{width:100%;font-size:.8rem;margin-top:7px}.dash-review-info{font-size:.73rem;color:var(--muted);margin:6px 0}
+.dash-latest{padding:9px 0 3px;border-top:1px solid var(--line);font-size:.8rem}.dash-latest strong{font-size:1.1rem}.dash-pass{color:#276749}.dash-fail{color:#a43c35}.dash-history-panel{border:1px solid var(--line);border-radius:12px;background:#f8faf8;padding:12px;margin:16px 0}.dash-history-panel h3{font-size:1rem;margin:0 0 9px}.dash-history-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.dash-history-stats div{background:#fff;border:1px solid var(--line);border-radius:8px;padding:6px;text-align:center;min-width:0}.dash-history-stats small{display:block;color:var(--muted);font-size:.7rem}.dash-history-stats b{font-size:1rem}.dash-history-row{display:grid;grid-template-columns:1fr auto;gap:4px;border-top:1px solid var(--line);padding:9px 0;font-size:.82rem}.dash-history-row small{display:block;color:var(--muted);font-size:.72rem}.dash-history-plot{display:flex;gap:5px;align-items:end;height:85px;border-bottom:1px solid var(--line);margin:6px 0 4px}.dash-history-plot div{height:100%;flex:1;display:flex;flex-direction:column;justify-content:end;align-items:center;min-width:0}.dash-history-plot b{font-size:.67rem;line-height:1.4}.dash-history-plot i{width:75%;background:#438564;border-radius:3px 3px 0 0;min-height:2px}.dash-history-plot i.fail{background:#b97e65}
+@media(max-width:360px){.dashboard-utility #adminState{display:none}.dashboard-utility #adminBar button{font-size:.7rem;padding:6px 7px}.dash-count span{font-size:.69rem}.dash-review-buttons button{font-size:.71rem}}
+
 </style>
 </head>
 <body>
 <header><div class="wrap"><h1>生薬フォトクイズ</h1><p>生薬鑑定試験に向けたトレーニング</p></div></header>
 <main>
-<div id="connectionState" role="status">共有データを読み込んでいます…</div>
-<div id="adminBar"><div class="row" style="align-items:center"><div id="adminState" class="muted">ゲストとして利用中：クイズ・原型生薬情報を閲覧できます。</div><button class="secondary" type="button" id="loginToggle">管理者ログイン</button><button class="secondary hidden" type="button" id="logoutButton">ログアウト</button></div>
+<div class="dashboard-utility"><div id="connectionState" role="status">接続中…</div>
+<div id="adminBar"><div class="row" style="align-items:center"><div id="adminState" class="muted">ゲスト</div><button class="secondary" type="button" id="loginToggle">管理者ログイン</button><button class="secondary hidden" type="button" id="logoutButton">ログアウト</button></div>
 <div id="loginBox" class="hidden"><form id="loginForm"><label for="adminEmail">管理者メールアドレス</label><input id="adminEmail" type="email" required autocomplete="username"><label for="adminPassword">パスワード</label><input id="adminPassword" type="password" required autocomplete="current-password"><button type="submit" class="primary">ログイン</button></form><p id="loginMessage" class="muted"></p></div></div>
 
-<div class="stats">
- <div class="stat"><b id="countStat">0</b><span>登録生薬</span></div>
- <div class="stat"><b id="accuracyStat">—</b><span>累計正答率</span></div>
- <div class="stat"><b id="scoreStat">0</b><span>累計得点</span></div>
- <div class="stat"><b id="weakStat">0</b><span>復習対象</span></div>
 </div>
+<section id="studyDashboard" aria-label="学習状況">
+ <div class="dash-head"><strong>学習状況</strong><button class="dash-toggle" id="dashToggle" type="button" aria-expanded="false" aria-controls="dashDetails">詳細を見る ▾</button></div>
+ <div id="dashCounts" class="dash-counts"></div>
+ <div class="dash-review-buttons"><button type="button" data-dash-filter="weak" aria-expanded="false" aria-controls="dashReviewList">復習対象 <b id="dashWeak">—</b> 件 <span>›</span></button><button type="button" data-dash-filter="due" aria-expanded="false" aria-controls="dashReviewList">今日の復習 <b id="dashDue">—</b> 件 <span>›</span></button></div>
+ <div id="dashReviewList" class="hidden" aria-label="復習対象一覧"></div>
+ <div id="dashDetails" class="hidden"><div id="dashLearning"></div><div id="dashLatestMock"></div><button class="secondary dash-progress-link" type="button" data-dash-progress>学習進捗を開く</button></div>
+</section>
 <nav class="top-navigation" aria-label="機能メニュー">
  <div class="nav-main" role="group" aria-label="メインメニュー">
   <button class="nav-main-button active" type="button" data-nav-group="quiz" aria-pressed="true">クイズ</button>
@@ -546,6 +566,7 @@ section.panel form .editor-actions button{min-height:49px}
  <div class="study-settings-heading">学習状況を選ぶ</div>
  <div id="progressCards" class="progress-cards" aria-label="クイズ別の学習状況"></div>
  <div class="review-today-panel"><h3 style="margin:0 0 8px">今日の復習</h3><p class="muted small" style="margin:0 0 10px">以前間違えたままの問題と、復習予定日になった問題を優先して解きます。正解を続けると、次の復習までの期間が延びます。</p><div id="reviewTodaySummary" class="review-today-summary"></div><div class="row review-start-actions"><button type="button" class="secondary" data-start-due="herb">生薬の復習を始める</button><button type="button" class="secondary" data-start-due="cut">刻み生薬の復習を始める</button><button type="button" class="secondary" data-start-due="kampo">漢方処方の復習を始める</button></div></div>
+ <section class="dash-history-panel" id="mockHistoryPanel" aria-label="模擬テスト受験履歴"><h3>模擬テストの受験履歴</h3><div id="mockHistoryContent"></div></section>
  <div class="study-filter-shell"><div class="study-settings-heading">学習履歴を探す</div>
  <div class="progress-filters">
   <div class="field"><label for="progressStatus">表示する項目</label><select id="progressStatus"><option value="all">すべて</option><option value="weak">復習対象</option><option value="new">未学習</option><option value="done">復習不要</option><option value="due">今日の復習</option></select></div>
@@ -556,7 +577,7 @@ section.panel form .editor-actions button{min-height:49px}
  <div id="progressList"></div>
  <details class="backup-accordion" id="learningBackupPanel">
   <summary>学習履歴のバックアップ・復元</summary>
-  <p class="muted small">この端末の生薬・刻み生薬・漢方処方の学習記録（復習予定日を含む）をJSONに保存します。共有データや写真は変更しません。</p>
+  <p class="muted small">この端末の生薬・刻み生薬・漢方処方の学習記録（復習予定日・模擬テスト受験履歴を含む）をJSONに保存します。共有データや写真は変更しません。</p>
   <button type="button" class="secondary" id="exportLearningBtn">学習履歴をダウンロード（JSON）</button>
   <div class="field"><label for="learningRestoreInput">学習履歴のバックアップを選択</label><input type="file" id="learningRestoreInput" accept=".json,application/json,.zip,application/zip"></div>
   <p id="learningRestorePreview" class="muted small" role="status">ファイルを選ぶと内容を確認できます。</p>
@@ -972,8 +993,8 @@ function getLocalProgress(){try{const x=JSON.parse(localStorage.getItem(LOCAL_ST
 async function save(){try{const x={stats:db.stats,attempts:db.attempts,correct:db.correct,totalScore:db.totalScore};localStorage.setItem(LOCAL_STATS_KEY,JSON.stringify(x));return true}catch(e){alert('端末に学習履歴を保存できません。ブラウザのプライベートモードや容量を確認してください。');return false}}
 function normalHerb(row){return {id:row.id,japaneseName:row.japanese_name||'',name:row.japanese_name||'',latinName:(row.latin_name||'').toUpperCase(),aliases:row.aliases||[],originLatin:row.origin_latin||'',originJapanese:row.origin_japanese||'',part:row.part||row.medicinal_part||'',familyLatin:row.family_latin||'',familyJapanese:row.family_japanese||'',constituents:row.constituents||'',uses:row.uses||[],notes:row.notes||'',images:row.images||[]}}
 function toRow(h){return {id:String(h.id),japanese_name:h.japaneseName||h.name||'',latin_name:(h.latinName||'').toUpperCase(),aliases:Array.isArray(h.aliases)?h.aliases:[],origin_latin:h.originLatin||'',origin_japanese:h.originJapanese||'',part:h.part||'',medicinal_part:h.part||'',family_latin:h.familyLatin||'',family_japanese:h.familyJapanese||'',constituents:h.constituents||'',uses:Array.isArray(h.uses)?h.uses:[],notes:h.notes||'',images:Array.isArray(h.images)?h.images:[],updated_at:new Date().toISOString()}}
-async function refreshHerbs(){const {data,error}=await client.from('herbs').select('*').order('japanese_name');if(error)throw error;db.herbs=(data||[]).map(normalHerb);updateStats();currentId=null;showIdle();setStatus('共有データ：接続済み・'+db.herbs.length+'種類／学習履歴：この端末のみ');}
-function showAdmin(){document.body.classList.toggle('is-admin',isAdmin);document.querySelectorAll('[data-admin-tab]').forEach(x=>x.classList.toggle('hidden',!isAdmin));$('loginToggle').classList.toggle('hidden',isAdmin);$('logoutButton').classList.toggle('hidden',!isAdmin);$('adminState').textContent=isAdmin?'管理者としてログイン中：データの登録・編集ができます。':'ゲストとして利用中：クイズ・原型生薬情報を閲覧できます。';if(!isAdmin&&(['manage','backup','cutManage','kampoManage'].some(x=>!$(x).classList.contains('hidden'))))switchTab('quiz')}
+async function refreshHerbs(){const {data,error}=await client.from('herbs').select('*').order('japanese_name');if(error)throw error;db.herbs=(data||[]).map(normalHerb);updateStats();currentId=null;showIdle();setStatus('共有データ：接続済み');}
+function showAdmin(){document.body.classList.toggle('is-admin',isAdmin);document.querySelectorAll('[data-admin-tab]').forEach(x=>x.classList.toggle('hidden',!isAdmin));$('loginToggle').classList.toggle('hidden',isAdmin);$('logoutButton').classList.toggle('hidden',!isAdmin);$('adminState').textContent=isAdmin?'管理者':'ゲスト';if(!isAdmin&&(['manage','backup','cutManage','kampoManage'].some(x=>!$(x).classList.contains('hidden'))))switchTab('quiz')}
 async function updateAdminSession(){if(!client)return;const {data,error}=await client.auth.getUser();isAdmin=!error&&data?.user?.id===ADMIN_USER_ID;showAdmin();}
 function initClient(){if(!window.supabase?.createClient)throw new Error('Supabaseライブラリを読み込めません。通信状況を確認してください。');client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}})}
 async function uploadDataImage(src,path){if(!src.startsWith('data:image/'))return src;const response=await fetch(src);const blob=await response.blob();if(!blob.type.startsWith('image/'))throw new Error('対応していない画像形式です');const {error}=await client.storage.from('herb-images').upload(path,blob,{contentType:blob.type,upsert:true});if(error)throw error;const {data}=client.storage.from('herb-images').getPublicUrl(path);return data.publicUrl}
@@ -1132,7 +1153,7 @@ function renderMockResults(){
   return `<article class="mock-result-item"><div class="mock-result-head"><h3>第${i+1}問｜${isHerb?'原型生薬':'漢方処方'}</h3><strong>${result.score} / ${result.max}点</strong></div>${photos}${result.blocked?`<p class="feedback bad">${isHerb?'生薬名・和名':'漢方処方名'}が不正解のため、この問題はすべて0点です。</p>`:''}<ul>${pointList}</ul><div class="mock-correct-data">${correctData}</div></article>`;
  }).join('');
  const judgementLabel=pass=>pass?'合格基準クリア':'合格基準未達';
- area.innerHTML=`<div class="mock-result-summary mock-result-judgement ${outcome.passed?'mock-result-passed':'mock-result-failed'}"><div class="mock-result-verdict" role="status">${outcome.passed?'合格':'不合格'}</div><div class="muted">模擬テストの結果</div><div class="mock-score-big">${total} <span style="font-size:1.05rem">/ ${max}点</span></div><div>正答率（配点比） ${Math.round(total/max*100)}%</div><div class="mock-section-scores"><div class="mock-section-score"><span>原型生薬（5問）</span><strong>${outcome.herbScore} / 30点</strong><span class="mock-section-judgement ${outcome.herbPassed?'mock-section-passed':'mock-section-failed'}">${judgementLabel(outcome.herbPassed)}</span><small>合格基準：18点以上</small></div><div class="mock-section-score"><span>漢方処方（1問）</span><strong>${outcome.kampoScore} / 5点</strong><span class="mock-section-judgement ${outcome.kampoPassed?'mock-section-passed':'mock-section-failed'}">${judgementLabel(outcome.kampoPassed)}</span><small>合格基準：3点以上</small></div></div><p class="mock-judgement-rule">原型生薬18点以上・漢方処方3点以上の<b>両方を満たした場合のみ合格</b>です。総得点だけでは判定しません。</p></div><p class="muted small">問題ごとの採点結果と正解を確認できます。${mockExam.progressSaved?'満点未満の問題は通常クイズの「復習対象」と「今日の復習」に反映されました。':'学習履歴の保存に失敗しました。表示されている結果は確認できますが、復習対象への反映は完了していません。'}</p>${rows}<div class="mock-quiz-nav">${mockExam.progressSaved&&missedItems.length?'<button class="secondary" type="button" data-mock-action="review">復習対象を見る</button>':''}<button class="primary" type="button" data-mock-action="restart">別の問題で再挑戦</button><button class="secondary" type="button" data-mock-action="quit">終了</button></div>`;
+ area.innerHTML=`<div class="mock-result-summary mock-result-judgement ${outcome.passed?'mock-result-passed':'mock-result-failed'}"><div class="mock-result-verdict" role="status">${outcome.passed?'合格':'不合格'}</div><div class="muted">模擬テストの結果</div><div class="mock-score-big">${total} <span style="font-size:1.05rem">/ ${max}点</span></div><div>正答率（配点比） ${Math.round(total/max*100)}%</div><div class="mock-section-scores"><div class="mock-section-score"><span>原型生薬（5問）</span><strong>${outcome.herbScore} / 30点</strong><span class="mock-section-judgement ${outcome.herbPassed?'mock-section-passed':'mock-section-failed'}">${judgementLabel(outcome.herbPassed)}</span><small>合格基準：18点以上</small></div><div class="mock-section-score"><span>漢方処方（1問）</span><strong>${outcome.kampoScore} / 5点</strong><span class="mock-section-judgement ${outcome.kampoPassed?'mock-section-passed':'mock-section-failed'}">${judgementLabel(outcome.kampoPassed)}</span><small>合格基準：3点以上</small></div></div><p class="mock-judgement-rule">原型生薬18点以上・漢方処方3点以上の<b>両方を満たした場合のみ合格</b>です。総得点だけでは判定しません。</p></div><p class="muted small">問題ごとの採点結果と正解を確認できます。${mockExam.historySaved?'':'受験履歴の保存に失敗しました。'}${mockExam.progressSaved?'満点未満の問題は通常クイズの「復習対象」と「今日の復習」に反映されました。':'学習履歴の保存に失敗しました。表示されている結果は確認できますが、復習対象への反映は完了していません。'}</p>${rows}<div class="mock-quiz-nav">${mockExam.progressSaved&&missedItems.length?'<button class="secondary" type="button" data-mock-action="review">復習対象を見る</button>':''}<button class="primary" type="button" data-mock-action="restart">別の問題で再挑戦</button><button class="secondary" type="button" data-mock-action="quit">終了</button></div>`;
 }
 // 模擬テストの各問を通常の学習履歴に1回の解答として登録する。
 // 満点未満の問題は復習対象・今日の復習へ、満点なら通常の正解履歴へ反映。
@@ -1191,7 +1212,8 @@ function finishMockExam(){
  if(blankCount&&!confirm(`未回答の項目が${blankCount}件あります。未回答は0点として採点しますか？`))return;
  mockExam.results=mockExam.items.map((item,i)=>item.kind==='herb'?mockScoreHerb(item.herb,mockExam.answers[i]):mockScoreKampo(item.formula,mockExam.answers[i]));
  mockExam.progressSaved=saveMockExamProgress();
- mockExam.finished=true;
+ mockExam.historySaved=saveMockHistory(mockExamJudgement(mockExam.items,mockExam.results));
+ mockExam.finished=true;renderStudyDashboard();
  renderMockResults();
  $('mockExam').scrollIntoView({block:'start',behavior:'auto'});
 }
@@ -1371,7 +1393,69 @@ function progressRows(kind){
  return [];
 }
 function progressStatusText(status){return {new:'未学習',weak:'復習対象',done:'復習不要'}[status]||''}
+
+const MOCK_HISTORY_KEY='herbPhotoQuiz.mockHistory.v1';
+const DASH_KINDS=[['herb','原型生薬','種類'],['cut','刻み生薬','種類'],['kampo','漢方処方','処方']];
+let dashFilter=null;
+function validMockHistory(v){return Array.isArray(v)&&v.every(r=>r&&Number.isFinite(r.at)&&r.at>0&&Number.isFinite(r.herbScore)&&r.herbScore>=0&&r.herbScore<=30&&Number.isFinite(r.kampoScore)&&r.kampoScore>=0&&r.kampoScore<=5)}
+function readMockHistory(){try{const h=JSON.parse(localStorage.getItem(MOCK_HISTORY_KEY)||'[]');return validMockHistory(h)?h:[]}catch(e){return []}}
+function saveMockHistory(outcome){try{const history=readMockHistory();history.push({at:Date.now(),herbScore:outcome.herbScore,kampoScore:outcome.kampoScore});localStorage.setItem(MOCK_HISTORY_KEY,JSON.stringify(history));return true}catch(e){console.warn('模擬テスト履歴の保存に失敗',e);return false}}
+function mockHistoryPassed(r){return r.herbScore>=18&&r.kampoScore>=3}
+function mockHistoryDate(r){return new Date(r.at).toLocaleString('ja-JP',{year:'numeric',month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})}
+function renderMockHistory(){
+ const root=$('mockHistoryContent');if(!root)return;const history=readMockHistory();
+ if(!history.length){root.innerHTML='<p class="muted small">まだ受験履歴はありません。この更新後の模擬テストから記録します。</p>';return}
+ const best=Math.max(...history.map(r=>r.herbScore+r.kampoScore)),pass=history.filter(mockHistoryPassed).length;
+ const recent=history.slice(-10);
+ root.innerHTML=`<div class="dash-history-stats"><div><small>受験回数</small><b>${history.length}回</b></div><div><small>最高得点</small><b>${best}/35</b></div><div><small>合格率</small><b>${Math.round(pass/history.length*100)}%</b></div></div><p class="muted small">直近${recent.length}回の得点推移（左から古い順）</p><div class="dash-history-plot" aria-hidden="true">${recent.map(r=>`<div><b>${r.herbScore+r.kampoScore}</b><i class="${mockHistoryPassed(r)?'':'fail'}" style="height:${(r.herbScore+r.kampoScore)/35*70}%"></i></div>`).join('')}</div><details class="study-disclosure"><summary>受験履歴を見る（${history.length}回）</summary><div class="study-disclosure-body">${history.slice().reverse().map(r=>`<div class="dash-history-row"><div>${escapeHtml(mockHistoryDate(r))}<small>原型 ${r.herbScore}/30点・漢方 ${r.kampoScore}/5点</small></div><div><b>${r.herbScore+r.kampoScore}/35点</b><small class="${mockHistoryPassed(r)?'dash-pass':'dash-fail'}">${mockHistoryPassed(r)?'合格':'不合格'}</small></div></div>`).join('')}</div></details>`;
+}
+function dashMatching(r,mode){return mode==='due'?r.due:r.status==='weak'}
+function renderStudyDashboard(){
+ const root=$('dashCounts');if(!root)return;
+ const groups=DASH_KINDS.map(([kind,label,unit])=>({kind,label,unit,rows:progressRows(kind)}));
+ root.innerHTML=groups.map(g=>`<div class="dash-count"><span>${g.label}</span><b>${g.kind==='kampo'&&kampoLoadError?'—':g.rows.length}</b><small>${g.unit}</small></div>`).join('');
+ const rows=groups.flatMap(g=>g.rows);$('dashWeak').textContent=rows.filter(r=>r.status==='weak').length;$('dashDue').textContent=rows.filter(r=>r.due).length;
+ $('dashLearning').innerHTML=groups.map(g=>{const learned=g.rows.filter(r=>r.seen>0).length,seen=g.rows.reduce((n,r)=>n+r.seen,0),right=g.rows.reduce((n,r)=>n+r.right,0),pct=g.rows.length?Math.round(learned/g.rows.length*100):0;return `<div class="dash-learn-row"><div class="dash-learn-top"><b>${g.label}</b><small>正答率 ${seen?Math.round(right/seen*100)+'%':'—'}</small></div><div class="dash-bar" role="progressbar" aria-label="${g.label}の学習済み割合" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div><div class="muted small">学習済み ${learned} / ${g.rows.length}${g.unit}（${pct}%）</div></div>`}).join('')+'<p class="muted small">正答率は各クイズの正解判定に基づきます。学習履歴はこの端末のみ。</p>';
+ const last=readMockHistory().slice(-1)[0];
+ $('dashLatestMock').innerHTML=last?`<div class="dash-latest"><div>前回の模擬テスト　<b class="${mockHistoryPassed(last)?'dash-pass':'dash-fail'}">${mockHistoryPassed(last)?'合格':'不合格'}</b></div><strong>${last.herbScore+last.kampoScore} / 35点</strong><div class="muted small">原型 ${last.herbScore}/30点・漢方 ${last.kampoScore}/5点</div></div>`:'<div class="dash-latest">前回の模擬テスト：記録なし</div>';
+ const list=$('dashReviewList');list.classList.toggle('hidden',!dashFilter);
+ document.querySelectorAll('[data-dash-filter]').forEach(b=>b.setAttribute('aria-expanded',String(b.dataset.dashFilter===dashFilter)));
+ if(!dashFilter)return;
+ const filtered=groups.map(g=>({...g,rows:g.rows.filter(r=>dashMatching(r,dashFilter))})).filter(g=>g.rows.length);
+ list.innerHTML=`<div class="dash-review-header"><h3>${dashFilter==='due'?'今日の復習':'復習対象'}の一覧</h3><button class="secondary" type="button" data-dash-close>閉じる</button></div><p class="dash-review-info">${dashFilter==='due'?'復習予定日が今日以前の項目':'苦手判定の項目'}。復習したい項目を選んでください。</p>`+(filtered.length?`<div class="dash-review-scroll">${filtered.map(g=>`<div class="dash-review-group"><h4>${g.label}（${g.rows.length}件）</h4>${g.rows.map(r=>`<div class="dash-review-item"><div><b>${escapeHtml(r.name)}</b>${r.kind==='kampo'?`<small>${escapeHtml((r.modes||[]).filter(m=>dashFilter==='due'?m.due:m.weak).map(m=>m.name).join('・'))}</small>`:''}</div><button type="button" class="secondary" data-dash-kind="${r.kind}" data-dash-id="${escapeHtml(r.id)}">復習する</button></div>`).join('')}</div>`).join('')}</div>`:'<p class="muted small">該当する項目はありません。</p>');
+}
+function startDashboardReview(kind,id,mode){
+ const row=progressRows(kind).find(r=>r.id===String(id));if(!row||!dashMatching(row,mode)){renderStudyDashboard();return}
+ if(kind==='herb'){
+  $('answerMode').value='full';$('inputStyle').value='written';$('quizMode').value=mode;
+ }else if(kind==='cut'){
+  if(!cutHerbs.some(h=>String(h.id)===String(id)&&cutImages(h).length)){alert('出題用写真がありません。');return}
+  $('cutStyle').value='written';$('cutMode').value=mode;
+ }else if(kind==='kampo'){
+  const configs=[];
+  for(const type of ['ingredients','photos'])for(const style of ['written','choice'])for(const difficulty of (type==='photos'?['beginner','advanced']:['beginner'])){
+   const cfg={type,style,difficulty},st=kampoProgress[kampoStatKey(id,type,style,difficulty)];
+   if(st&&(mode==='due'?reviewIsDue(st,st.lastPerfect!==true):st.lastPerfect!==true)&&kampoQuestionPool(cfg).some(f=>String(f.id)===String(id)))configs.push(cfg);
+  }
+  if(!configs.length){alert('この処方は現在出題できる復習形式がありません。写真の登録状況を確認してください。');return}
+  const c=configs[0];$('kampoQuizType').value=c.type;$('kampoQuizStyle').value=c.style;$('kampoQuizDifficulty').value=c.difficulty;$('kampoQuizMode').value=mode;kampoQuizIdle();
+ }else return;
+ dashFilter=null;renderStudyDashboard();pendingReviewTarget={kind,id};
+ const tab=kind==='herb'?'quiz':kind==='cut'?'cutQuiz':'kampoQuiz';switchTab(tab);
+ if(kind==='herb')nextQuestion();else if(kind==='cut')nextCutQuestion();else nextKampoQuestion();
+ $(tab).scrollIntoView({block:'start',behavior:'auto'});
+}
+$('studyDashboard').addEventListener('click',e=>{
+ const b=e.target.closest('button');if(!b)return;
+ if(b.id==='dashToggle'){const open=b.getAttribute('aria-expanded')!=='true';b.setAttribute('aria-expanded',String(open));b.textContent=open?'詳細を閉じる ▴':'詳細を見る ▾';$('dashDetails').classList.toggle('hidden',!open);if(open)renderStudyDashboard();return}
+ if(b.dataset.dashFilter){dashFilter=dashFilter===b.dataset.dashFilter?null:b.dataset.dashFilter;renderStudyDashboard();return}
+ if(b.hasAttribute('data-dash-close')){dashFilter=null;renderStudyDashboard();return}
+ if(b.dataset.dashKind){startDashboardReview(b.dataset.dashKind,b.dataset.dashId,dashFilter);return}
+ if(b.hasAttribute('data-dash-progress')){switchTab('progress');$('progress').scrollIntoView({block:'start',behavior:'auto'})}
+});
+
 function renderLearningProgress(){
+ renderMockHistory();
  const cards=$('progressCards'),list=$('progressList');if(!cards||!list)return;
  const types=[['herb','原型生薬'],['cut','刻み生薬'],['kampo','漢方処方']];
  cards.innerHTML=types.map(([kind,label])=>{
@@ -1445,7 +1529,7 @@ function startDueReview(kind){
 document.querySelectorAll('button[data-start-due]').forEach(b=>b.addEventListener('click',()=>startDueReview(b.dataset.startDue)));
 function statFor(id){return db.stats[id]||(db.stats[id]={seen:0,wrong:0,right:0,streak:0,score:0})}
 function isWeak(h){const s=statFor(h.id);if(s.reviewCleared===true)return false;if(s.reviewCleared===false)return true;return s.wrong>s.right||(s.seen>0&&s.streak===0)}
-function updateStats(){ $('countStat').textContent=db.herbs.length;$('accuracyStat').textContent=db.attempts?Math.round(db.correct/db.attempts*100)+'%':'—';$('scoreStat').textContent=String(db.totalScore||0);$('weakStat').textContent=db.herbs.filter(isWeak).length;renderList();if(!$('info').classList.contains('hidden'))renderHerbInfo();if(!$('progress').classList.contains('hidden'))renderLearningProgress();}
+function updateStats(){ renderStudyDashboard();renderList();if(!$('info').classList.contains('hidden'))renderHerbInfo();if(!$('progress').classList.contains('hidden'))renderLearningProgress();}
 // メインメニューと小メニューを同期。直接の画面移動（進捗から復習、情報リンク等）も反映する。
 const NAV_GROUP_TABS={quiz:['quiz','cutQuiz','kampoQuiz','mockExam'],info:['info','cutInfo','kampoInfo'],progress:['progress'],admin:['manage','cutManage','kampoManage','backup']};
 const NAV_DEFAULT={quiz:'quiz',info:'info',progress:'progress',admin:'manage'};
@@ -1930,7 +2014,7 @@ function cutPhotoHtml(photo,mode='quiz'){
 }
 function cutRubyHtml(h){const name=escapeHtml(h.name||''),reading=escapeHtml(h.reading||'');return reading?`<ruby>${name}<rt>${reading}</rt></ruby>`:name}
 // 同名検索ではなく「登録日時」の昇順で一貫して表示し、編集時は順番を維持。
-async function refreshCutHerbs(){const {data,error}=await client.from('cut_herbs').select('id,name,reading,images,created_at').order('created_at',{ascending:true}).order('id',{ascending:true});if(error)throw error;cutHerbs=data||[];renderCutList();renderKampoIngredientOptions();if($('kampoManage')&&!$('kampoManage').classList.contains('hidden')){renderKampoPreview();renderKampoList()} if(!$('cutInfo').classList.contains('hidden'))renderCutInfo();if(!$('progress').classList.contains('hidden'))renderLearningProgress();if($('kampoInfo')&&!$('kampoInfo').classList.contains('hidden'))renderKampoInfo();}
+async function refreshCutHerbs(){const {data,error}=await client.from('cut_herbs').select('id,name,reading,images,created_at').order('created_at',{ascending:true}).order('id',{ascending:true});if(error)throw error;cutHerbs=data||[];renderStudyDashboard();renderCutList();renderKampoIngredientOptions();if($('kampoManage')&&!$('kampoManage').classList.contains('hidden')){renderKampoPreview();renderKampoList()} if(!$('cutInfo').classList.contains('hidden'))renderCutInfo();if(!$('progress').classList.contains('hidden'))renderLearningProgress();if($('kampoInfo')&&!$('kampoInfo').classList.contains('hidden'))renderKampoInfo();}
 let cutEditingPhotoIndex=-1;
 function resetCutForm(){$('cutForm').reset();$('cutEditId').value='';cutStaged=[];cutEditingPhotoIndex=-1;$('cutMaskEditor').classList.add('hidden');$('cutFormTitle').textContent='刻み生薬を新規登録';renderCutPhotos()}
 function renderCutPhotos(){
@@ -2105,7 +2189,7 @@ function checkCutAnswer(){
   // 採点後は覆いを取り除き、元の写真に写っているラベルを一斉に見せる。
   $('cutQuizArea').querySelectorAll('.cut-mask').forEach(mask=>mask.classList.add('revealed'));
   $('cutResult').innerHTML=`<div class="feedback ${ok?'good':'bad'} cut-result"><b>${ok?'正解':'不正解'}</b><p>正解：${cutRubyHtml(h)}</p><p class="muted">この生薬：正解 ${s.right} 回／不正解 ${s.wrong} 回 ／ ${escapeHtml(reviewDateText(s,!ok))}</p></div><div class="answer-actions result-actions"><button class="primary" onclick="nextCutQuestion()">次の問題</button><button class="secondary end-quiz-button" onclick="cutIdle()">終了</button></div>`;
-  $('cutAnswerForm').querySelector('.answer-actions').remove();
+  $('cutAnswerForm').querySelector('.answer-actions').remove();renderStudyDashboard();
 }
 $('cutStyle').addEventListener('change',cutIdle);$('cutMode').addEventListener('change',cutIdle);
 
@@ -2142,7 +2226,7 @@ function resetKampoForm(){
 async function refreshKampoFormulas(){
   const {data,error}=await client.from('kampo_formulas').select('id,name,ingredients,created_at').order('created_at',{ascending:true});
   if(error)throw error;
-  kampoFormulas=data||[];kampoLoadError='';renderKampoList();renderKampoQuizProgress();renderKampoInfo();if(!$('progress').classList.contains('hidden'))renderLearningProgress();if(!$('mockExam').classList.contains('hidden'))renderMockExam();
+  kampoFormulas=data||[];kampoLoadError='';renderStudyDashboard();renderKampoList();renderKampoQuizProgress();renderKampoInfo();if(!$('progress').classList.contains('hidden'))renderLearningProgress();if(!$('mockExam').classList.contains('hidden'))renderMockExam();
 }
 function renderKampoList(){
  const root=$('kampoList');if(!root)return;
@@ -2529,7 +2613,7 @@ function checkKampoAnswer(){
   }
   $('kampoResult').innerHTML=`<div class="feedback ${perfect?'good':'bad'} kampo-result-details"><div class="scoreline">${perfect?'完全正解':'部分正解・不正解'}：${score}／${config.type==='ingredients'?ingredients.length:1}点</div>${details}<p class="muted small">正しい構成生薬の順序は問いません。／ ${escapeHtml(reviewDateText(kampoProgress[key],!perfect))}</p></div><div class="answer-actions result-actions"><button type="button" class="primary" onclick="nextKampoQuestion()">次の問題</button><button type="button" class="secondary end-quiz-button" onclick="endKampoQuiz()">終了</button></div>`;
   $('kampoAnswerForm').querySelector('.answer-actions')?.remove();
-  renderKampoQuizProgress();
+  renderKampoQuizProgress();renderStudyDashboard();
 }
 ['kampoQuizType','kampoQuizStyle','kampoQuizMode','kampoQuizDifficulty'].forEach(id=>$(id).addEventListener('change',kampoQuizIdle));
 renderKampoQuizProgress();
@@ -2546,7 +2630,7 @@ function backupSnapshot(){
    cutHerbs:cutHerbs.map(h=>({...h,images:JSON.parse(JSON.stringify(h.images||[]))})),
    kampoFormulas:kampoFormulas.map(f=>({...f,ingredients:[...(f.ingredients||[])]}))},
   local:{herb:{stats:p.stats||{},attempts:Number(p.attempts)||0,correct:Number(p.correct)||0,totalScore:Number(p.totalScore)||0},
-   cut:cutProgress(),kampo:readKampoProgress()},photos:{}};
+   cut:cutProgress(),kampo:readKampoProgress(),mockHistory:readMockHistory()},photos:{}};
 }
 function backupDownload(blob,filename){
  const url=URL.createObjectURL(blob),a=document.createElement('a');
@@ -2659,12 +2743,12 @@ function backupExtractLearning(data){
  if(data.schema===BACKUP_SCHEMA){
   const l=data.local;
   if(!l||(!l.herb&&!l.cut&&!l.kampo))throw new Error('このバックアップには学習履歴がありません。');
-  return {herb:l.herb??null,cut:l.cut??null,kampo:l.kampo??null};
+  return {herb:l.herb??null,cut:l.cut??null,kampo:l.kampo??null,mockHistory:l.mockHistory??null};
  }
  // 旧エクスポートに入っていた履歴のうち、実際に保存されているもののみ復元。
  if(data&&typeof data==='object'&&!Array.isArray(data)&&('stats' in data||'kampoProgress' in data||'cutProgress' in data)){
   return {herb:data.stats&&typeof data.stats==='object'?{stats:data.stats,attempts:data.attempts||0,correct:data.correct||0,totalScore:data.totalScore||0}:null,
-   cut:data.cutProgress??null,kampo:data.kampoProgress??null};
+   cut:data.cutProgress??null,kampo:data.kampoProgress??null,mockHistory:null};
  }
  throw new Error('学習履歴のあるJSONではありません。');
 }
@@ -2672,7 +2756,7 @@ function backupHistoryCount(x){return x&&typeof x==='object'&&!Array.isArray(x)?
 function backupLearningSummary(local){
  const h=local.herb&&local.herb.stats||{};
  const c=local.cut||{},k=local.kampo||{};
- return `生薬：${backupHistoryCount(h)}種類（総解答 ${Number(local.herb?.attempts)||0} 回） / 刻み生薬：${backupHistoryCount(c)}種類 / 漢方処方：${backupHistoryCount(k)}形式の学習記録`;
+ return `生薬：${backupHistoryCount(h)}種類（総解答 ${Number(local.herb?.attempts)||0} 回） / 刻み生薬：${backupHistoryCount(c)}種類 / 漢方処方：${backupHistoryCount(k)}形式の学習記録 / 模擬テスト：${local.mockHistory===null?"対象外":local.mockHistory.length+"回"}`;
 }
 async function backupPreviewLearningFile(file){
  backupPendingLearning=null;$('restoreLearningBtn').disabled=true;
@@ -2685,6 +2769,7 @@ async function backupPreviewLearningFile(file){
    if(data.schema===BACKUP_SCHEMA)backupValidatePayload(data);
   }
   const local=backupExtractLearning(data);
+  if(local.mockHistory!==null&&!validMockHistory(local.mockHistory))throw new Error("模擬テスト履歴が不正です。");
   for(const group of ['herb','cut','kampo'])if(local[group]!==null&&(typeof local[group]!=='object'||Array.isArray(local[group])))throw new Error(group+' の学習記録が不正です。');
   if(local.herb!==null&&(typeof local.herb.stats!=='object'||!local.herb.stats||Array.isArray(local.herb.stats)))throw new Error('生薬の学習記録が不正です。');
   backupPendingLearning=local;
@@ -2699,6 +2784,7 @@ function backupRestoreLearning(){
  if(local.herb!==null)entries.push([LOCAL_STATS_KEY,local.herb]);
  if(local.cut!==null)entries.push([CUT_STATS_KEY,local.cut]);
  if(local.kampo!==null)entries.push([KAMPO_PROGRESS_KEY,local.kampo]);
+ if(local.mockHistory!==null)entries.push([MOCK_HISTORY_KEY,local.mockHistory]);
  const previous=entries.map(([key])=>[key,localStorage.getItem(key)]);
  try{
   for(const [key,value] of entries)localStorage.setItem(key,JSON.stringify(value));
@@ -2817,7 +2903,9 @@ $('restoreSharedInput').addEventListener('change',e=>backupPreviewSharedFile(e.t
 $('restoreSharedBtn').addEventListener('click',backupRestoreShared);
 
 appViewReady=true;appStoreView('replace');
-initShared();
+renderStudyDashboard();
+ document.addEventListener("visibilitychange",()=>{if(!document.hidden){renderStudyDashboard();if(!$("progress").classList.contains("hidden"))renderLearningProgress()}});
+ initShared();
 </script>
 </body>
 </html>
