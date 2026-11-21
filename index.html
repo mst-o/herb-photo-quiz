@@ -678,6 +678,7 @@ section.panel form .editor-actions button{min-height:49px}
 #compare .compare-matrix [data-compare-detail-cell][hidden]{display:none!important}
 @media(max-width:420px){#compare .compare-detail-controls{flex-wrap:wrap;gap:7px}#compare .compare-details-toggle{margin-left:auto}}
 
+
 /* 2026-11 比較機能の追加：画像を主役とする縦長写真ビューアー */
 .compare-group-filter{margin:9px 0 13px}
 .compare-note-grid{display:grid;gap:9px;margin-bottom:12px}
@@ -817,6 +818,25 @@ section.panel form .editor-actions button{min-height:49px}
 #compare .compare-library-cards{min-height:0}
 #compare .compare-group-row .compare-group-open{position:relative;padding-right:27px}
 #compare .compare-group-row .compare-group-open::after{position:absolute;right:7px;top:50%;transform:translateY(-50%);float:none}
+
+/* 2026-11: 拡大写真の操作バー。どの画面幅でも「− 全体表示 ＋」を一列に保つ */
+.compare-viewer .viewer-footer{display:flex;flex-direction:column;align-items:stretch;justify-content:center;gap:5px;padding:6px 8px max(8px,env(safe-area-inset-bottom));flex-wrap:nowrap;width:100%}
+.compare-viewer .viewer-navigation{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:6px;width:100%;min-width:0}
+.compare-viewer .viewer-navigation .viewer-small-label{text-align:center;white-space:nowrap;font-variant-numeric:tabular-nums}
+.compare-viewer .viewer-navigation button{min-width:0;width:100%;max-width:none;white-space:nowrap}
+.compare-viewer .viewer-tools{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:stretch;gap:6px;width:100%;min-width:0}
+.compare-viewer .viewer-tools>.viewer-key-action{width:100%;min-width:0;max-width:none;white-space:nowrap}
+.compare-viewer .viewer-zoom-controls{display:grid;grid-template-columns:34px minmax(78px,auto) 34px;align-items:stretch;gap:4px;min-width:0}
+.compare-viewer .viewer-zoom-controls button{width:100%;min-width:0;max-width:none;white-space:nowrap;padding:8px 3px}
+.compare-viewer .compare-dual-photo{position:relative;cursor:grab;overscroll-behavior:contain}
+.compare-viewer .compare-dual-photo.is-dragging{cursor:grabbing}
+.compare-viewer .compare-dual-photo img{transform-origin:center center;user-select:none;-webkit-user-drag:none}
+@media(max-width:360px){
+ .compare-viewer .viewer-footer{padding-left:5px;padding-right:5px}
+ .compare-viewer .viewer-navigation,.compare-viewer .viewer-tools{gap:4px}
+ .compare-viewer .viewer-zoom-controls{grid-template-columns:29px minmax(68px,auto) 29px;gap:3px}
+ .compare-viewer .viewer-navigation button,.compare-viewer .viewer-tools button{font-size:.71rem;padding:7px 3px}
+}
 
 </style>
 </head>
@@ -1225,7 +1245,10 @@ section.panel form .editor-actions button{min-height:49px}
   <div class="info-photo-stage compare-viewer-stage" id="compareViewerStage"><img id="infoPhotoViewerImage" alt="生薬写真の拡大" draggable="false"></div>
   <div id="compareViewerThumbs" class="viewer-thumbs" aria-label="同じ生薬の別写真"></div>
   <div id="compareDualSelect" class="compare-dual-select hidden"><label for="compareDualOther">比較相手</label><select id="compareDualOther" aria-label="同時に比較する生薬"></select></div>
-  <div id="compareViewerFooter" class="viewer-footer hidden"><button type="button" id="compareViewerPrev">‹ 前の生薬</button><span id="compareViewerCounter" class="viewer-small-label"></span><button type="button" id="compareViewerNext">次の生薬 ›</button><button type="button" id="compareViewerDual" class="viewer-key-action">2枚同時比較</button><button type="button" id="compareViewerZoomOut">−</button><button type="button" id="compareViewerZoomReset">全体表示</button><button type="button" id="compareViewerZoomIn">＋</button></div>
+  <div id="compareViewerFooter" class="viewer-footer hidden">
+   <div class="viewer-navigation"><button type="button" id="compareViewerPrev">‹ 前の生薬</button><span id="compareViewerCounter" class="viewer-small-label"></span><button type="button" id="compareViewerNext">次の生薬 ›</button></div>
+   <div class="viewer-tools"><button type="button" id="compareViewerDual" class="viewer-key-action">2枚同時比較</button><div class="viewer-zoom-controls" role="group" aria-label="写真の拡大・縮小"><button type="button" id="compareViewerZoomOut" aria-label="縮小">−</button><button type="button" id="compareViewerZoomReset">全体表示</button><button type="button" id="compareViewerZoomIn" aria-label="拡大">＋</button></div></div>
+  </div>
  </div>
 </dialog>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -3697,19 +3720,55 @@ $('adminCompareLink').addEventListener('click',()=>{if(isAdmin){switchTab('compa
 let compareViewerActive=false,compareViewerDual=false,compareViewerCurrent=0,compareViewerZoom=1,compareViewerX=0,compareViewerY=0;
 const compareViewerPointers=new Map();let compareViewerLastDistance=0,compareViewerTouchStart=null;
 let compareViewerDualOtherId='',compareViewerDualZoom={};
+const compareViewerDualPointers=new Map();let compareViewerDualOffset={};
 function compareViewerResetLayout(){
  $('compareViewerStage').innerHTML='<img id="infoPhotoViewerImage" alt="生薬写真の拡大" draggable="false">';
  $('compareViewerThumbs').innerHTML='';$('compareViewerFooter').classList.add('hidden');$('compareDualSelect').classList.add('hidden');
  compareViewerZoom=1;compareViewerX=0;compareViewerY=0;compareViewerPointers.clear();
+ compareViewerDualPointers.clear();compareViewerDualZoom={};compareViewerDualOffset={};
 }
 function compareViewerHerbs(){return compareIds.map(id=>compareFind(id)).filter(h=>h&&comparePhotos(h).length)}
 function compareViewerItem(){return compareViewerHerbs()[compareViewerCurrent]}
 function compareViewerTransform(img,zoom=compareViewerZoom,x=compareViewerX,y=compareViewerY){
  if(img)img.style.transform=`translate(${x}px,${y}px) scale(${zoom})`;
 }
+// 2枚同時比較では、各写真の拡大率と移動位置を独立して保持する。
+function compareViewerDualView(key){
+ key=String(key);
+ if(!compareViewerDualOffset[key])compareViewerDualOffset[key]={x:0,y:0};
+ if(!(key in compareViewerDualZoom))compareViewerDualZoom[key]=1;
+ return {zoom:compareViewerDualZoom[key],offset:compareViewerDualOffset[key]};
+}
+function compareViewerDualApply(key){
+ key=String(key);
+ const pane=$('compareViewerStage').querySelector(`[data-viewer-panel="${key}"]`);
+ if(!pane)return;
+ const img=pane.querySelector('img');if(!img)return;
+ const view=compareViewerDualView(key);
+ const maxX=pane.clientWidth*(view.zoom-1)/2,maxY=pane.clientHeight*(view.zoom-1)/2;
+ view.offset.x=view.zoom<=1?0:Math.max(-maxX,Math.min(maxX,view.offset.x));
+ view.offset.y=view.zoom<=1?0:Math.max(-maxY,Math.min(maxY,view.offset.y));
+ img.style.transform=`translate(${view.offset.x}px,${view.offset.y}px) scale(${view.zoom})`;
+}
+function compareViewerDualReset(){
+ compareViewerZoom=1;compareViewerDualZoom={};compareViewerDualOffset={};compareViewerDualPointers.clear();
+ $('compareViewerStage').querySelectorAll('[data-viewer-panel]').forEach(p=>compareViewerDualApply(p.dataset.viewerPanel));
+}
 function compareViewerZoomSet(n){
- compareViewerZoom=Math.max(1,Math.min(5,n));if(compareViewerZoom===1){compareViewerX=0;compareViewerY=0}
- if(compareViewerDual){for(const [i,pane] of [...$('compareViewerStage').querySelectorAll('.compare-dual-photo')].entries()){compareViewerDualZoom[i]=compareViewerZoom;const im=pane.querySelector('img');if(im)im.style.transform=`scale(${compareViewerZoom})`}}else compareViewerTransform($('infoPhotoViewerImage'));
+ const next=Math.max(1,Math.min(5,n));
+ if(compareViewerDual){
+  const delta=next-compareViewerZoom;
+  $('compareViewerStage').querySelectorAll('[data-viewer-panel]').forEach(p=>{
+   const key=p.dataset.viewerPanel,view=compareViewerDualView(key);
+   compareViewerDualZoom[key]=Math.max(1,Math.min(5,view.zoom+delta));
+   compareViewerDualApply(key);
+  });
+  compareViewerZoom=next;
+ }else{
+  compareViewerZoom=next;
+  if(compareViewerZoom===1){compareViewerX=0;compareViewerY=0}
+  compareViewerTransform($('infoPhotoViewerImage'));
+ }
 }
 function compareViewerThumbs(){
  const item=compareViewerItem(),imgs=comparePhotos(item),id=String(item?.id||''),selected=comparePhotoIndex[id]||0;
@@ -3734,7 +3793,7 @@ function compareViewerRender(){
   const select=$('compareDualOther');select.innerHTML=choices.map(h=>`<option value="${escapeHtml(h.id)}">${escapeHtml(compareName(h))}</option>`).join('');select.value=compareViewerDualOtherId;
   const two=[item,other];
   $('compareViewerStage').innerHTML=`<div class="compare-dual-stage">${two.map((h,i)=>{const urls=comparePhotos(h),which=comparePhotoIndex[h.id]||0;return `<div class="compare-dual-pane"><header>${escapeHtml(compareName(h))}</header><div class="compare-dual-photo" data-viewer-panel="${i}"><img src="${escapeHtml(urls[which])}" draggable="false" alt="${escapeHtml(compareName(h))}"></div>${urls.length>1?`<select data-viewer-dual-photo="${i}" aria-label="${escapeHtml(compareName(h))}の写真">${urls.map((_,j)=>`<option value="${j}" ${which===j?'selected':''}>写真${j+1}/${urls.length}</option>`).join('')}</select>`:''}</div>`}).join('')}</div>`;
-  $('compareViewerThumbs').innerHTML='';compareViewerZoom=1;compareViewerDualZoom={};
+  $('compareViewerThumbs').innerHTML='';compareViewerZoom=1;compareViewerDualZoom={};compareViewerDualOffset={};compareViewerDualPointers.clear();
  }
 }
 function openCompareViewer(id){
@@ -3769,7 +3828,7 @@ $('compareViewerPrev').addEventListener('click',()=>compareViewerStep(-1));
 $('compareViewerNext').addEventListener('click',()=>compareViewerStep(1));
 $('compareViewerZoomOut').addEventListener('click',()=>compareViewerZoomSet(compareViewerZoom-.5));
 $('compareViewerZoomIn').addEventListener('click',()=>compareViewerZoomSet(compareViewerZoom+.5));
-$('compareViewerZoomReset').addEventListener('click',()=>compareViewerZoomSet(1));
+$('compareViewerZoomReset').addEventListener('click',()=>compareViewerDual?compareViewerDualReset():compareViewerZoomSet(1));
 $('compareViewerDual').addEventListener('click',()=>{if(!compareViewerActive)return;compareViewerDual=!compareViewerDual;compareViewerResetLayout();compareViewerRender()});
 $('compareDualOther').addEventListener('change',e=>{compareViewerDualOtherId=e.target.value;compareViewerRender()});
 $('compareViewerThumbs').addEventListener('click',e=>{const b=e.target.closest('[data-viewer-thumb]');if(b)compareViewerSelectPhoto(Number(b.dataset.viewerThumb))});
@@ -3804,21 +3863,46 @@ function compareViewerPointerEnd(e){
  compareViewerTouchStart=null;
 }
 stage.addEventListener('pointerup',compareViewerPointerEnd);stage.addEventListener('pointercancel',compareViewerPointerEnd);
-// 同時比較では選択した2枚を並べ、ピンチ拡大は各写真領域内で独立して行う。
-let dualGesture={};
-stage.addEventListener('touchstart',e=>{
+// 2枚同時比較：各写真を1本指で上下左右にドラッグ、2本指で独立してピンチ拡大。
+// pointer eventsへ一本化し、タッチイベントと二重処理しない。
+function dualPoints(key){return [...compareViewerDualPointers.values()].filter(p=>p.key===String(key))}
+function dualPointerDown(e){
  if(!compareViewerActive||!compareViewerDual)return;
- const pane=e.target.closest('[data-viewer-panel]');if(!pane||e.touches.length!==2)return;
- const k=pane.dataset.viewerPanel,a=e.touches[0],b=e.touches[1];dualGesture={key:k,d:Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY),zoom:compareViewerDualZoom[k]||1};
-},{passive:true});
-stage.addEventListener('touchmove',e=>{
- if(!compareViewerActive||!compareViewerDual||!dualGesture.key||e.touches.length!==2)return;
- const a=e.touches[0],b=e.touches[1],z=Math.max(1,Math.min(5,dualGesture.zoom*Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY)/dualGesture.d));
- compareViewerDualZoom[dualGesture.key]=z;
- const img=stage.querySelector(`[data-viewer-panel="${dualGesture.key}"] img`);if(img)img.style.transform=`scale(${z})`;
- e.preventDefault();
-},{passive:false});
-stage.addEventListener('touchend',()=>{dualGesture={}}, {passive:true});
+ const pane=e.target.closest('[data-viewer-panel]');if(!pane)return;
+ const key=pane.dataset.viewerPanel;
+ compareViewerDualPointers.set(e.pointerId,{key,x:e.clientX,y:e.clientY});
+ if(dualPoints(key).length===1)pane.classList.add('is-dragging');
+ try{stage.setPointerCapture(e.pointerId)}catch(_){}
+}
+function dualPointerMove(e){
+ const p=compareViewerDualPointers.get(e.pointerId);
+ if(!compareViewerActive||!compareViewerDual||!p)return;
+ const key=p.key,points=dualPoints(key),view=compareViewerDualView(key);
+ if(points.length===1){
+  if(view.zoom>1){view.offset.x+=e.clientX-p.x;view.offset.y+=e.clientY-p.y;compareViewerDualApply(key)}
+ }else if(points.length>=2){
+  const other=points.find(q=>q!==p);
+  if(other){
+   const before=Math.hypot(p.x-other.x,p.y-other.y),after=Math.hypot(e.clientX-other.x,e.clientY-other.y);
+   if(before>1){compareViewerDualZoom[key]=Math.max(1,Math.min(5,view.zoom*after/before))}
+   // ピンチ中の中心移動も許容（両写真は互いに連動しない）。
+   view.offset.x+=(e.clientX-p.x)/2;view.offset.y+=(e.clientY-p.y)/2;
+   compareViewerDualApply(key);
+  }
+ }
+ p.x=e.clientX;p.y=e.clientY;
+}
+function dualPointerEnd(e){
+ const p=compareViewerDualPointers.get(e.pointerId);if(!p)return;
+ compareViewerDualPointers.delete(e.pointerId);
+ if(dualPoints(p.key).length===0){const pane=stage.querySelector(`[data-viewer-panel="${p.key}"]`);pane?.classList.remove('is-dragging')}
+ try{if(stage.hasPointerCapture(e.pointerId))stage.releasePointerCapture(e.pointerId)}catch(_){}
+}
+stage.addEventListener('pointerdown',dualPointerDown);
+stage.addEventListener('pointermove',dualPointerMove);
+stage.addEventListener('pointerup',dualPointerEnd);
+stage.addEventListener('pointercancel',dualPointerEnd);
+stage.addEventListener('lostpointercapture',dualPointerEnd);
 
 
 // 本人が選んだクイズ設定だけを端末に記憶する。復習画面からの一時的な出題設定は自動保存しない。
