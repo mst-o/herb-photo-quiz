@@ -566,6 +566,8 @@ section.panel form .editor-actions button{min-height:49px}
 #progress .progress-review-empty{padding:18px 12px;border:1px solid var(--line);border-radius:12px;background:#f7faf7;text-align:center;color:var(--muted)}
 #progress #learningBackupPanel{margin-top:20px}
 
+
+.field-analysis{margin-top:16px}.field-analysis-row{padding:10px 0;border-bottom:1px solid var(--line)}.field-analysis-head{display:flex;justify-content:space-between;gap:8px;align-items:center}.field-analysis-bar{height:8px;background:#e6ebe7;border-radius:6px;overflow:hidden;margin:6px 0}.field-analysis-bar i{display:block;height:100%;background:#438564}.field-analysis-bar i.low{background:#bb8539}.field-analysis-row small{display:block;overflow-wrap:anywhere}.compare-switch,.compare-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;margin:12px 0}.compare-switch button[aria-pressed=true]{background:#28654a;color:white}.compare-grid>*{min-width:0}.compare-grid select{width:100%;min-width:0}.compare-photo{border:1px solid var(--line);border-radius:12px;overflow:hidden;min-width:0;padding:8px}.compare-photo h3{font-size:1rem;margin:0 0 8px;overflow-wrap:anywhere}.compare-photo img{width:100%;aspect-ratio:1;object-fit:contain;background:#eef1ee;border-radius:8px;display:block}.compare-photo button{width:100%;padding:6px;min-width:0}.compare-photo-nav{display:grid;grid-template-columns:1fr 1fr;gap:5px}.compare-field{border-bottom:1px solid var(--line);padding:9px 0}.compare-field>strong{font-size:.83rem;color:#64736a}.compare-field .compare-grid{margin:4px 0;gap:12px;font-size:.88rem;overflow-wrap:anywhere;white-space:pre-wrap}.compare-pair{display:flex;align-items:center;gap:8px;margin:6px 0}.compare-pair button:first-child{flex:1;min-width:0;text-align:left;overflow-wrap:anywhere}.compare-note{padding:10px;background:#eef4ef;border-radius:10px;white-space:pre-wrap;overflow-wrap:anywhere}#compareAdmin{margin-top:16px;padding-top:12px;border-top:1px solid var(--line)}#compareSave{width:100%;margin-top:8px}@media(max-width:360px){.compare-photo{padding:5px}.compare-photo-nav button{font-size:.8rem}.compare-pair{flex-wrap:wrap}}
 </style>
 </head>
 <body>
@@ -596,6 +598,7 @@ section.panel form .editor-actions button{min-height:49px}
   <button class="tab" type="button" data-tab="info">原型生薬</button>
   <button class="tab" type="button" data-tab="cutInfo">刻み生薬</button>
   <button class="tab" type="button" data-tab="kampoInfo">漢方処方</button>
+  <button class="tab" type="button" data-tab="compare">生薬の比較</button>
  </div>
  <div class="nav-subset nav-subset-admin hidden" data-nav-items="admin" role="group" aria-label="管理者の操作">
   <span class="nav-subtitle">管理する種類</span>
@@ -603,6 +606,7 @@ section.panel form .editor-actions button{min-height:49px}
   <button class="tab" type="button" data-admin-tab="1" data-tab="cutManage">刻み生薬</button>
   <button class="tab" type="button" data-admin-tab="1" data-tab="kampoManage">漢方処方</button>
   <button class="tab" type="button" data-admin-tab="1" data-tab="backup">バックアップ</button>
+  <button class="secondary" type="button" data-admin-tab="1" id="adminCompareLink">類似生薬の登録</button>
  </div>
 </nav>
 <section id="progress" class="panel hidden">
@@ -620,7 +624,7 @@ section.panel form .editor-actions button{min-height:49px}
  <div id="dashReviewList" aria-label="復習対象一覧"></div>
  </section></div>
  <div id="progressLearningPane" class="hidden" data-progress-pane="learning">
- <div id="progressOverview"><div class="study-settings-heading">種類別の学習状況</div><div id="progressCards" class="progress-cards" aria-label="クイズ別の学習状況"></div><p class="muted small">学習済みは1回以上解答した項目、正答率は通常の採点で正解扱いになった解答の割合です。復習不要でも今後の復習予定日が設定されています。</p></div>
+ <div id="progressOverview"><div class="study-settings-heading">種類別の学習状況</div><div id="progressCards" class="progress-cards" aria-label="クイズ別の学習状況"></div><p class="muted small">学習済みは1回以上解答した項目、正答率は通常の採点で正解扱いになった解答の割合です。復習不要でも今後の復習予定日が設定されています。</p><details class="study-disclosure field-analysis" id="fieldAnalysisPanel"><summary>原型生薬：回答項目別の苦手分析</summary><div class="study-disclosure-body"><p class="muted small">和名誤答による全項目0点ルールとは別に、各回答そのものを判定します。部分正解は完全正答に含めません。</p><label for="fieldAnalysisMode">集計する解答</label><select id="fieldAnalysisMode"><option value="all">すべて</option><option value="written">通常・記述式</option><option value="choice">通常・選択式</option><option value="mock">模擬テスト</option></select><div id="fieldAnalysisContent"></div></div></details></div>
  <div id="progressIndividualPane" class="hidden">
  <div class="study-filter-shell" id="progressIndividual"><div class="progress-detail-head"><button type="button" class="secondary" data-progress-overview>‹ 学習状況に戻る</button><h3 id="progressIndividualTitle">個別の学習履歴</h3></div>
  <div class="progress-filters">
@@ -869,6 +873,15 @@ section.panel form .editor-actions button{min-height:49px}
  <div id="infoList"></div>
  <div id="infoDetail" class="hidden"></div>
 </section>
+<section id="compare" class="panel hidden">
+ <div class="study-hero"><h2>生薬の比較</h2><p class="muted small">登録済みの写真・情報を左右に並べて確認します。</p></div>
+ <div class="compare-switch" aria-label="比較する種類"><button type="button" data-compare-kind="herb" aria-pressed="true">原型生薬</button><button type="button" data-compare-kind="cut" aria-pressed="false">刻み生薬</button></div>
+ <details class="study-disclosure" open><summary>登録済みの類似生薬</summary><div class="study-disclosure-body"><div id="comparePairList" role="status"></div></div></details>
+ <div class="study-settings-heading">自由に比較する</div>
+ <div class="compare-grid"><div><label for="compareLeft">生薬 A</label><select id="compareLeft"></select></div><div><label for="compareRight">生薬 B</label><select id="compareRight"></select></div></div>
+ <div id="compareResult" aria-live="polite"></div>
+ <div id="compareAdmin" class="hidden"><h3>類似生薬を登録・編集</h3><p class="muted small">上で選択した2種類を共有の組み合わせとして登録します。同じ組み合わせを保存すると識別ポイントを更新できます。</p><label for="compareNote">識別のポイント（任意）</label><textarea id="compareNote" rows="3" maxlength="2000" placeholder="形状・色・表面の特徴など"></textarea><button type="button" class="primary" id="compareSave">組み合わせを保存</button><p id="compareMessage" class="muted small" role="status"></p></div>
+</section>
 <section id="backup" class="panel hidden">
  <div class="study-hero"><span class="study-kicker">データの保護・引き継ぎ</span>
  <h2 style="margin-top:0">バックアップと復元</h2>
@@ -1050,7 +1063,7 @@ function getLocalProgress(){try{const x=JSON.parse(localStorage.getItem(LOCAL_ST
 async function save(){try{const x={stats:db.stats,attempts:db.attempts,correct:db.correct,totalScore:db.totalScore};localStorage.setItem(LOCAL_STATS_KEY,JSON.stringify(x));return true}catch(e){alert('端末に学習履歴を保存できません。ブラウザのプライベートモードや容量を確認してください。');return false}}
 function normalHerb(row){return {id:row.id,japaneseName:row.japanese_name||'',name:row.japanese_name||'',latinName:(row.latin_name||'').toUpperCase(),aliases:row.aliases||[],originLatin:row.origin_latin||'',originJapanese:row.origin_japanese||'',part:row.part||row.medicinal_part||'',familyLatin:row.family_latin||'',familyJapanese:row.family_japanese||'',constituents:row.constituents||'',uses:row.uses||[],notes:row.notes||'',images:row.images||[]}}
 function toRow(h){return {id:String(h.id),japanese_name:h.japaneseName||h.name||'',latin_name:(h.latinName||'').toUpperCase(),aliases:Array.isArray(h.aliases)?h.aliases:[],origin_latin:h.originLatin||'',origin_japanese:h.originJapanese||'',part:h.part||'',medicinal_part:h.part||'',family_latin:h.familyLatin||'',family_japanese:h.familyJapanese||'',constituents:h.constituents||'',uses:Array.isArray(h.uses)?h.uses:[],notes:h.notes||'',images:Array.isArray(h.images)?h.images:[],updated_at:new Date().toISOString()}}
-async function refreshHerbs(){const {data,error}=await client.from('herbs').select('*').order('japanese_name');if(error)throw error;db.herbs=(data||[]).map(normalHerb);updateStats();currentId=null;showIdle();setStatus('共有データ：接続済み');}
+async function refreshHerbs(){const {data,error}=await client.from('herbs').select('*').order('japanese_name');if(error)throw error;db.herbs=(data||[]).map(normalHerb);if(!$('compare').classList.contains('hidden'))renderCompare();updateStats();currentId=null;showIdle();setStatus('共有データ：接続済み');}
 function showAdmin(){document.body.classList.toggle('is-admin',isAdmin);document.querySelectorAll('[data-admin-tab]').forEach(x=>x.classList.toggle('hidden',!isAdmin));$('loginToggle').classList.toggle('hidden',isAdmin);$('logoutButton').classList.toggle('hidden',!isAdmin);$('adminState').textContent=isAdmin?'管理者':'ゲスト';if(!isAdmin&&(['manage','backup','cutManage','kampoManage'].some(x=>!$(x).classList.contains('hidden'))))switchTab('quiz')}
 async function updateAdminSession(){if(!client)return;const {data,error}=await client.auth.getUser();isAdmin=!error&&data?.user?.id===ADMIN_USER_ID;showAdmin();}
 function initClient(){if(!window.supabase?.createClient)throw new Error('Supabaseライブラリを読み込めません。通信状況を確認してください。');client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}})}
@@ -1121,8 +1134,9 @@ function mockScoreHerb(h,a={}){
     {label:'用途',score:isWrittenUseCorrect(a.use,h.uses)?1:0,max:1,correct:(h.uses||[]).join('、')}
   ];
   // 通常の記述式と同じルール：和名が不正解なら全得点0点。
+  const fieldScores=points.map(p=>p.score);
   if(!jaOK)for(const p of points)p.score=0;
-  return {score:points.reduce((n,p)=>n+p.score,0),max:6,points,blocked:!jaOK};
+  return {score:points.reduce((n,p)=>n+p.score,0),max:6,points,blocked:!jaOK,fieldScores};
 }
 function mockScoreKampo(formula,a={}){
  const nameOK=exactAnswer(a.formulaName,[formula.name]);
@@ -1225,6 +1239,7 @@ function saveMockExamProgress(){
    const result=mockExam.results[i],perfect=result.score===result.max;
    if(item.kind==='herb'){
     const stat=statFor(item.id);
+    recordFieldAnalysis(stat,'mock',result.fieldScores);
     stat.seen=progressNumber(stat.seen)+1;
     if(perfect){stat.right=progressNumber(stat.right)+1;stat.streak=progressNumber(stat.streak)+1;stat.reviewCleared=true}
     else{stat.wrong=progressNumber(stat.wrong)+1;stat.streak=0;stat.reviewCleared=false}
@@ -1545,6 +1560,7 @@ $('studyDashboard').addEventListener('click',e=>{
 });
 
 function renderLearningProgress(){
+ renderFieldAnalysis();
  syncProgressView();
  renderStudyDashboard();
  renderMockHistory();
@@ -1625,7 +1641,7 @@ function statFor(id){return db.stats[id]||(db.stats[id]={seen:0,wrong:0,right:0,
 function isWeak(h){const s=statFor(h.id);if(s.reviewCleared===true)return false;if(s.reviewCleared===false)return true;return s.wrong>s.right||(s.seen>0&&s.streak===0)}
 function updateStats(){ renderStudyDashboard();renderList();if(!$('info').classList.contains('hidden'))renderHerbInfo();if(!$('progress').classList.contains('hidden'))renderLearningProgress();}
 // メインメニューと小メニューを同期。直接の画面移動（進捗から復習、情報リンク等）も反映する。
-const NAV_GROUP_TABS={quiz:['quiz','cutQuiz','kampoQuiz','mockExam'],info:['info','cutInfo','kampoInfo'],progress:['progress'],admin:['manage','cutManage','kampoManage','backup']};
+const NAV_GROUP_TABS={quiz:['quiz','cutQuiz','kampoQuiz','mockExam'],info:['info','cutInfo','kampoInfo','compare'],progress:['progress'],admin:['manage','cutManage','kampoManage','backup']};
 const NAV_DEFAULT={quiz:'quiz',info:'info',progress:'progress',admin:'manage'};
 const navLastTab={...NAV_DEFAULT};
 function syncMainNavigation(tab){
@@ -1646,7 +1662,7 @@ document.querySelectorAll('[data-nav-group]').forEach(b=>b.addEventListener('cli
  if(group==='admin'&&!isAdmin)return;
  switchTab(navLastTab[group]||NAV_DEFAULT[group]);
 }));
-function switchTab(tab,keepLinkedHistory=false){if(tab==='list')tab='manage';if(!keepLinkedHistory)linkedInfoHistory=[];if(!isAdmin&&['manage','backup','cutManage','kampoManage'].includes(tab))return;document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));syncMainNavigation(tab);['quiz','info','manage','backup','cutQuiz','cutManage','cutInfo','kampoManage','kampoQuiz','kampoInfo','progress','mockExam'].forEach(id=>$(id).classList.toggle('hidden',id!==tab));if(tab==='manage')renderList();if(tab==='cutManage')renderCutList();if(tab==='kampoManage'){renderKampoList();renderKampoIngredientOptions();renderKampoPreview()}if(tab==='cutInfo')renderCutInfo();if(tab==='kampoQuiz')renderKampoQuizProgress();if(tab==='mockExam')renderMockExam();if(tab==='kampoInfo')renderKampoInfo();if(tab==='info')renderHerbInfo();if(tab==='progress')renderLearningProgress();if(tab==='backup')$('backupStatus').textContent='学習履歴はこの端末のブラウザに保存されています。';appStoreView()}
+function switchTab(tab,keepLinkedHistory=false){if(tab==='list')tab='manage';if(!keepLinkedHistory)linkedInfoHistory=[];if(!isAdmin&&['manage','backup','cutManage','kampoManage'].includes(tab))return;document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));syncMainNavigation(tab);['quiz','info','manage','backup','cutQuiz','cutManage','cutInfo','kampoManage','kampoQuiz','kampoInfo','progress','mockExam','compare'].forEach(id=>$(id).classList.toggle('hidden',id!==tab));if(tab==='manage')renderList();if(tab==='cutManage')renderCutList();if(tab==='kampoManage'){renderKampoList();renderKampoIngredientOptions();renderKampoPreview()}if(tab==='cutInfo')renderCutInfo();if(tab==='kampoQuiz')renderKampoQuizProgress();if(tab==='mockExam')renderMockExam();if(tab==='kampoInfo')renderKampoInfo();if(tab==='info')renderHerbInfo();if(tab==='compare'){renderCompare();loadComparePairs()}if(tab==='progress')renderLearningProgress();if(tab==='backup')$('backupStatus').textContent='学習履歴はこの端末のブラウザに保存されています。';appStoreView()}
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>switchTab(b.dataset.tab)));
 
 // 登録済みの一覧を初期表示。登録・編集フォームは必要なときのみ開く。
@@ -1817,7 +1833,7 @@ async function checkAnswer(id,answerMode){
   }
  }
  const maxScore=answerMode==='name'?2:(isChoice?7:6);
- const beforeStats=JSON.stringify(db);const s=statFor(id),attemptOK=answerMode==='name'?score===2:(isChoice?(score===7||(usePartialCorrect&&nonUseScore===5)):score===6);s.seen++;if(attemptOK){s.right++;s.streak++;s.reviewCleared=true}else{s.wrong++;s.streak=0;s.reviewCleared=false}reviewRecord(s,attemptOK);s.score=(s.score||0)+score;db.attempts++;if(attemptOK)db.correct++;db.totalScore=(db.totalScore||0)+score;if(!await save()){db=JSON.parse(beforeStats);answered=false;return}updateStats();
+ const beforeStats=JSON.stringify(db);const s=statFor(id);recordFieldAnalysis(s,isChoice?'choice':'written',normalFieldScores(h,answerMode,isChoice));const attemptOK=answerMode==='name'?score===2:(isChoice?(score===7||(usePartialCorrect&&nonUseScore===5)):score===6);s.seen++;if(attemptOK){s.right++;s.streak++;s.reviewCleared=true}else{s.wrong++;s.streak=0;s.reviewCleared=false}reviewRecord(s,attemptOK);s.score=(s.score||0)+score;db.attempts++;if(attemptOK)db.correct++;db.totalScore=(db.totalScore||0)+score;if(!await save()){db=JSON.parse(beforeStats);answered=false;return}updateStats();
  const detail=[h.part?`<b>薬用部位：</b>${escapeHtml(h.part)}`:'',h.notes?`<b>補足：</b><br>${escapeHtml(h.notes).replace(/\n/g,'<br>')}`:''].filter(Boolean).join('<br>');
  $('result').innerHTML=`<div class="feedback ${score>=(isChoice?(answerMode==='name'?2:6):maxScore)?'good':(score===0?'bad':'')}"><div class="scoreline">得点：${score}点／${maxScore}点</div><p><b>採点結果</b></p><ul>${lines.map(x=>`<li>${x}</li>`).join('')}</ul><hr><p><b>正解データ</b><br>生薬名：${escapeHtml(h.japaneseName||'未登録')} ／ ${escapeHtml(h.latinName||'未登録')}<br>基原植物：${escapeHtml(h.originLatin||'未登録')}（${escapeHtml(h.originJapanese||'未登録')}）<br>科名：${escapeHtml(h.familyLatin||'未登録')}（${escapeHtml(h.familyJapanese||'未登録')}）<br>主成分：${escapeHtml(h.constituents||'未登録')}<br>用途：${escapeHtml((h.uses||[]).join('、')||'未登録')}</p>${detail?'<hr>'+detail:''}<p class="muted">この生薬：正解 ${s.right} 回・不正解 ${s.wrong} 回・累計得点 ${s.score||0} 点 ／ ${escapeHtml(reviewDateText(s,!attemptOK))}</p></div><div class="answer-actions result-actions"><button class="primary" type="button" onclick="nextQuestion()">次の問題</button><button class="secondary end-quiz-button" type="button" onclick="endQuiz()">終了</button>${isAdmin?`<button class="secondary" onclick="editHerb('${h.id}')">この原型生薬を編集</button>`:""}</div>`;
  // 採点後は「次の問題」の下にある終了ボタンだけを表示する。
@@ -2108,7 +2124,7 @@ function cutPhotoHtml(photo,mode='quiz'){
 }
 function cutRubyHtml(h){const name=escapeHtml(h.name||''),reading=escapeHtml(h.reading||'');return reading?`<ruby>${name}<rt>${reading}</rt></ruby>`:name}
 // 同名検索ではなく「登録日時」の昇順で一貫して表示し、編集時は順番を維持。
-async function refreshCutHerbs(){const {data,error}=await client.from('cut_herbs').select('id,name,reading,images,created_at').order('created_at',{ascending:true}).order('id',{ascending:true});if(error)throw error;cutHerbs=data||[];renderStudyDashboard();renderCutList();renderKampoIngredientOptions();if($('kampoManage')&&!$('kampoManage').classList.contains('hidden')){renderKampoPreview();renderKampoList()} if(!$('cutInfo').classList.contains('hidden'))renderCutInfo();if(!$('progress').classList.contains('hidden'))renderLearningProgress();if($('kampoInfo')&&!$('kampoInfo').classList.contains('hidden'))renderKampoInfo();}
+async function refreshCutHerbs(){const {data,error}=await client.from('cut_herbs').select('id,name,reading,images,created_at').order('created_at',{ascending:true}).order('id',{ascending:true});if(error)throw error;cutHerbs=data||[];if(!$('compare').classList.contains('hidden'))renderCompare();renderStudyDashboard();renderCutList();renderKampoIngredientOptions();if($('kampoManage')&&!$('kampoManage').classList.contains('hidden')){renderKampoPreview();renderKampoList()} if(!$('cutInfo').classList.contains('hidden'))renderCutInfo();if(!$('progress').classList.contains('hidden'))renderLearningProgress();if($('kampoInfo')&&!$('kampoInfo').classList.contains('hidden'))renderKampoInfo();}
 let cutEditingPhotoIndex=-1;
 function resetCutForm(){$('cutForm').reset();$('cutEditId').value='';cutStaged=[];cutEditingPhotoIndex=-1;$('cutMaskEditor').classList.add('hidden');$('cutFormTitle').textContent='刻み生薬を新規登録';renderCutPhotos()}
 function renderCutPhotos(){
@@ -2320,7 +2336,7 @@ function resetKampoForm(){
 async function refreshKampoFormulas(){
   const {data,error}=await client.from('kampo_formulas').select('id,name,ingredients,created_at').order('created_at',{ascending:true});
   if(error)throw error;
-  kampoFormulas=data||[];kampoLoadError='';renderStudyDashboard();renderKampoList();renderKampoQuizProgress();renderKampoInfo();if(!$('progress').classList.contains('hidden'))renderLearningProgress();if(!$('mockExam').classList.contains('hidden'))renderMockExam();
+  kampoFormulas=data||[];kampoLoadError='';if(!$('compare').classList.contains('hidden'))renderCompare();renderStudyDashboard();renderKampoList();renderKampoQuizProgress();renderKampoInfo();if(!$('progress').classList.contains('hidden'))renderLearningProgress();if(!$('mockExam').classList.contains('hidden'))renderMockExam();
 }
 function renderKampoList(){
  const root=$('kampoList');if(!root)return;
@@ -2995,6 +3011,91 @@ $('learningRestoreInput').addEventListener('change',e=>backupPreviewLearningFile
 $('restoreLearningBtn').addEventListener('click',backupRestoreLearning);
 $('restoreSharedInput').addEventListener('change',e=>backupPreviewSharedFile(e.target.files[0]));
 $('restoreSharedBtn').addEventListener('click',backupRestoreShared);
+
+// 項目別の判定は総得点とは独立し、既存の学習履歴と一緒に保存する。
+const FIELD_ANALYSIS_NAMES=['生薬名（和名）','生薬ラテン名','基原植物','科名','主成分','用途'];
+function normalFieldScores(h,mode,choice){
+ const scores=[Number(exactAnswer($('answerJapanese').value,[h.japaneseName])),Number(exactAnswer($('answerLatin').value,[h.latinName]))];
+ if(mode==='name')return scores;
+ const origin=$('answerOrigin').value,family=$('answerFamily').value;
+ scores.push(exactAnswer(origin,choice?splitScientificNames(h.originLatin):[h.originLatin])?1:!choice&&exactAnswer(origin,[h.originJapanese])?.5:0);
+ scores.push(exactAnswer(family,[h.familyLatin])?1:!choice&&exactAnswer(family,[h.familyJapanese])?.5:0);
+ scores.push(Number(exactAnswer($('answerConstituents').value,choice?[selectedConstituent]:splitAliases(h.constituents))));
+ if(choice){const got=[...document.querySelectorAll('input[name="useChoice"]:checked')].map(x=>normalizeUse(x.value)),expected=(currentUseCorrect||[]).map(normalizeUse);scores.push(got.length&&expected.length&&got.every(x=>expected.includes(x))?(expected.every(x=>got.includes(x))?1:.5):0)}
+ else scores.push(Number(isWrittenUseCorrect($('answerUses').value.trim(),h.uses)));
+ return scores;
+}
+function fieldCounter(v){const count=n=>Number.isFinite(Number(n))?Math.max(0,Math.floor(Number(n))):0;const seen=count(v?.seen),right=Math.min(seen,count(v?.right));return {seen,right,partial:Math.min(seen-right,count(v?.partial))}}
+function recordFieldAnalysis(stat,mode,scores){
+ if(!Array.isArray(scores))return;
+ const root=stat.fieldAnalysis&&typeof stat.fieldAnalysis==='object'?stat.fieldAnalysis:{};
+ const fields=Array.isArray(root[mode])?root[mode]:[];
+ scores.forEach((score,i)=>{if(i>=6||!Number.isFinite(score))return;const n=fieldCounter(fields[i]);n.seen++;if(score===1)n.right++;else if(score>0)n.partial++;fields[i]=n});root[mode]=fields;stat.fieldAnalysis=root;
+}
+function renderFieldAnalysis(){
+ const box=$('fieldAnalysisContent');if(!box)return;
+ const mode=$('fieldAnalysisMode').value,modes=mode==='all'?['written','choice','mock']:[mode];
+ const stats=FIELD_ANALYSIS_NAMES.map((name,i)=>{let seen=0,right=0,partial=0;const misses=[];
+ for(const herb of db.herbs){let hs=0,hr=0;for(const m of modes){const n=fieldCounter(db.stats[herb.id]?.fieldAnalysis?.[m]?.[i]);seen+=n.seen;right+=n.right;partial+=n.partial;hs+=n.seen;hr+=n.right}if(hs>hr)misses.push({name:herb.japaneseName,wrong:hs-hr})}
+ return {name,seen,right,partial,misses:misses.sort((a,b)=>b.wrong-a.wrong).slice(0,3)} });
+ if(!stats.some(x=>x.seen)){box.innerHTML='<p class="empty">項目別の記録はまだありません。今回の更新後に解いた問題から集計します。</p>';return}
+ box.innerHTML=stats.map(x=>{const pct=x.seen?Math.round(x.right/x.seen*100):0;return `<div class="field-analysis-row"><div class="field-analysis-head"><b>${x.name}</b><strong>${x.seen?pct+'%':'—'}</strong></div><div class="field-analysis-bar"><i class="${pct<60?'low':''}" style="width:${pct}%"></i></div><small class="muted">${x.seen?`完全正答 ${x.right}/${x.seen}回・部分正解 ${x.partial}回`:'未解答'}</small>${x.misses.length?`<small class="muted">要確認：${x.misses.map(h=>escapeHtml(h.name)+'（'+h.wrong+'回）').join('・')}</small>`:''}</div>`}).join('');
+}
+$('fieldAnalysisMode').addEventListener('change',renderFieldAnalysis);
+// 同じ種類の登録済み生薬を比較。管理者による組み合わせのみ共有DBへ保存。
+let compareKind='herb',compareIds=['',''],comparePhotoIndex=[0,0],comparePairs=[],comparePairsState='idle',compareLoading=false,compareSaving=false;
+function compareRows(kind=compareKind){return kind==='herb'?db.herbs:cutHerbs}
+function compareName(h){return h.japaneseName||h.name||'名称未登録'}
+function compareFind(id,kind=compareKind){return compareRows(kind).find(h=>String(h.id)===String(id))}
+function comparePairKey(){return [...compareIds].map(String).sort()}
+function compareCurrentPair(){const [a,b]=comparePairKey();return comparePairs.find(r=>r.kind===compareKind&&r.left_id===a&&r.right_id===b)}
+function comparePhotos(h){return !h?[]:compareKind==='herb'?(h.images||[]).filter(x=>typeof x==='string'&&x):cutImages(h).map(x=>x.url)}
+function renderCompare(resetNote=false){
+ document.querySelectorAll('[data-compare-kind]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.compareKind===compareKind)));
+ const list=compareRows().slice().sort((a,b)=>compareName(a).localeCompare(compareName(b),'ja'));
+ for(let i=0;i<2;i++){const el=$(i?'compareRight':'compareLeft');if(!compareFind(compareIds[i]))compareIds[i]='';el.innerHTML='<option value="">選択してください</option>'+list.map(h=>`<option value="${escapeHtml(h.id)}">${escapeHtml(compareName(h))}${compareKind==='cut'&&h.reading?'（'+escapeHtml(h.reading)+'）':''}</option>`).join('');el.value=compareIds[i]}
+ $('compareAdmin').classList.toggle('hidden',!isAdmin);$('compareSave').disabled=!isAdmin||compareSaving||comparePairsState!=='ready'||!compareIds.every(Boolean)||compareIds[0]===compareIds[1];
+ renderComparePairs();renderCompareResult();if(resetNote)$('compareNote').value=compareCurrentPair()?.note||'';
+}
+function renderComparePairs(){
+ const root=$('comparePairList');if(comparePairsState==='idle'||comparePairsState==='loading'){root.textContent='読み込み中…';return}
+ if(comparePairsState==='error'){root.innerHTML='<p class="muted small">共有の類似生薬一覧を取得できません。自由比較は利用できます。管理者は初回のSupabase設定・接続状況をご確認ください。</p><button type="button" class="secondary" data-compare-reload>再読み込み</button>';return}
+ const pairs=comparePairs.filter(r=>r.kind===compareKind&&compareFind(r.left_id)&&compareFind(r.right_id));
+ root.innerHTML=pairs.length?pairs.map((r,i)=>`<div class="compare-pair"><button type="button" class="secondary" data-compare-pair="${comparePairs.indexOf(r)}">${escapeHtml(compareName(compareFind(r.left_id)))} ／ ${escapeHtml(compareName(compareFind(r.right_id)))} ›</button>${isAdmin?`<button type="button" class="secondary" data-compare-delete="${comparePairs.indexOf(r)}" ${compareSaving?'disabled':''}>削除</button>`:''}</div>`).join(''):'<p class="muted small">登録済みの組み合わせはありません。</p>';
+}
+function renderCompareResult(){
+ const box=$('compareResult'),herbs=compareIds.map(id=>compareFind(id));
+ if(!herbs.every(Boolean)||compareIds[0]===compareIds[1]){box.innerHTML='<p class="empty">異なる2種類の生薬を選択してください。</p>';return}
+ const photos=herbs.map(comparePhotos);
+ const gallery=herbs.map((h,i)=>{const imgs=photos[i],index=Math.max(0,Math.min(comparePhotoIndex[i],imgs.length-1));comparePhotoIndex[i]=index;return `<article class="compare-photo"><h3>${escapeHtml(compareName(h))}</h3>${imgs.length?`<button type="button" class="secondary" data-compare-zoom="${i}" aria-label="${escapeHtml(compareName(h))}の写真を拡大"><img src="${escapeHtml(imgs[index])}" alt="${escapeHtml(compareName(h))}"></button><p class="muted small">${index+1}/${imgs.length}枚・タップで拡大</p><div class="compare-photo-nav"><button type="button" class="secondary" data-compare-prev="${i}" ${index===0?'disabled':''}>‹ 前</button><button type="button" class="secondary" data-compare-next="${i}" ${index>=imgs.length-1?'disabled':''}>次 ›</button></div>`:'<p class="muted">写真未登録</p>'}</article>`}).join('');
+ const fields=compareKind==='herb'?[['生薬ラテン名',h=>h.latinName],['基原植物',h=>[h.originLatin,h.originJapanese].filter(Boolean).join('\n')],['科名',h=>[h.familyLatin,h.familyJapanese].filter(Boolean).join('\n')],['主成分',h=>h.constituents],['用途',h=>(h.uses||[]).join('、')],['薬用部位',h=>h.part],['補足',h=>h.notes]]:[['読みがな',h=>h.reading],['含まれる漢方処方',h=>kampoFormulas.filter(f=>kampoNormalizedIngredients(f).some(n=>normalizeCutHerbName(n)===normalizeCutHerbName(h.name))).map(f=>f.name).join('、')]];
+ const pair=compareCurrentPair();box.innerHTML=`<div class="compare-grid">${gallery}</div>${pair?.note?`<div class="compare-note"><b>識別のポイント</b>\n${escapeHtml(pair.note)}</div>`:''}${fields.map(([label,get])=>`<div class="compare-field"><strong>${label}</strong><div class="compare-grid">${herbs.map(h=>`<div>${escapeHtml(get(h)||'未登録')}</div>`).join('')}</div></div>`).join('')}`;
+}
+async function loadComparePairs(){
+ if(compareLoading)return;compareLoading=true;comparePairsState='loading';renderCompare();
+ try{if(!client)throw new Error('未接続');const {data,error}=await client.from('similar_herbs').select('kind,left_id,right_id,note');if(error)throw error;comparePairs=(data||[]).filter(r=>['herb','cut'].includes(r.kind));comparePairsState='ready'}catch(e){comparePairsState='error';console.warn('類似生薬の読み込みに失敗',e)}finally{compareLoading=false;renderCompare(true)}
+}
+async function writeComparePair(remove){
+ if(!isAdmin||compareSaving||comparePairsState!=='ready')return;
+ const [a,b]=comparePairKey(),row=remove||{kind:compareKind,left_id:a,right_id:b,note:$('compareNote').value.trim()};
+ if(!remove&&(!a||!b||a===b||!compareFind(a)||!compareFind(b)))return;
+ if(remove&&!confirm('この類似生薬の組み合わせを削除しますか？ 生薬本体は削除しません。'))return;
+ compareSaving=true;renderCompare();$('compareMessage').textContent='保存中…';
+ try{const query=remove?client.from('similar_herbs').delete().eq('kind',row.kind).eq('left_id',row.left_id).eq('right_id',row.right_id):client.from('similar_herbs').upsert(row,{onConflict:'kind,left_id,right_id'});const {error}=await query;if(error)throw error;await loadComparePairs();$('compareMessage').textContent=remove?'組み合わせを削除しました。':'組み合わせを保存しました。'}catch(e){$('compareMessage').textContent='操作に失敗しました：'+(e.message||String(e))}finally{compareSaving=false;renderCompare()}
+}
+$('compareLeft').addEventListener('change',e=>{compareIds[0]=e.target.value;comparePhotoIndex[0]=0;renderCompare(true)});
+$('compareRight').addEventListener('change',e=>{compareIds[1]=e.target.value;comparePhotoIndex[1]=0;renderCompare(true)});
+$('compare').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+ if(b.dataset.compareKind){compareKind=b.dataset.compareKind;compareIds=['',''];comparePhotoIndex=[0,0];renderCompare(true);return}
+ if(b.hasAttribute('data-compare-pair')){const r=comparePairs[Number(b.dataset.comparePair)];if(r){compareIds=[r.left_id,r.right_id];comparePhotoIndex=[0,0];renderCompare(true)}return}
+ if(b.hasAttribute('data-compare-delete')){const row=comparePairs[Number(b.dataset.compareDelete)];if(row)writeComparePair(row);return}
+ if(b.hasAttribute('data-compare-reload')){loadComparePairs();return}
+ if(b.id==='compareSave'){writeComparePair();return}
+ if(b.hasAttribute('data-compare-prev')){comparePhotoIndex[Number(b.dataset.comparePrev)]--;renderCompareResult();return}
+ if(b.hasAttribute('data-compare-next')){comparePhotoIndex[Number(b.dataset.compareNext)]++;renderCompareResult();return}
+ if(b.hasAttribute('data-compare-zoom')){const i=Number(b.dataset.compareZoom),h=compareFind(compareIds[i]);if(h)openInfoPhotoViewer(comparePhotos(h)[comparePhotoIndex[i]],compareName(h));}
+});
+$('adminCompareLink').addEventListener('click',()=>{if(isAdmin){switchTab('compare');$('compare').scrollIntoView({block:'start'})}});
 
 appViewReady=true;appStoreView('replace');
 renderStudyDashboard();
