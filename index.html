@@ -719,9 +719,6 @@ section.panel form .editor-actions button{min-height:49px}
 .compare-dual-select select{min-width:0;flex:1;max-width:260px;background:#2c4033;color:white;padding:5px 6px;font-size:.8rem}
 .compare-dual-select label{font-size:.72rem}
 @media(max-width:420px){.compare-viewer .viewer-footer{gap:4px}.compare-viewer .viewer-footer button{padding:7px 6px;font-size:.75rem}.compare-dual-photo{min-width:0}}
-.review-confidence{margin:12px 0;padding:10px 12px;border-radius:11px;border:1px solid var(--line);background:#f7faf6}
-.review-confidence label{display:block;margin-bottom:4px}
-.review-confidence select{max-width:430px}
 .field-focus-hint{padding:10px;background:#f1f7f1;border:1px solid #cfe4d2;border-radius:10px;margin:10px 0}
 .progress-weak-ranking{display:grid;gap:7px;margin:9px 0 18px}
 .progress-rank-row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:9px 10px;border-radius:9px;background:#f5f8f5}
@@ -1366,8 +1363,6 @@ $('infoPhotoViewer').addEventListener('close',()=>{document.documentElement.styl
 // ネイティブの dialog の Android 戻るも、同一アプリ内の履歴へ戻す。
 $('kampoPhotoViewer').addEventListener('cancel',e=>{e.preventDefault();appBackFromViewer('kampo')});
 
-function quizConfidenceRead(formId){const v=document.querySelector(`#${formId} [name="answerConfidence"]`)?.value;return ['certain','unsure','guess'].includes(v)?v:null}
-function quizConfidenceRecord(stat,v){if(!v)return;const a=stat.confidence&&typeof stat.confidence==='object'?stat.confidence:{};a[v]=(Number(a[v])||0)+1;stat.confidence=a}
 function setStatus(text,bad=false){const el=$('connectionState');el.textContent=text;el.classList.toggle('error',bad)}
 function readKampoProgress(){try{const data=JSON.parse(localStorage.getItem(KAMPO_PROGRESS_KEY)||'{}');return data&&typeof data==='object'&&!Array.isArray(data)?data:{}}catch(e){return {}}}
 function saveKampoProgress(){try{localStorage.setItem(KAMPO_PROGRESS_KEY,JSON.stringify(kampoProgress));return true}catch(err){alert('漢方処方の学習履歴を保存できません。端末の空き容量やブラウザ設定を確認してください。');return false}}
@@ -2093,7 +2088,7 @@ function nextQuestion(){
    form=choiceField('answerJapanese','① 生薬名・和名（1点）','japaneseName',h)+choiceField('answerLatin','① 生薬名・ラテン名（1点）','latinName',h);
    if(answerMode==='full')form+=choiceField('answerOrigin','② 基原植物・ラテン名（1点）','originLatin',h)+choiceField('answerFamily','③ 科名・ラテン名（1点）','familyLatin',h)+choiceField('answerConstituents','④ 主成分（1点）','constituents',h)+'<div class="field"><label>⑤ 用途（複数選択・最大2点）</label><div id="useOptions" class="check-grid"></div><span class="muted small">正しい用途を1つ以上選べば1点、正解をすべて選べば2点です（誤答を1つでも含む場合は0点）。</span></div>';
   }else selectedConstituent='';
- $('quizArea').innerHTML=`<div><span class="pill">${({weak:'苦手復習',due:'今日の復習',priority:'重点復習',random:'ランダム出題',field:'回答項目別復習'})[mode]||'ランダム出題'}</span><span class="pill">${answerMode==='name'?'生薬名モード':`総合モード・${maxScore}点満点`}</span><span class="pill">${$('inputStyle').value==='choice'?'選択式':'記述式'}</span><span class="pill">登録 ${db.herbs.length} 種</span>${mode==='field'?`<span class="pill">重点：${FIELD_ANALYSIS_NAMES[focusField]}</span>`:''}</div>${mode==='random'?`<p class="muted small random-cycle-status">${randomCycleNotice(pool,'herb','種')}</p>`:''}<img class="question-image" src="${escapeHtml(chosen)}" alt="識別する生薬の写真"><div id="extraPhotos" class="gallery"></div><form id="answerForm">${form}<div class="review-confidence"><label>回答への自信（任意）</label><select name="answerConfidence" aria-label="回答への自信"><option value="">記録しない</option><option value="certain">自信あり</option><option value="unsure">迷った</option><option value="guess">勘で答えた</option></select></div><div class="answer-actions"><button class="primary" type="submit">採点する</button><button class="secondary" type="button" onclick="endQuiz()">終了</button></div></form><div id="result"></div>`;
+ $('quizArea').innerHTML=`<div><span class="pill">${({weak:'苦手復習',due:'今日の復習',priority:'重点復習',random:'ランダム出題',field:'回答項目別復習'})[mode]||'ランダム出題'}</span><span class="pill">${answerMode==='name'?'生薬名モード':`総合モード・${maxScore}点満点`}</span><span class="pill">${$('inputStyle').value==='choice'?'選択式':'記述式'}</span><span class="pill">登録 ${db.herbs.length} 種</span>${mode==='field'?`<span class="pill">重点：${FIELD_ANALYSIS_NAMES[focusField]}</span>`:''}</div>${mode==='random'?`<p class="muted small random-cycle-status">${randomCycleNotice(pool,'herb','種')}</p>`:''}<img class="question-image" src="${escapeHtml(chosen)}" alt="識別する生薬の写真"><div id="extraPhotos" class="gallery"></div><form id="answerForm">${form}<div class="answer-actions"><button class="primary" type="submit">採点する</button><button class="secondary" type="button" onclick="endQuiz()">終了</button></div></form><div id="result"></div>`;
  const extra=$('extraPhotos');images.filter(src=>src!==chosen).slice(0,3).forEach(src=>{const im=document.createElement('img');im.src=src;im.alt='同じ生薬の別写真';extra.appendChild(im)});
  if(answerMode==='full'&&isChoice)renderUseOptions(h);
  $('answerForm').addEventListener('submit',e=>{e.preventDefault();checkAnswer(h.id,answerMode)});
@@ -2176,7 +2171,7 @@ async function checkAnswer(id,answerMode){
   }
  }
  const maxScore=answerMode==='name'?2:(isChoice?7:6);
- const beforeStats=JSON.stringify(db);const s=statFor(id);recordFieldAnalysis(s,isChoice?'choice':'written',normalFieldScores(h,answerMode,isChoice));const attemptOK=answerMode==='name'?score===2:(isChoice?(score===7||(usePartialCorrect&&nonUseScore===5)):score===6);s.seen++;if(attemptOK){s.right++;s.streak++;s.reviewCleared=true}else{s.wrong++;s.streak=0;s.reviewCleared=false}reviewRecord(s,attemptOK);quizConfidenceRecord(s,quizConfidenceRead('answerForm'));s.score=(s.score||0)+score;db.attempts++;if(attemptOK)db.correct++;db.totalScore=(db.totalScore||0)+score;if(!await save()){db=JSON.parse(beforeStats);answered=false;return}updateStats();
+ const beforeStats=JSON.stringify(db);const s=statFor(id);recordFieldAnalysis(s,isChoice?'choice':'written',normalFieldScores(h,answerMode,isChoice));const attemptOK=answerMode==='name'?score===2:(isChoice?(score===7||(usePartialCorrect&&nonUseScore===5)):score===6);s.seen++;if(attemptOK){s.right++;s.streak++;s.reviewCleared=true}else{s.wrong++;s.streak=0;s.reviewCleared=false}reviewRecord(s,attemptOK);s.score=(s.score||0)+score;db.attempts++;if(attemptOK)db.correct++;db.totalScore=(db.totalScore||0)+score;if(!await save()){db=JSON.parse(beforeStats);answered=false;return}updateStats();
  const detail=[h.part?`<b>薬用部位：</b>${escapeHtml(h.part)}`:'',h.notes?`<b>補足：</b><br>${escapeHtml(h.notes).replace(/\n/g,'<br>')}`:''].filter(Boolean).join('<br>');
  $('result').innerHTML=`<div class="feedback ${score>=(isChoice?(answerMode==='name'?2:6):maxScore)?'good':(score===0?'bad':'')}"><div class="scoreline">得点：${score}点／${maxScore}点</div><p><b>採点結果</b></p><ul>${lines.map(x=>`<li>${x}</li>`).join('')}</ul><hr><p><b>正解データ</b><br>生薬名：${escapeHtml(h.japaneseName||'未登録')} ／ ${escapeHtml(h.latinName||'未登録')}<br>基原植物：${escapeHtml(h.originLatin||'未登録')}（${escapeHtml(h.originJapanese||'未登録')}）<br>科名：${escapeHtml(h.familyLatin||'未登録')}（${escapeHtml(h.familyJapanese||'未登録')}）<br>主成分：${escapeHtml(h.constituents||'未登録')}<br>用途：${escapeHtml((h.uses||[]).join('、')||'未登録')}</p>${detail?'<hr>'+detail:''}<p class="muted">この生薬：正解 ${s.right} 回・不正解 ${s.wrong} 回・累計得点 ${s.score||0} 点 ／ ${escapeHtml(reviewDateText(s,!attemptOK))}</p></div><div class="answer-actions result-actions"><button class="primary" type="button" onclick="nextQuestion()">次の問題</button><button class="secondary end-quiz-button" type="button" onclick="endQuiz()">終了</button>${!attemptOK&&compareGroupWithHerb('herb',h.id,ja)?`<button class="secondary" type="button" data-quiz-compare-kind="herb" data-quiz-compare-id="${escapeHtml(h.id)}" data-quiz-compare-wrong="${escapeHtml(ja)}">類似生薬と比較する</button>`:''}${isAdmin?`<button class="secondary" onclick="editHerb('${h.id}')">この原型生薬を編集</button>`:""}</div>`;
  // 採点後は「次の問題」の下にある終了ボタンだけを表示する。
@@ -2632,14 +2627,14 @@ function nextCutQuestion(){
     const names=shuffleValues([h.name,...shuffleValues(distinctValues(cutHerbs.filter(x=>x.id!==h.id).map(x=>x.name))).slice(0,5)]);
     input=`<select id="cutAnswer" required><option value="">選択してください</option>${names.map(n=>`<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('')}</select>`;
   }
-  $('cutQuizArea').innerHTML=(mode==='random'?`<p class="muted small random-cycle-status">${randomCycleNotice(pool,'cut','種')}</p>`:'')+cutPhotoHtml(photo)+`<form id="cutAnswerForm"><div class="field"><label for="cutAnswer">この刻み生薬の名前は？</label>${input}</div><div class="review-confidence"><label>回答への自信（任意）</label><select name="answerConfidence" aria-label="回答への自信"><option value="">記録しない</option><option value="certain">自信あり</option><option value="unsure">迷った</option><option value="guess">勘で答えた</option></select></div><div class="answer-actions"><button class="primary" type="submit">採点する</button><button class="secondary" type="button" onclick="cutIdle()">終了</button></div></form><div id="cutResult"></div>`;
+  $('cutQuizArea').innerHTML=(mode==='random'?`<p class="muted small random-cycle-status">${randomCycleNotice(pool,'cut','種')}</p>`:'')+cutPhotoHtml(photo)+`<form id="cutAnswerForm"><div class="field"><label for="cutAnswer">この刻み生薬の名前は？</label>${input}</div><div class="answer-actions"><button class="primary" type="submit">採点する</button><button class="secondary" type="button" onclick="cutIdle()">終了</button></div></form><div id="cutResult"></div>`;
   $('cutAnswerForm').addEventListener('submit',e=>{e.preventDefault();checkCutAnswer()});
 }
 function checkCutAnswer(){
   if(cutAnswered||!cutCurrent)return;cutAnswered=true;
   const h=cutCurrent,ok=cutHerbNameMatches($('cutAnswer').value,[h.name]),stats=cutProgress(),s=stats[h.id]||{right:0,wrong:0};
   if(ok){s.right++;s.cleared=true}else{s.wrong++;s.cleared=false}
-  reviewRecord(s,ok);quizConfidenceRecord(s,quizConfidenceRead('cutAnswerForm'));stats[h.id]=s;try{localStorage.setItem(CUT_STATS_KEY,JSON.stringify(stats))}catch(e){console.warn(e)}
+  reviewRecord(s,ok);stats[h.id]=s;try{localStorage.setItem(CUT_STATS_KEY,JSON.stringify(stats))}catch(e){console.warn(e)}
   // 採点後は覆いを取り除き、元の写真に写っているラベルを一斉に見せる。
   $('cutQuizArea').querySelectorAll('.cut-mask').forEach(mask=>mask.classList.add('revealed'));
   $('cutResult').innerHTML=`<div class="feedback ${ok?'good':'bad'} cut-result"><b>${ok?'正解':'不正解'}</b><p>正解：${cutRubyHtml(h)}</p><p class="muted">この生薬：正解 ${s.right} 回／不正解 ${s.wrong} 回 ／ ${escapeHtml(reviewDateText(s,!ok))}</p></div><div class="answer-actions result-actions">${!ok&&compareGroupWithHerb('cut',h.id)?`<button type="button" class="secondary" data-quiz-compare-kind="cut" data-quiz-compare-id="${escapeHtml(h.id)}">類似生薬と比較する</button>`:''}<button class="primary" onclick="nextCutQuestion()">次の問題</button><button class="secondary end-quiz-button" onclick="cutIdle()">終了</button></div>`;
@@ -3004,7 +2999,7 @@ function nextKampoQuestion(){
     }else{
       answerHtml='<div class="field"><label for="kampoWrittenIngredients">構成生薬をすべて入力してください</label><textarea id="kampoWrittenIngredients" rows="4" autocomplete="off" placeholder="生薬名を「、」または改行で区切って入力"></textarea><span class="muted small">入力順序は自由です。生薬名の重複入力は1種類として扱います。</span></div>';
     }
-    $('kampoQuizArea').innerHTML=`<div class="kampo-question"><span class="pill">構成生薬クイズ</span><h3>${escapeHtml(formula.name)}</h3><p>この漢方処方の構成生薬をすべて答えなさい。</p></div><form id="kampoAnswerForm">${answerHtml}<div class="review-confidence"><label>回答への自信（任意）</label><select name="answerConfidence" aria-label="回答への自信"><option value="">記録しない</option><option value="certain">自信あり</option><option value="unsure">迷った</option><option value="guess">勘で答えた</option></select></div><div class="answer-actions"><button class="primary" type="submit">採点する</button><button type="button" class="secondary" onclick="endKampoQuiz()">終了</button></div></form><div id="kampoResult" aria-live="polite"></div>`;
+    $('kampoQuizArea').innerHTML=`<div class="kampo-question"><span class="pill">構成生薬クイズ</span><h3>${escapeHtml(formula.name)}</h3><p>この漢方処方の構成生薬をすべて答えなさい。</p></div><form id="kampoAnswerForm">${answerHtml}<div class="answer-actions"><button class="primary" type="submit">採点する</button><button type="button" class="secondary" onclick="endKampoQuiz()">終了</button></div></form><div id="kampoResult" aria-live="polite"></div>`;
   }else{
     const entries=kampoUsablePhotos(formula,config.difficulty);
     if(!entries){$('kampoQuizArea').innerHTML='<div class="empty">この処方には写真が不足しています。</div>';return}
@@ -3016,7 +3011,7 @@ function nextKampoQuestion(){
       const names=shuffleValues([formula.name,...shuffleValues(otherNames).slice(0,5)]);
       answerHtml=`<div class="field"><label for="kampoPhotoAnswerChoice">漢方処方名を選択してください</label><select id="kampoPhotoAnswerChoice" required><option value="">選択してください</option>${names.map(x=>`<option value="${escapeHtml(x)}">${escapeHtml(x)}</option>`).join('')}</select></div>`;
     }else answerHtml='<div class="field"><label for="kampoPhotoAnswerWritten">漢方処方名を入力してください</label><input id="kampoPhotoAnswerWritten" autocomplete="off" placeholder="漢方処方名を入力" required></div>';
-    $('kampoQuizArea').innerHTML=`<div class="kampo-question"><span class="pill">写真識別・${config.difficulty==='beginner'?'初級':'上級'}</span><p>写真に写っている生薬で構成される漢方処方名を答えなさい。</p></div><p class="kampo-photo-zoom-hint" role="note"><strong>写真をタップすると拡大できます。</strong><span>拡大画面ではピンチ操作や＋／－ボタンで拡大・縮小できます。</span></p><div class="kampo-quiz-photos${chosenPhotos.length>=5?' is-many':''}">${photoCards}</div><form id="kampoAnswerForm">${answerHtml}<div class="review-confidence"><label>回答への自信（任意）</label><select name="answerConfidence" aria-label="回答への自信"><option value="">記録しない</option><option value="certain">自信あり</option><option value="unsure">迷った</option><option value="guess">勘で答えた</option></select></div><div class="answer-actions"><button type="submit" class="primary">採点する</button><button type="button" class="secondary" onclick="endKampoQuiz()">終了</button></div></form><div id="kampoResult" aria-live="polite"></div>`;
+    $('kampoQuizArea').innerHTML=`<div class="kampo-question"><span class="pill">写真識別・${config.difficulty==='beginner'?'初級':'上級'}</span><p>写真に写っている生薬で構成される漢方処方名を答えなさい。</p></div><p class="kampo-photo-zoom-hint" role="note"><strong>写真をタップすると拡大できます。</strong><span>拡大画面ではピンチ操作や＋／－ボタンで拡大・縮小できます。</span></p><div class="kampo-quiz-photos${chosenPhotos.length>=5?' is-many':''}">${photoCards}</div><form id="kampoAnswerForm">${answerHtml}<div class="answer-actions"><button type="submit" class="primary">採点する</button><button type="button" class="secondary" onclick="endKampoQuiz()">終了</button></div></form><div id="kampoResult" aria-live="polite"></div>`;
   }
   kampoCurrent={formula,ingredients,config,chosenPhotos};
   $('kampoAnswerForm').addEventListener('submit',e=>{e.preventDefault();checkKampoAnswer()});
@@ -3047,7 +3042,7 @@ function checkKampoAnswer(){
   const key=kampoStatKey(formula.id,config.type,config.style,config.difficulty),old=kampoProgress[key]||{seen:0,perfect:0};
   const snapshot={...old};
   const next={...old,seen:(old.seen||0)+1,perfect:(old.perfect||0)+(perfect?1:0),lastPerfect:perfect};
-  reviewRecord(next,perfect);quizConfidenceRecord(next,quizConfidenceRead('kampoAnswerForm'));
+  reviewRecord(next,perfect);
   if(config.type==='ingredients'){
     const ingredientStats={...(old.ingredientStats||{})};
     for(const name of missingIngredients){const key=normalizeCutHerbName(name),item=ingredientStats[key]||{name,missed:0,correct:0};ingredientStats[key]={...item,name,missed:progressNumber(item.missed)+1}}
