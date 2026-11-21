@@ -577,7 +577,7 @@ section.panel form .editor-actions button{min-height:49px}
 .compare-pick-option input{flex:none;width:18px;height:18px;accent-color:var(--green);margin:0}
 .compare-pick-option span{min-width:0;overflow-wrap:anywhere}
 .compare-selected-head,.compare-editor-title{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:10px 0 8px}
-.compare-selected-head button,.compare-editor-title button{padding:7px 10px;font-size:.85rem}
+.compare-editor-title button{padding:7px 10px;font-size:.85rem}
 .compare-selected{display:flex;gap:7px;flex-wrap:wrap;min-height:35px;align-items:center;margin:8px 0 18px}
 .compare-chip{display:inline-flex;align-items:center;gap:6px;padding:7px 9px;border-radius:999px;background:#e7f2e9;color:#1a523b;border:1px solid #bdd8c6;font-size:.86rem;line-height:1.2}
 .compare-chip button{border:0;background:transparent;color:inherit;padding:0 2px;line-height:1;font-size:1.15rem;min-width:20px}
@@ -612,6 +612,54 @@ section.panel form .editor-actions button{min-height:49px}
 .compare-note{white-space:pre-wrap}
 @media(max-width:420px){.compare-matrix.compare-two{grid-template-columns:66px repeat(2,minmax(95px,1fr));width:max(100%,256px)}.compare-picker{grid-template-columns:1fr 1fr;gap:6px;padding:7px}.compare-pick-option{font-size:.79rem;padding:9px 6px;gap:6px}.compare-matrix{grid-template-columns:82px repeat(var(--compare-columns),minmax(144px,1fr));width:max(100%,calc(82px + var(--compare-columns) * 144px))}.compare-matrix-label{padding:8px 5px;font-size:.74rem}.compare-matrix-cell{padding:7px;font-size:.8rem}.compare-group-open{font-size:.87rem}}
 
+
+/* 生薬比較：結果を優先し、操作のまとまりを明確にしたレイアウト */
+#compare{min-width:0}
+#compare .compare-switch{margin:14px 0 18px;gap:7px}
+#compare .compare-switch button{padding:11px 8px;border-radius:10px;font-weight:700}
+.compare-library-heading h3,.compare-section-top h3{font-size:1.03rem;margin:0;line-height:1.5}
+.compare-library-heading p{margin:3px 0 9px}
+.compare-collections{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0 0 16px;align-items:start}
+#compare .compare-groups{margin:0;min-width:0}
+#compare .compare-groups summary{font-size:.91rem;font-weight:700;line-height:1.5;padding:13px 11px}
+.compare-summary-tag{display:inline-block;font-size:.69rem;font-weight:600;color:var(--muted);margin-left:5px;white-space:nowrap}
+#compare .compare-groups .study-disclosure-body{padding:8px}
+.compare-choose-panel,.compare-results-panel{border:1px solid var(--line);border-radius:15px;padding:15px;margin-bottom:15px;min-width:0;background:#fff}
+.compare-choose-panel{background:#fafcfb}
+.compare-section-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:11px;min-width:0}
+.compare-limit{font-size:.75rem;color:var(--muted);white-space:nowrap;padding:5px 9px;border:1px solid var(--line);border-radius:999px}
+#compare .compare-choose-panel label[for="compareFilter"]{display:block;font-size:.84rem;font-weight:700;margin-bottom:6px}
+#compareFilter{width:100%;margin:0;min-height:42px}
+#compare .compare-picker{background:white;margin:9px 0 11px;max-height:215px}
+#compare .compare-pick-option{min-height:43px}
+#compare .compare-selected-head{margin:11px 0 6px;gap:8px}
+#compare .compare-selected{margin:0;min-height:30px;gap:6px}
+#compare .compare-chip{padding:7px 8px}
+.compare-results-heading{align-items:center;margin:0 0 12px}
+.compare-results-heading p{margin:3px 0 0;line-height:1.45}
+#compareOpenSave{padding:9px 11px;font-size:.81rem;white-space:nowrap;flex:none}
+#compare .compare-results-panel .compare-matrix-viewport{margin-top:7px;overscroll-behavior-x:contain;scrollbar-gutter:stable}
+#compare .compare-scroll-hint{margin:6px 0 8px}
+#compare .compare-note{margin:5px 0 11px;padding:12px 13px;font-size:.88rem}
+#compare .compare-matrix .compare-photo h3{font-size:.91rem;text-align:center;margin:4px 0 8px}
+#compare .compare-matrix .compare-photo button[data-compare-zoom]{padding:4px;border-radius:9px;background:#f3f6f3}
+#compare .compare-matrix .compare-photo img{object-fit:contain;aspect-ratio:1;width:100%;height:auto}
+#compare .compare-matrix .compare-photo-nav{margin-top:6px;gap:6px}
+#compare .compare-matrix .compare-photo-nav button{min-height:33px;font-size:.8rem;padding:6px 4px}
+.compare-photo-count{font-size:.75rem;color:var(--muted);text-align:center;margin:6px 0 2px;white-space:normal}
+#compare .compare-save-disclosure{margin:10px 0 2px}
+#compare .compare-save-disclosure summary{font-weight:700;padding:13px 14px}
+#compare .compare-save-disclosure .study-disclosure-body{padding:5px 12px 12px}
+#compare .compare-personal-editor{margin:8px 0 12px}
+#compare #compareAdmin{margin:10px 0 3px}
+@media(max-width:600px){
+ .compare-collections{grid-template-columns:1fr;gap:8px}
+ .compare-choose-panel,.compare-results-panel{padding:11px;border-radius:12px}
+ .compare-results-heading{align-items:flex-start;flex-wrap:wrap}
+ #compareOpenSave{width:100%}
+ #compare .compare-picker{max-height:190px}
+ #compare .compare-selected-head .muted{font-size:.71rem}
+}
 </style>
 </head>
 <body>
@@ -918,20 +966,28 @@ section.panel form .editor-actions button{min-height:49px}
  <div id="infoDetail" class="hidden"></div>
 </section>
 <section id="compare" class="panel hidden">
- <div class="study-hero"><h2>生薬の比較</h2><p class="muted small">原型生薬・刻み生薬を2種類以上選び、写真や情報を比べられます。</p></div>
+ <div class="study-hero"><h2>生薬の比較</h2><p class="muted small">写真を見比べながら、見分け方を整理できます。原型生薬と刻み生薬に対応しています。</p></div>
  <div class="compare-switch" aria-label="比較する種類"><button type="button" data-compare-kind="herb" aria-pressed="true">原型生薬</button><button type="button" data-compare-kind="cut" aria-pressed="false">刻み生薬</button></div>
- <details class="study-disclosure compare-groups" open><summary>みんなの比較グループ（共有）</summary><div class="study-disclosure-body"><p class="muted small">管理者が登録したグループです。全員が閲覧できます。</p><div id="comparePairList" role="status"></div></div></details>
- <details class="study-disclosure compare-groups" open><summary>自分の比較グループ（この端末のみ）</summary><div class="study-disclosure-body"><p class="muted small">自分が見分けにくい生薬を保存できます。共通グループは変更されません。データはこの端末のブラウザに保存され、別端末へは学習履歴のバックアップで引き継げます。</p><div id="personalCompareList" role="status"></div></div></details>
- <div class="study-settings-heading">比較する生薬を選択</div>
- <p class="muted small compare-pick-hint">2～12種類を選べます。名前で検索して、チェックを付けてください。</p>
- <label for="compareFilter">生薬名で検索</label><input type="search" id="compareFilter" placeholder="例：ソウジュツ、カンゾウ" autocomplete="off">
- <div id="comparePicker" class="compare-picker" aria-label="比較する生薬の一覧"></div>
- <div class="compare-selected-head"><strong>選択中 <span id="compareSelectedCount">0</span>種類</strong><button type="button" class="secondary" id="compareClear">選択を解除</button></div>
- <div id="compareSelected" class="compare-selected" aria-live="polite"></div>
- <div id="personalCompareEditor" class="compare-personal-editor"><div class="compare-editor-title"><h3 id="personalCompareEditorTitle">自分の比較グループを登録</h3><button type="button" class="secondary" id="personalCompareNew">新しいグループ</button></div><p class="muted small">2～12種類を選択して保存できます。管理者ログインは必要ありません。</p><label for="personalCompareTitle">グループ名（任意）</label><input type="text" id="personalCompareTitle" maxlength="80" placeholder="例：どうしても似て見える生薬"><label for="personalCompareNote">自分用の見分け方メモ（任意）</label><textarea id="personalCompareNote" rows="3" maxlength="1200" placeholder="色・形・匂いなど、自分が覚えたいポイント"></textarea><button type="button" class="primary" id="personalCompareSave">自分用として保存</button><p id="personalCompareMessage" class="muted small" role="status"></p></div>
- <div id="compareAdmin" class="hidden"><div class="compare-editor-title"><h3 id="compareEditorTitle">類似生薬グループを登録</h3><button type="button" class="secondary" id="compareNew">新しいグループ</button></div><p class="muted small" id="compareEditorHint">上で選択した生薬を1つのグループとして共有登録します。2種類でも、3種類以上でも登録できます。</p><label for="compareNote">識別のポイント（任意）</label><textarea id="compareNote" rows="3" maxlength="1200" placeholder="形状・色・表面の特徴や見分け方など"></textarea><button type="button" class="primary" id="compareSave">このグループを保存</button><p id="compareMessage" class="muted small" role="status"></p></div>
- <div class="study-settings-heading">比較結果</div>
- <div id="compareResult" aria-live="polite"></div>
+ <div class="compare-library-heading"><h3>登録済みの比較グループ</h3><p class="muted small">タップしてグループを開き、比較する生薬をまとめて選べます。</p></div>
+ <div class="compare-collections">
+  <details class="study-disclosure compare-groups"><summary>みんなの比較グループ <span class="compare-summary-tag">共有</span></summary><div class="study-disclosure-body"><p class="muted small">管理者が登録したグループです。全員が閲覧できます。</p><div id="comparePairList" role="status"></div></div></details>
+  <details class="study-disclosure compare-groups"><summary>自分の比較グループ <span class="compare-summary-tag">この端末</span></summary><div class="study-disclosure-body"><p class="muted small">自分が見分けにくい生薬を保存できます。端末内に保存され、学習履歴のバックアップで引き継げます。</p><div id="personalCompareList" role="status"></div></div></details>
+ </div>
+ <div class="compare-choose-panel">
+  <div class="compare-section-top"><h3>比較する生薬を選ぶ</h3><span class="compare-limit">2～12種類</span></div>
+  <label for="compareFilter">生薬名で検索</label><input type="search" id="compareFilter" placeholder="生薬名で絞り込む" autocomplete="off">
+  <div id="comparePicker" class="compare-picker" aria-label="比較する生薬の一覧"></div>
+  <div class="compare-selected-head"><strong>選択中 <span id="compareSelectedCount">0</span> / 12種類</strong><span class="muted small">外すときは名前の × をタップ</span></div>
+  <div id="compareSelected" class="compare-selected" aria-live="polite"></div>
+ </div>
+ <div class="compare-results-panel">
+  <div class="compare-section-top compare-results-heading"><div><h3>比較結果</h3><p class="muted small">写真は「前」「次」で切り替えられます。表示位置は変わりません。</p></div><button type="button" class="secondary" id="compareOpenSave" disabled>この組み合わせを保存</button></div>
+  <div id="compareResult" aria-live="polite"></div>
+ </div>
+ <details class="study-disclosure compare-save-disclosure" id="compareSavePanel"><summary>比較グループの登録・編集</summary><div class="study-disclosure-body">
+  <div id="personalCompareEditor" class="compare-personal-editor"><div class="compare-editor-title"><h3 id="personalCompareEditorTitle">自分の比較グループを登録</h3><button type="button" class="secondary" id="personalCompareNew">新しいグループ</button></div><p class="muted small">2～12種類を選択して保存できます。管理者ログインは必要ありません。</p><label for="personalCompareTitle">グループ名（任意）</label><input type="text" id="personalCompareTitle" maxlength="80" placeholder="例：どうしても似て見える生薬"><label for="personalCompareNote">自分用の見分け方メモ（任意）</label><textarea id="personalCompareNote" rows="3" maxlength="1200" placeholder="色・形・匂いなど、自分が覚えたいポイント"></textarea><button type="button" class="primary" id="personalCompareSave">自分用として保存</button><p id="personalCompareMessage" class="muted small" role="status"></p></div>
+  <div id="compareAdmin" class="hidden"><div class="compare-editor-title"><h3 id="compareEditorTitle">類似生薬グループを登録</h3><button type="button" class="secondary" id="compareNew">新しいグループ</button></div><p class="muted small" id="compareEditorHint">上で選択した生薬を1つのグループとして共有登録します。2種類でも、3種類以上でも登録できます。</p><label for="compareNote">識別のポイント（任意）</label><textarea id="compareNote" rows="3" maxlength="1200" placeholder="形状・色・表面の特徴や見分け方など"></textarea><button type="button" class="primary" id="compareSave">このグループを保存</button><p id="compareMessage" class="muted small" role="status"></p></div>
+ </div></details>
 </section>
 <section id="backup" class="panel hidden">
  <div class="study-hero"><span class="study-kicker">データの保護・引き継ぎ</span>
@@ -3173,10 +3229,10 @@ function compareRefreshSelection(){
  $('compareSelectedCount').textContent=compareIds.length;
  $('compareSelected').innerHTML=compareIds.length?compareIds.map(id=>`<span class="compare-chip">${escapeHtml(compareName(compareFind(id)))}<button type="button" data-compare-remove="${escapeHtml(id)}" aria-label="${escapeHtml(compareName(compareFind(id)))}を選択から外す">×</button></span>`).join(''):'<span class="muted small">まだ選択されていません。</span>';
  $('compareSave').disabled=!isAdmin||compareSaving||comparePairsState!=='ready'||compareIds.length<2;
- $('compareClear').disabled=!compareIds.length||compareSaving;
  $('compareEditorTitle').textContent=compareEditingRow?'類似生薬グループを編集':'類似生薬グループを登録';
  $('compareEditorHint').textContent=compareEditingRow?'選択内容と識別ポイントを編集し「変更を保存」を押してください。':'選択した2～12種類を1つのグループとして共有登録します。';
  $('compareSave').textContent=compareEditingRow?'変更を保存':'このグループを保存';
+ $('compareOpenSave').disabled=compareIds.length<2||compareIds.length>COMPARE_LIMIT;
  $('personalCompareSave').disabled=compareIds.length<2||compareIds.length>COMPARE_LIMIT;
  $('personalCompareEditorTitle').textContent=personalEditingId?'自分の比較グループを編集':'自分の比較グループを登録';
  $('personalCompareSave').textContent=personalEditingId?'自分のグループの変更を保存':'自分用として保存';
@@ -3198,11 +3254,11 @@ function renderComparePairs(){
 }
 function renderCompareResult(){
  const box=$('compareResult'),previousScroll=box.querySelector('.compare-matrix-viewport')?.scrollLeft||0,herbs=compareIds.map(id=>compareFind(id)).filter(Boolean);
- if(herbs.length<2){box.innerHTML='<p class="empty">2種類以上の生薬を選択すると、ここに写真と比較情報が表示されます。</p>';return}
+ if(herbs.length<2){box.innerHTML='<p class="empty">上で2種類以上の生薬を選択すると、ここに写真と比較情報が表示されます。</p>';return}
  const fields=compareKind==='herb'?[['生薬ラテン名',h=>h.latinName],['基原植物',h=>[h.originLatin,h.originJapanese].filter(Boolean).join('\n')],['科名',h=>[h.familyLatin,h.familyJapanese].filter(Boolean).join('\n')],['主成分',h=>h.constituents],['用途',h=>(h.uses||[]).join('、')],['薬用部位',h=>h.part],['補足',h=>h.notes]]:[['読みがな',h=>h.reading],['含まれる漢方処方',h=>kampoFormulas.filter(f=>kampoNormalizedIngredients(f).some(n=>normalizeCutHerbName(n)===normalizeCutHerbName(h.name))).map(f=>f.name).join('、')]];
  const gallery=herbs.map(h=>{
   const id=String(h.id),imgs=comparePhotos(h),index=Math.max(0,Math.min(comparePhotoIndex[id]||0,Math.max(0,imgs.length-1)));comparePhotoIndex[id]=index;
-  return `<div class="compare-matrix-cell compare-image-cell"><article class="compare-photo"><h3>${escapeHtml(compareName(h))}</h3>${imgs.length?`<button type="button" class="secondary" data-compare-zoom="${escapeHtml(id)}" aria-label="${escapeHtml(compareName(h))}の写真を拡大"><img src="${escapeHtml(imgs[index])}" alt="${escapeHtml(compareName(h))}"></button><p class="muted small">${index+1}/${imgs.length}枚・タップで拡大</p><div class="compare-photo-nav"><button type="button" class="secondary" data-compare-prev="${escapeHtml(id)}" ${index===0?'disabled':''}>‹ 前</button><button type="button" class="secondary" data-compare-next="${escapeHtml(id)}" ${index>=imgs.length-1?'disabled':''}>次 ›</button></div>`:'<p class="muted small">写真未登録</p>'}</article></div>`
+  return `<div class="compare-matrix-cell compare-image-cell"><article class="compare-photo" data-compare-herb-id="${escapeHtml(id)}"><h3>${escapeHtml(compareName(h))}</h3>${imgs.length?`<button type="button" class="secondary" data-compare-zoom="${escapeHtml(id)}" aria-label="${escapeHtml(compareName(h))}の写真を拡大"><img src="${escapeHtml(imgs[index])}" alt="${escapeHtml(compareName(h))}"></button><p class="compare-photo-count" data-compare-photo-count>${index+1} / ${imgs.length}枚・タップで拡大</p><div class="compare-photo-nav"><button type="button" class="secondary" data-compare-prev="${escapeHtml(id)}" ${index===0?'disabled':''}>‹ 前</button><button type="button" class="secondary" data-compare-next="${escapeHtml(id)}" ${index>=imgs.length-1?'disabled':''}>次 ›</button></div>`:'<p class="muted small">写真未登録</p>'}</article></div>`
  }).join('');
  const personal=personalEditingId?personalCompareGroups.find(g=>g.id===personalEditingId):null;
  const matchedPersonal=personal&&compareIdSignature(personal.ids)===compareIdSignature(compareIds)?personal:comparePersonalMatchingGroup();
@@ -3210,14 +3266,36 @@ function renderCompareResult(){
  const shared=editingGroup&&compareIdSignature(editingGroup.ids)===compareIdSignature(compareIds)?editingGroup:compareMatchingGroup();
  const note=matchedPersonal?.note||shared?.note||'';
  const noteLabel=matchedPersonal?.note?'自分用の見分け方メモ':'登録されている識別のポイント';
- box.innerHTML=`${compareIds.length>2?'<p class="compare-scroll-hint">表を左右にスワイプすると、3種類目以降も比較できます。</p>':''}${note?`<div class="compare-note"><b>${noteLabel}</b>\n${escapeHtml(note)}</div>`:''}<div class="compare-matrix-viewport"><div class="compare-matrix${herbs.length===2?' compare-two':''}" style="--compare-columns:${herbs.length}"><div class="compare-matrix-label">写真</div>${gallery}${fields.map(([label,get])=>`<div class="compare-matrix-label">${label}</div>${herbs.map(h=>`<div class="compare-matrix-cell">${escapeHtml(get(h)||'未登録')}</div>`).join('')}`).join('')}</div></div>`;
+ box.innerHTML=`${compareIds.length>2?'<p class="compare-scroll-hint">比較表は左右にスワイプできます。写真を切り替えても位置は変わりません。</p>':''}${note?`<div class="compare-note"><b>${noteLabel}</b>\n${escapeHtml(note)}</div>`:''}<div class="compare-matrix-viewport" tabindex="0" aria-label="生薬の比較表。左右にスクロールできます"><div class="compare-matrix${herbs.length===2?' compare-two':''}" style="--compare-columns:${herbs.length}"><div class="compare-matrix-label">写真</div>${gallery}${fields.map(([label,get])=>`<div class="compare-matrix-label">${label}</div>${herbs.map(h=>`<div class="compare-matrix-cell">${escapeHtml(get(h)||'未登録')}</div>`).join('')}`).join('')}</div></div>`;
+ // 種類を増減した場合も、残っている列の閲覧位置をできる限り維持する。
+ const viewport=box.querySelector('.compare-matrix-viewport');
+ if(viewport)viewport.scrollLeft=Math.min(previousScroll,Math.max(0,viewport.scrollWidth-viewport.clientWidth));
+}
+function compareStepPhoto(id,step){
+ const herb=compareFind(id),images=comparePhotos(herb);
+ if(!herb||images.length<2)return;
+ const current=Math.max(0,Math.min(comparePhotoIndex[id]||0,images.length-1));
+ const next=Math.max(0,Math.min(current+step,images.length-1));
+ if(current===next)return;
+ const photo=[...$('compareResult').querySelectorAll('[data-compare-herb-id]')].find(el=>el.dataset.compareHerbId===String(id));
+ if(!photo)return;
+ const img=photo.querySelector('img'),count=photo.querySelector('[data-compare-photo-count]');
+ if(!img)return;
+ comparePhotoIndex[id]=next;
+ // 画像だけを差し替え、横スクロール位置とボタンのフォーカスを保持する。
+ img.src=images[next];
+ if(count)count.textContent=`${next+1} / ${images.length}枚・タップで拡大`;
+ const prev=photo.querySelector('[data-compare-prev]'),forward=photo.querySelector('[data-compare-next]');
+ if(prev)prev.disabled=next===0;
+ if(forward)forward.disabled=next===images.length-1;
 }
 function compareSelectGroup(row){
  const group=compareData(row);if(!group)return;
  compareIds=group.ids.filter(id=>compareFind(id));comparePhotoIndex={};compareEditingRow=isAdmin?row:null;personalEditingId=null;
  $('personalCompareTitle').value='';$('personalCompareNote').value='';compareShowPersonalMessage('');
  $('compareFilter').value='';$('compareNote').value=group.note;compareShowMessage('');renderCompare();
- $('compareSelected').scrollIntoView({block:'nearest',behavior:'auto'});
+ const view=$('compareResult').querySelector('.compare-matrix-viewport');if(view)view.scrollLeft=0;
+ $('compareResult').scrollIntoView({block:'start',behavior:'auto'});
 }
 function compareStartNew(){compareEditingRow=null;personalEditingId=null;compareIds=[];comparePhotoIndex={};$('compareNote').value='';$('compareFilter').value='';$('personalCompareTitle').value='';$('personalCompareNote').value='';compareShowPersonalMessage('');compareShowMessage('');renderCompare()}
 function compareSelectPersonalGroup(group,edit=false){
@@ -3227,8 +3305,11 @@ function compareSelectPersonalGroup(group,edit=false){
  $('personalCompareTitle').value=edit?group.title:'';
  $('personalCompareNote').value=edit?group.note:'';
  $('compareFilter').value='';$('compareNote').value='';compareShowPersonalMessage('');compareShowMessage('');renderCompare();
- $('compareSelected').scrollIntoView({block:'nearest',behavior:'auto'});
- if(edit)$('personalCompareTitle').focus();
+ const view=$('compareResult').querySelector('.compare-matrix-viewport');if(view)view.scrollLeft=0;
+ if(edit){
+  $('compareSavePanel').open=true;
+  $('personalCompareTitle').focus();
+ }else $('compareResult').scrollIntoView({block:'start',behavior:'auto'});
 }
 function compareSavePersonalGroup(){
  if(compareIds.length<2||compareIds.length>COMPARE_LIMIT){compareShowPersonalMessage('2～12種類の生薬を選択してください。',true);return}
@@ -3322,16 +3403,16 @@ $('compare').addEventListener('click',e=>{const b=e.target.closest('button');if(
  if(b.hasAttribute('data-personal-compare-open')){const g=personalCompareGroups[Number(b.dataset.personalCompareOpen)];if(g)compareSelectPersonalGroup(g);return}
  if(b.hasAttribute('data-personal-compare-edit')){const g=personalCompareGroups[Number(b.dataset.personalCompareEdit)];if(g)compareSelectPersonalGroup(g,true);return}
  if(b.hasAttribute('data-personal-compare-delete')){const g=personalCompareGroups[Number(b.dataset.personalCompareDelete)];if(g)compareDeletePersonalGroup(g);return}
+ if(b.id==='compareOpenSave'){if(compareIds.length>=2){$('compareSavePanel').open=true;$('compareSavePanel').scrollIntoView({block:'nearest',behavior:'smooth'});}return}
  if(b.id==='personalCompareNew'){compareStartNew();return}
  if(b.id==='personalCompareSave'){compareSavePersonalGroup();return}
  if(b.hasAttribute('data-compare-delete')){const row=comparePairs[Number(b.dataset.compareDelete)];if(row)writeCompareGroup(row);return}
  if(b.hasAttribute('data-compare-reload')){loadComparePairs();return}
  if(b.hasAttribute('data-compare-remove')){compareIds=compareIds.filter(id=>id!==b.dataset.compareRemove);renderCompare();return}
- if(b.id==='compareClear'){compareIds=[];comparePhotoIndex={};renderCompare();return}
  if(b.id==='compareNew'){compareStartNew();return}
  if(b.id==='compareSave'){writeCompareGroup();return}
- if(b.hasAttribute('data-compare-prev')){comparePhotoIndex[b.dataset.comparePrev]=(comparePhotoIndex[b.dataset.comparePrev]||0)-1;renderCompareResult();return}
- if(b.hasAttribute('data-compare-next')){comparePhotoIndex[b.dataset.compareNext]=(comparePhotoIndex[b.dataset.compareNext]||0)+1;renderCompareResult();return}
+ if(b.hasAttribute('data-compare-prev')){compareStepPhoto(b.dataset.comparePrev,-1);return}
+ if(b.hasAttribute('data-compare-next')){compareStepPhoto(b.dataset.compareNext,1);return}
  if(b.hasAttribute('data-compare-zoom')){const id=b.dataset.compareZoom,h=compareFind(id);if(h)openInfoPhotoViewer(comparePhotos(h)[comparePhotoIndex[id]||0],compareName(h));}
 });
 $('adminCompareLink').addEventListener('click',()=>{if(isAdmin){switchTab('compare');$('compare').scrollIntoView({block:'start'})}});
