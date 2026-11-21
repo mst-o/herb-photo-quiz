@@ -590,6 +590,13 @@ section.panel form .editor-actions button{min-height:49px}
 #compareAdmin{border:1px solid #c5dfcd;background:#f6faf7;border-radius:13px;padding:14px;margin:16px 0}
 #compareAdmin h3{margin:0;font-size:1.06rem}
 #compareAdmin textarea{margin:8px 0 10px;width:100%}
+.compare-personal-editor{border:1px solid var(--line);background:#f7faf8;border-radius:13px;padding:14px;margin:14px 0}
+.compare-personal-editor h3{margin:0;font-size:1.06rem}
+.compare-personal-editor input,.compare-personal-editor textarea{width:100%;margin:7px 0 11px}
+#personalCompareSave{width:100%;margin-top:8px}
+.compare-personal-actions{display:flex;gap:6px;flex:none;flex-wrap:wrap}
+.compare-personal-actions button{padding:8px;font-size:.82rem}
+@media(max-width:480px){.compare-personal-actions{width:100%}.compare-personal-actions button{flex:1}}
 #compareResult{min-width:0}
 .compare-matrix-viewport{overflow-x:auto;overscroll-behavior-inline:contain;border:1px solid var(--line);border-radius:12px;background:#fff;margin-top:10px}
 .compare-matrix{display:grid;grid-template-columns:110px repeat(var(--compare-columns),minmax(160px,1fr));width:max(100%,calc(110px + var(--compare-columns) * 160px));}
@@ -675,7 +682,7 @@ section.panel form .editor-actions button{min-height:49px}
  <div id="progressExamPane" class="hidden" data-progress-pane="exam"><section class="dash-history-panel" id="mockHistoryPanel" aria-label="模擬テスト受験履歴"><h3>模擬テストの成績</h3><div id="dashLatestMock"></div><div id="mockHistoryContent"></div></section><button type="button" class="primary progress-exam-start" id="progressExamStart">模擬テストを受ける</button></div>
  <details class="backup-accordion" id="learningBackupPanel">
   <summary>学習履歴のバックアップ・復元</summary>
-  <p class="muted small">この端末の生薬・刻み生薬・漢方処方の学習記録（復習予定日・模擬テスト受験履歴を含む）をJSONに保存します。共有データや写真は変更しません。</p>
+  <p class="muted small">この端末の生薬・刻み生薬・漢方処方の学習記録（復習予定日・模擬テスト受験履歴を含む）と、自分の比較グループをJSONに保存します。共有データや写真は変更しません。</p>
   <button type="button" class="secondary" id="exportLearningBtn">学習履歴をダウンロード（JSON）</button>
   <div class="field"><label for="learningRestoreInput">学習履歴のバックアップを選択</label><input type="file" id="learningRestoreInput" accept=".json,application/json,.zip,application/zip"></div>
   <p id="learningRestorePreview" class="muted small" role="status">ファイルを選ぶと内容を確認できます。</p>
@@ -913,13 +920,15 @@ section.panel form .editor-actions button{min-height:49px}
 <section id="compare" class="panel hidden">
  <div class="study-hero"><h2>生薬の比較</h2><p class="muted small">原型生薬・刻み生薬を2種類以上選び、写真や情報を比べられます。</p></div>
  <div class="compare-switch" aria-label="比較する種類"><button type="button" data-compare-kind="herb" aria-pressed="true">原型生薬</button><button type="button" data-compare-kind="cut" aria-pressed="false">刻み生薬</button></div>
- <details class="study-disclosure compare-groups" open><summary>登録済みの類似生薬グループ</summary><div class="study-disclosure-body"><div id="comparePairList" role="status"></div></div></details>
+ <details class="study-disclosure compare-groups" open><summary>みんなの比較グループ（共有）</summary><div class="study-disclosure-body"><p class="muted small">管理者が登録したグループです。全員が閲覧できます。</p><div id="comparePairList" role="status"></div></div></details>
+ <details class="study-disclosure compare-groups" open><summary>自分の比較グループ（この端末のみ）</summary><div class="study-disclosure-body"><p class="muted small">自分が見分けにくい生薬を保存できます。共通グループは変更されません。データはこの端末のブラウザに保存され、別端末へは学習履歴のバックアップで引き継げます。</p><div id="personalCompareList" role="status"></div></div></details>
  <div class="study-settings-heading">比較する生薬を選択</div>
  <p class="muted small compare-pick-hint">2～12種類を選べます。名前で検索して、チェックを付けてください。</p>
  <label for="compareFilter">生薬名で検索</label><input type="search" id="compareFilter" placeholder="例：ソウジュツ、カンゾウ" autocomplete="off">
  <div id="comparePicker" class="compare-picker" aria-label="比較する生薬の一覧"></div>
  <div class="compare-selected-head"><strong>選択中 <span id="compareSelectedCount">0</span>種類</strong><button type="button" class="secondary" id="compareClear">選択を解除</button></div>
  <div id="compareSelected" class="compare-selected" aria-live="polite"></div>
+ <div id="personalCompareEditor" class="compare-personal-editor"><div class="compare-editor-title"><h3 id="personalCompareEditorTitle">自分の比較グループを登録</h3><button type="button" class="secondary" id="personalCompareNew">新しいグループ</button></div><p class="muted small">2～12種類を選択して保存できます。管理者ログインは必要ありません。</p><label for="personalCompareTitle">グループ名（任意）</label><input type="text" id="personalCompareTitle" maxlength="80" placeholder="例：どうしても似て見える生薬"><label for="personalCompareNote">自分用の見分け方メモ（任意）</label><textarea id="personalCompareNote" rows="3" maxlength="1200" placeholder="色・形・匂いなど、自分が覚えたいポイント"></textarea><button type="button" class="primary" id="personalCompareSave">自分用として保存</button><p id="personalCompareMessage" class="muted small" role="status"></p></div>
  <div id="compareAdmin" class="hidden"><div class="compare-editor-title"><h3 id="compareEditorTitle">類似生薬グループを登録</h3><button type="button" class="secondary" id="compareNew">新しいグループ</button></div><p class="muted small" id="compareEditorHint">上で選択した生薬を1つのグループとして共有登録します。2種類でも、3種類以上でも登録できます。</p><label for="compareNote">識別のポイント（任意）</label><textarea id="compareNote" rows="3" maxlength="1200" placeholder="形状・色・表面の特徴や見分け方など"></textarea><button type="button" class="primary" id="compareSave">このグループを保存</button><p id="compareMessage" class="muted small" role="status"></p></div>
  <div class="study-settings-heading">比較結果</div>
  <div id="compareResult" aria-live="polite"></div>
@@ -1106,7 +1115,19 @@ async function save(){try{const x={stats:db.stats,attempts:db.attempts,correct:d
 function normalHerb(row){return {id:row.id,japaneseName:row.japanese_name||'',name:row.japanese_name||'',latinName:(row.latin_name||'').toUpperCase(),aliases:row.aliases||[],originLatin:row.origin_latin||'',originJapanese:row.origin_japanese||'',part:row.part||row.medicinal_part||'',familyLatin:row.family_latin||'',familyJapanese:row.family_japanese||'',constituents:row.constituents||'',uses:row.uses||[],notes:row.notes||'',images:row.images||[]}}
 function toRow(h){return {id:String(h.id),japanese_name:h.japaneseName||h.name||'',latin_name:(h.latinName||'').toUpperCase(),aliases:Array.isArray(h.aliases)?h.aliases:[],origin_latin:h.originLatin||'',origin_japanese:h.originJapanese||'',part:h.part||'',medicinal_part:h.part||'',family_latin:h.familyLatin||'',family_japanese:h.familyJapanese||'',constituents:h.constituents||'',uses:Array.isArray(h.uses)?h.uses:[],notes:h.notes||'',images:Array.isArray(h.images)?h.images:[],updated_at:new Date().toISOString()}}
 async function refreshHerbs(){const {data,error}=await client.from('herbs').select('*').order('japanese_name');if(error)throw error;db.herbs=(data||[]).map(normalHerb);if(!$('compare').classList.contains('hidden'))renderCompare();updateStats();currentId=null;showIdle();setStatus('共有データ：接続済み');}
-function showAdmin(){document.body.classList.toggle('is-admin',isAdmin);document.querySelectorAll('[data-admin-tab]').forEach(x=>x.classList.toggle('hidden',!isAdmin));$('loginToggle').classList.toggle('hidden',isAdmin);$('logoutButton').classList.toggle('hidden',!isAdmin);$('adminState').textContent=isAdmin?'管理者':'ゲスト';if(!isAdmin&&(['manage','backup','cutManage','kampoManage'].some(x=>!$(x).classList.contains('hidden'))))switchTab('quiz')}
+function showAdmin(){
+ document.body.classList.toggle('is-admin',isAdmin);
+ document.querySelectorAll('[data-admin-tab]').forEach(x=>x.classList.toggle('hidden',!isAdmin));
+ $('loginToggle').classList.toggle('hidden',isAdmin);
+ $('logoutButton').classList.toggle('hidden',!isAdmin);
+ $('adminState').textContent=isAdmin?'管理者':'ゲスト';
+ if(!isAdmin){
+  compareEditingRow=null;
+  $('compareNote').value='';
+ }
+ if(!isAdmin&&['manage','backup','cutManage','kampoManage'].some(x=>!$(x).classList.contains('hidden')))switchTab('quiz');
+ if(!$('compare').classList.contains('hidden'))renderCompare();
+}
 async function updateAdminSession(){if(!client)return;const {data,error}=await client.auth.getUser();isAdmin=!error&&data?.user?.id===ADMIN_USER_ID;showAdmin();}
 function initClient(){if(!window.supabase?.createClient)throw new Error('Supabaseライブラリを読み込めません。通信状況を確認してください。');client=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}})}
 async function uploadDataImage(src,path){if(!src.startsWith('data:image/'))return src;const response=await fetch(src);const blob=await response.blob();if(!blob.type.startsWith('image/'))throw new Error('対応していない画像形式です');const {error}=await client.storage.from('herb-images').upload(path,blob,{contentType:blob.type,upsert:true});if(error)throw error;const {data}=client.storage.from('herb-images').getPublicUrl(path);return data.publicUrl}
@@ -2782,7 +2803,7 @@ function backupSnapshot(){
    cutHerbs:cutHerbs.map(h=>({...h,images:JSON.parse(JSON.stringify(h.images||[]))})),
    kampoFormulas:kampoFormulas.map(f=>({...f,ingredients:[...(f.ingredients||[])]}))},
   local:{herb:{stats:p.stats||{},attempts:Number(p.attempts)||0,correct:Number(p.correct)||0,totalScore:Number(p.totalScore)||0},
-   cut:cutProgress(),kampo:readKampoProgress(),mockHistory:readMockHistory()},photos:{}};
+   cut:cutProgress(),kampo:readKampoProgress(),mockHistory:readMockHistory(),personalCompareGroups:compareReadPersonalGroups()},photos:{}};
 }
 function backupDownload(blob,filename){
  const url=URL.createObjectURL(blob),a=document.createElement('a');
@@ -2895,12 +2916,12 @@ function backupExtractLearning(data){
  if(data.schema===BACKUP_SCHEMA){
   const l=data.local;
   if(!l||(!l.herb&&!l.cut&&!l.kampo))throw new Error('このバックアップには学習履歴がありません。');
-  return {herb:l.herb??null,cut:l.cut??null,kampo:l.kampo??null,mockHistory:l.mockHistory??null};
+  return {herb:l.herb??null,cut:l.cut??null,kampo:l.kampo??null,mockHistory:l.mockHistory??null,personalCompareGroups:l.personalCompareGroups??null};
  }
  // 旧エクスポートに入っていた履歴のうち、実際に保存されているもののみ復元。
  if(data&&typeof data==='object'&&!Array.isArray(data)&&('stats' in data||'kampoProgress' in data||'cutProgress' in data)){
   return {herb:data.stats&&typeof data.stats==='object'?{stats:data.stats,attempts:data.attempts||0,correct:data.correct||0,totalScore:data.totalScore||0}:null,
-   cut:data.cutProgress??null,kampo:data.kampoProgress??null,mockHistory:null};
+   cut:data.cutProgress??null,kampo:data.kampoProgress??null,mockHistory:null,personalCompareGroups:null};
  }
  throw new Error('学習履歴のあるJSONではありません。');
 }
@@ -2908,7 +2929,7 @@ function backupHistoryCount(x){return x&&typeof x==='object'&&!Array.isArray(x)?
 function backupLearningSummary(local){
  const h=local.herb&&local.herb.stats||{};
  const c=local.cut||{},k=local.kampo||{};
- return `生薬：${backupHistoryCount(h)}種類（総解答 ${Number(local.herb?.attempts)||0} 回） / 刻み生薬：${backupHistoryCount(c)}種類 / 漢方処方：${backupHistoryCount(k)}形式の学習記録 / 模擬テスト：${local.mockHistory===null?"対象外":local.mockHistory.length+"回"}`;
+ return `生薬：${backupHistoryCount(h)}種類（総解答 ${Number(local.herb?.attempts)||0} 回） / 刻み生薬：${backupHistoryCount(c)}種類 / 漢方処方：${backupHistoryCount(k)}形式の学習記録 / 模擬テスト：${local.mockHistory===null?"対象外":local.mockHistory.length+"回"} / 自分の比較グループ：${local.personalCompareGroups===null?'対象外':local.personalCompareGroups.length+'件'}`;
 }
 async function backupPreviewLearningFile(file){
  backupPendingLearning=null;$('restoreLearningBtn').disabled=true;
@@ -2924,6 +2945,7 @@ async function backupPreviewLearningFile(file){
   if(local.mockHistory!==null&&!validMockHistory(local.mockHistory))throw new Error("模擬テスト履歴が不正です。");
   for(const group of ['herb','cut','kampo'])if(local[group]!==null&&(typeof local[group]!=='object'||Array.isArray(local[group])))throw new Error(group+' の学習記録が不正です。');
   if(local.herb!==null&&(typeof local.herb.stats!=='object'||!local.herb.stats||Array.isArray(local.herb.stats)))throw new Error('生薬の学習記録が不正です。');
+  if(local.personalCompareGroups!==null&&(!Array.isArray(local.personalCompareGroups)||compareNormalizePersonalGroups(local.personalCompareGroups).length!==local.personalCompareGroups.length))throw new Error('個人用比較グループのデータが不正です。');
   backupPendingLearning=local;
   $('learningRestorePreview').textContent='読み込み内容：'+backupLearningSummary(local)+'\n※復元対象の履歴は現在の端末の履歴と置き換わります。共有データには影響しません。';
   $('restoreLearningBtn').disabled=false;
@@ -2937,13 +2959,15 @@ function backupRestoreLearning(){
  if(local.cut!==null)entries.push([CUT_STATS_KEY,local.cut]);
  if(local.kampo!==null)entries.push([KAMPO_PROGRESS_KEY,local.kampo]);
  if(local.mockHistory!==null)entries.push([MOCK_HISTORY_KEY,local.mockHistory]);
+ if(local.personalCompareGroups!==null)entries.push([PERSONAL_COMPARE_KEY,compareNormalizePersonalGroups(local.personalCompareGroups)]);
  const previous=entries.map(([key])=>[key,localStorage.getItem(key)]);
  try{
   for(const [key,value] of entries)localStorage.setItem(key,JSON.stringify(value));
   const h=getLocalProgress();db.stats=h.stats||{};db.attempts=Number(h.attempts)||0;db.correct=Number(h.correct)||0;db.totalScore=Number(h.totalScore)||0;
   kampoProgress=readKampoProgress();
-  updateStats();renderKampoQuizProgress();renderLearningProgress();
-  $('learningBackupStatus').textContent='学習履歴を復元しました。復習予定日・苦手記録も引き継がれました。';
+  personalCompareGroups=compareReadPersonalGroups();personalEditingId=null;
+  updateStats();renderKampoQuizProgress();renderLearningProgress();if(!$('compare').classList.contains('hidden'))renderCompare();
+  $('learningBackupStatus').textContent='学習履歴を復元しました。復習予定日・苦手記録と、バックアップ内にあれば自分の比較グループも引き継がれました。';
   backupPendingLearning=null;$('restoreLearningBtn').disabled=true;$('learningRestoreInput').value='';
  }catch(err){
   for(const [key,old] of previous){try{if(old===null)localStorage.removeItem(key);else localStorage.setItem(key,old)}catch(_){}}
@@ -3087,7 +3111,39 @@ $('fieldAnalysisMode').addEventListener('change',renderFieldAnalysis);
 // 原型・刻み生薬の多項目比較。旧2件ペアと新しい複数件グループは同じDBテーブルで共存する。
 // DB schema kind,left_id,right_id,note はそのまま。複数件グループは予約キーとnoteのJSONで表現。
 const COMPARE_GROUP_PREFIX='group:',COMPARE_GROUP_MEMBER_MARKER='members',COMPARE_LIMIT=12;
+const PERSONAL_COMPARE_KEY='herbPhotoQuiz.personalCompareGroups.v1';
 let compareKind='herb',compareIds=[],comparePhotoIndex={},comparePairs=[],comparePairsState='idle',compareLoading=false,compareSaving=false,compareEditingRow=null;
+let personalCompareGroups=compareReadPersonalGroups(),personalEditingId=null;
+function compareNormalizePersonalGroups(rows){
+ if(!Array.isArray(rows)||rows.length>200)return [];
+ const used=new Set(),clean=[];
+ for(const row of rows){
+  if(!row||typeof row!=='object'||!['herb','cut'].includes(row.kind)||typeof row.id!=='string'||row.id.length>120||!row.id||used.has(row.id))continue;
+  if(!Array.isArray(row.ids)||row.ids.length<2||row.ids.length>COMPARE_LIMIT||row.ids.some(x=>typeof x!=='string'||!x||x.length>200))continue;
+  const ids=[...new Set(row.ids)];if(ids.length!==row.ids.length||ids.length<2)continue;
+  if(typeof row.title!=='string'||typeof row.note!=='string'||row.title.length>80||row.note.length>1200)continue;
+  used.add(row.id);clean.push({id:row.id,kind:row.kind,ids,title:row.title,note:row.note});
+ }
+ return clean;
+}
+function compareReadPersonalGroups(){
+ try{return compareNormalizePersonalGroups(JSON.parse(localStorage.getItem(PERSONAL_COMPARE_KEY)||'[]'))}
+ catch(e){console.warn('個人用比較グループを読み込めません',e);return []}
+}
+function compareWritePersonalGroups(next){
+ try{localStorage.setItem(PERSONAL_COMPARE_KEY,JSON.stringify(next));personalCompareGroups=next;return true}
+ catch(e){console.warn('個人用比較グループを保存できません',e);compareShowPersonalMessage('端末に保存できません。ブラウザの保存容量やプライベートモードを確認してください。',true);return false}
+}
+function compareShowPersonalMessage(message,bad=false){const box=$('personalCompareMessage');box.textContent=message;box.classList.toggle('error',bad)}
+function comparePersonalGroupRows(){return personalCompareGroups.filter(g=>g.kind===compareKind&&g.ids.every(id=>compareFind(id)))}
+function comparePersonalMatchingGroup(){const sign=compareIdSignature(compareIds);return comparePersonalGroupRows().find(g=>compareIdSignature(g.ids)===sign)}
+function renderPersonalCompareGroups(){
+ const root=$('personalCompareList'),groups=comparePersonalGroupRows();
+ root.innerHTML=groups.length?groups.map(g=>{
+  const i=personalCompareGroups.indexOf(g),names=g.ids.map(id=>compareName(compareFind(id)));
+  return `<div class="compare-group-row"><button type="button" class="compare-group-open secondary" data-personal-compare-open="${i}"><b>${escapeHtml(g.title||names.join('・'))}</b><small>${escapeHtml(names.join('・'))}${g.note?' ／ メモあり':''}${personalEditingId===g.id?' ／ 編集中':''}</small></button><div class="compare-personal-actions"><button type="button" class="secondary" data-personal-compare-edit="${i}">編集</button><button type="button" class="compare-group-delete" data-personal-compare-delete="${i}">削除</button></div></div>`;
+ }).join(''):'<p class="muted small">自分の比較グループはまだありません。下で生薬を2種類以上選んで保存できます。</p>';
+}
 function compareRows(kind=compareKind){return kind==='herb'?db.herbs:cutHerbs}
 function compareName(h){return h.japaneseName||h.name||'名称未登録'}
 function compareFind(id,kind=compareKind){return compareRows(kind).find(h=>String(h.id)===String(id))}
@@ -3121,12 +3177,15 @@ function compareRefreshSelection(){
  $('compareEditorTitle').textContent=compareEditingRow?'類似生薬グループを編集':'類似生薬グループを登録';
  $('compareEditorHint').textContent=compareEditingRow?'選択内容と識別ポイントを編集し「変更を保存」を押してください。':'選択した2～12種類を1つのグループとして共有登録します。';
  $('compareSave').textContent=compareEditingRow?'変更を保存':'このグループを保存';
+ $('personalCompareSave').disabled=compareIds.length<2||compareIds.length>COMPARE_LIMIT;
+ $('personalCompareEditorTitle').textContent=personalEditingId?'自分の比較グループを編集':'自分の比較グループを登録';
+ $('personalCompareSave').textContent=personalEditingId?'自分のグループの変更を保存':'自分用として保存';
 }
 function renderCompare(){
  document.querySelectorAll('[data-compare-kind]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.compareKind===compareKind)));
  compareIds=[...new Set(compareIds)].filter(id=>!!compareFind(id));
  $('compareAdmin').classList.toggle('hidden',!isAdmin);
- comparePickerList();compareRefreshSelection();renderComparePairs();renderCompareResult();
+ comparePickerList();compareRefreshSelection();renderComparePairs();renderPersonalCompareGroups();renderCompareResult();
 }
 function renderComparePairs(){
  const root=$('comparePairList');if(comparePairsState==='idle'||comparePairsState==='loading'){root.textContent='読み込み中…';return}
@@ -3145,19 +3204,54 @@ function renderCompareResult(){
   const id=String(h.id),imgs=comparePhotos(h),index=Math.max(0,Math.min(comparePhotoIndex[id]||0,Math.max(0,imgs.length-1)));comparePhotoIndex[id]=index;
   return `<div class="compare-matrix-cell compare-image-cell"><article class="compare-photo"><h3>${escapeHtml(compareName(h))}</h3>${imgs.length?`<button type="button" class="secondary" data-compare-zoom="${escapeHtml(id)}" aria-label="${escapeHtml(compareName(h))}の写真を拡大"><img src="${escapeHtml(imgs[index])}" alt="${escapeHtml(compareName(h))}"></button><p class="muted small">${index+1}/${imgs.length}枚・タップで拡大</p><div class="compare-photo-nav"><button type="button" class="secondary" data-compare-prev="${escapeHtml(id)}" ${index===0?'disabled':''}>‹ 前</button><button type="button" class="secondary" data-compare-next="${escapeHtml(id)}" ${index>=imgs.length-1?'disabled':''}>次 ›</button></div>`:'<p class="muted small">写真未登録</p>'}</article></div>`
  }).join('');
+ const personal=personalEditingId?personalCompareGroups.find(g=>g.id===personalEditingId):null;
+ const matchedPersonal=personal&&compareIdSignature(personal.ids)===compareIdSignature(compareIds)?personal:comparePersonalMatchingGroup();
  const editingGroup=compareEditingRow?compareData(compareEditingRow):null;
- const group=editingGroup&&compareIdSignature(editingGroup.ids)===compareIdSignature(compareIds)?editingGroup:compareMatchingGroup();
- const sameGroup=group&&compareIdSignature(group.ids)===compareIdSignature(compareIds);
- const note=sameGroup?group.note:'';
- box.innerHTML=`${compareIds.length>2?'<p class="compare-scroll-hint">表を左右にスワイプすると、3種類目以降も比較できます。</p>':''}${note?`<div class="compare-note"><b>登録されている識別のポイント</b>\n${escapeHtml(note)}</div>`:''}<div class="compare-matrix-viewport"><div class="compare-matrix${herbs.length===2?' compare-two':''}" style="--compare-columns:${herbs.length}"><div class="compare-matrix-label">写真</div>${gallery}${fields.map(([label,get])=>`<div class="compare-matrix-label">${label}</div>${herbs.map(h=>`<div class="compare-matrix-cell">${escapeHtml(get(h)||'未登録')}</div>`).join('')}`).join('')}</div></div>`;
+ const shared=editingGroup&&compareIdSignature(editingGroup.ids)===compareIdSignature(compareIds)?editingGroup:compareMatchingGroup();
+ const note=matchedPersonal?.note||shared?.note||'';
+ const noteLabel=matchedPersonal?.note?'自分用の見分け方メモ':'登録されている識別のポイント';
+ box.innerHTML=`${compareIds.length>2?'<p class="compare-scroll-hint">表を左右にスワイプすると、3種類目以降も比較できます。</p>':''}${note?`<div class="compare-note"><b>${noteLabel}</b>\n${escapeHtml(note)}</div>`:''}<div class="compare-matrix-viewport"><div class="compare-matrix${herbs.length===2?' compare-two':''}" style="--compare-columns:${herbs.length}"><div class="compare-matrix-label">写真</div>${gallery}${fields.map(([label,get])=>`<div class="compare-matrix-label">${label}</div>${herbs.map(h=>`<div class="compare-matrix-cell">${escapeHtml(get(h)||'未登録')}</div>`).join('')}`).join('')}</div></div>`;
 }
 function compareSelectGroup(row){
  const group=compareData(row);if(!group)return;
- compareIds=group.ids.filter(id=>compareFind(id));comparePhotoIndex={};compareEditingRow=isAdmin?row:null;
+ compareIds=group.ids.filter(id=>compareFind(id));comparePhotoIndex={};compareEditingRow=isAdmin?row:null;personalEditingId=null;
+ $('personalCompareTitle').value='';$('personalCompareNote').value='';compareShowPersonalMessage('');
  $('compareFilter').value='';$('compareNote').value=group.note;compareShowMessage('');renderCompare();
  $('compareSelected').scrollIntoView({block:'nearest',behavior:'auto'});
 }
-function compareStartNew(){compareEditingRow=null;compareIds=[];comparePhotoIndex={};$('compareNote').value='';$('compareFilter').value='';compareShowMessage('');renderCompare()}
+function compareStartNew(){compareEditingRow=null;personalEditingId=null;compareIds=[];comparePhotoIndex={};$('compareNote').value='';$('compareFilter').value='';$('personalCompareTitle').value='';$('personalCompareNote').value='';compareShowPersonalMessage('');compareShowMessage('');renderCompare()}
+function compareSelectPersonalGroup(group,edit=false){
+ if(!group||group.kind!==compareKind)return;
+ compareIds=group.ids.filter(id=>compareFind(id));comparePhotoIndex={};compareEditingRow=null;
+ personalEditingId=edit?group.id:null;
+ $('personalCompareTitle').value=edit?group.title:'';
+ $('personalCompareNote').value=edit?group.note:'';
+ $('compareFilter').value='';$('compareNote').value='';compareShowPersonalMessage('');compareShowMessage('');renderCompare();
+ $('compareSelected').scrollIntoView({block:'nearest',behavior:'auto'});
+ if(edit)$('personalCompareTitle').focus();
+}
+function compareSavePersonalGroup(){
+ if(compareIds.length<2||compareIds.length>COMPARE_LIMIT){compareShowPersonalMessage('2～12種類の生薬を選択してください。',true);return}
+ const title=$('personalCompareTitle').value.trim(),note=$('personalCompareNote').value.trim();
+ if(title.length>80||note.length>1200){compareShowPersonalMessage('グループ名かメモが長すぎます。',true);return}
+ const other=personalCompareGroups.find(g=>g.kind===compareKind&&g.id!==personalEditingId&&compareIdSignature(g.ids)===compareIdSignature(compareIds));
+ if(other){compareShowPersonalMessage('同じ生薬の組み合わせはすでに自分のグループに登録されています。「編集」から変更してください。',true);return}
+ if(!personalEditingId&&personalCompareGroups.length>=200){compareShowPersonalMessage('保存できる個人用グループの上限（200件）に達しました。',true);return}
+ const existing=personalCompareGroups.find(g=>g.id===personalEditingId);
+ const id=existing?.id||'personal:'+(globalThis.crypto?.randomUUID?.()||Date.now().toString(36)+'-'+Math.random().toString(36).slice(2));
+ const row={id,kind:compareKind,ids:compareIds.map(String),title,note};
+ const next=existing?personalCompareGroups.map(g=>g.id===id?row:g):[...personalCompareGroups,row];
+ if(!compareWritePersonalGroups(next))return;
+ personalEditingId=id;
+ compareShowPersonalMessage(existing?'自分の比較グループを更新しました。':'自分の比較グループを保存しました。共有データには反映されません。');
+ renderCompare();
+}
+function compareDeletePersonalGroup(group){
+ if(!group||!confirm('この自分用の比較グループを削除しますか？ 共有データは削除されません。'))return;
+ if(!compareWritePersonalGroups(personalCompareGroups.filter(g=>g.id!==group.id)))return;
+ if(personalEditingId===group.id){personalEditingId=null;$('personalCompareTitle').value='';$('personalCompareNote').value=''}
+ compareShowPersonalMessage('自分の比較グループを削除しました。');renderCompare();
+}
 function compareCreateRow(ids,note,existing){
  // 旧2件レコードの内容も読み込むが、新規グループは一行のJSONで保存する。
  // 既存のペアを編集する場合も、既存レコードを削除するまでは元データを維持する。
@@ -3174,6 +3268,13 @@ async function loadComparePairs(){
 }
 async function writeCompareGroup(remove){
  if(!isAdmin||compareSaving||comparePairsState!=='ready')return;
+ // 表示状態だけではなく、操作直前のSupabase認証を検証する。
+ const {data:authData,error:authError}=await client.auth.getUser();
+ if(authError||authData?.user?.id!==ADMIN_USER_ID){
+  isAdmin=false;showAdmin();
+  compareShowMessage('管理者ログインが必要です。',true);
+  return;
+ }
  if(remove){if(!confirm('この類似生薬グループを削除しますか？ 生薬の登録情報・写真は削除しません。'))return}
  else if(compareIds.length<2){compareShowMessage('2種類以上を選択してください。',true);return}
  const prev=remove||compareEditingRow;
@@ -3187,7 +3288,11 @@ async function writeCompareGroup(remove){
  }catch(err){compareShowMessage(err.message||String(err),true);return}
  compareSaving=true;renderCompare();compareShowMessage(remove?'削除しています…':'保存しています…');
  try{
-  if(remove){const {error}=await client.from('similar_herbs').delete().eq('kind',remove.kind).eq('left_id',remove.left_id).eq('right_id',remove.right_id);if(error)throw error}
+  if(remove){
+   const {data,error}=await client.from('similar_herbs').delete().eq('kind',remove.kind).eq('left_id',remove.left_id).eq('right_id',remove.right_id).select('kind,left_id,right_id');
+   if(error)throw error;
+   if(!data?.length)throw new Error('削除されませんでした。管理者権限またはSupabaseのアクセス権設定を確認してください。');
+  }
   else{
    const {error}=await client.from('similar_herbs').upsert(next,{onConflict:'kind,left_id,right_id'});if(error)throw error;
    // 旧2件のデータを複数件グループに更新したとき、保存成功後にのみ旧行を削除する。
@@ -3214,6 +3319,11 @@ $('comparePicker').addEventListener('change',e=>{
 $('compare').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
  if(b.dataset.compareKind){compareKind=b.dataset.compareKind;compareStartNew();return}
  if(b.hasAttribute('data-compare-pair')){const r=comparePairs[Number(b.dataset.comparePair)];if(r)compareSelectGroup(r);return}
+ if(b.hasAttribute('data-personal-compare-open')){const g=personalCompareGroups[Number(b.dataset.personalCompareOpen)];if(g)compareSelectPersonalGroup(g);return}
+ if(b.hasAttribute('data-personal-compare-edit')){const g=personalCompareGroups[Number(b.dataset.personalCompareEdit)];if(g)compareSelectPersonalGroup(g,true);return}
+ if(b.hasAttribute('data-personal-compare-delete')){const g=personalCompareGroups[Number(b.dataset.personalCompareDelete)];if(g)compareDeletePersonalGroup(g);return}
+ if(b.id==='personalCompareNew'){compareStartNew();return}
+ if(b.id==='personalCompareSave'){compareSavePersonalGroup();return}
  if(b.hasAttribute('data-compare-delete')){const row=comparePairs[Number(b.dataset.compareDelete)];if(row)writeCompareGroup(row);return}
  if(b.hasAttribute('data-compare-reload')){loadComparePairs();return}
  if(b.hasAttribute('data-compare-remove')){compareIds=compareIds.filter(id=>id!==b.dataset.compareRemove);renderCompare();return}
